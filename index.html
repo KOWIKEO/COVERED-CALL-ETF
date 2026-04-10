@@ -482,7 +482,10 @@
     border-bottom: 1px solid var(--card-border);
     padding-bottom: 0;
     overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .app-nav::-webkit-scrollbar { display: none; }
   .app-tab {
     font-family: var(--font);
     font-size: 13px;
@@ -566,6 +569,15 @@
   .cagr-table td.neg { color: #ff7070; }
 
   .cagr-chart-wrap { position: relative; height: 220px; margin-bottom: 20px; }
+
+  /* ── KOSPI 반응형 ── */
+  @media(max-width:700px){
+    #kospi-rate-grid { grid-template-columns: 1fr !important; }
+    #kospi-sim-grid  { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media(max-width:480px){
+    #kospi-sim-grid  { grid-template-columns: 1fr !important; }
+  }
 
   /* ── 아코디언 ── */
   .acc-header {
@@ -1377,11 +1389,6 @@
         ※ KOSPI 기준지수 100은 1980년 1월 4일 기준입니다. 과거 성장률이 미래를 보장하지 않습니다.
       </p>
     </div>
-
-    @media(max-width:700px){
-      #kospi-rate-grid { grid-template-columns: 1fr !important; }
-      #kospi-sim-grid  { grid-template-columns: 1fr 1fr !important; }
-    }
 
   </div><!-- /page-kospi -->
 
@@ -2395,82 +2402,153 @@ function calcKospiRates(currentVal, asOfDate) {
   });
 }
 
+/* ═══════════════════════════════════════
+   KOSPI 지수 조회
+   1순위: Anthropic API + web_search
+   2순위: CORS 프록시 순차 시도
+   실패 시 마지막 성공값 유지
+═══════════════════════════════════════ */
+
+let _lastKospi  = 2500;
+let _isFetching = false;
+
+function nowStr() {
+  const n = new Date();
+  return n.getFullYear() + '-'
+    + String(n.getMonth()+1).padStart(2,'0') + '-'
+    + String(n.getDate()).padStart(2,'0')
+    + ' ' + n.toTimeString().slice(0,8);
+}
+
+function applyKospiValue(price, src) {
+  price = parseFloat(String(price).replace(/,/g,''));
+  if (!price || isNaN(price) || price < 200 || price > 20000) return false;
+  _lastKospi = price;
+  document.getElementById('kospi-current-val').textContent =
+    price.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('kospi-date-label').textContent  = nowStr() + ' 기준';
+  document.getElementById('kospi-source-label').textContent = '출처: ' + src;
+  calcKospiRates(price, new Date());
+  return true;
+}
+
+/* ── 1순위: Anthropic API ── */
+async function tryAnthropic() {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user',
+        content: '지금 당장 KOSPI 지수 실시간 현재가를 검색해줘. 검색 후 반드시 숫자만 이 형식으로 답해: {"v":숫자}' }]
+    })
+  });
+  if (!resp.ok) throw new Error('http ' + resp.status);
+  const data = await resp.json();
+  const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join(' ');
+  // {"v": 2500.00} 또는 숫자 직접 추출
+  const m1 = text.match(/"v"\s*:\s*([\d]+(?:\.\d+)?)/);
+  if (m1) {
+    const p = parseFloat(m1[1]);
+    if (p >= 200 && p <= 20000) return p;
+  }
+  // KOSPI 범위(1000~9999) 숫자 fallback 파싱
+  const nums = [...text.matchAll(/([1-9]\d{3}(?:\.\d{1,2})?)/g)]
+    .map(m => parseFloat(m[1])).filter(n => n >= 1000 && n <= 9999);
+  if (nums.length > 0) return nums[0];
+  throw new Error('parse fail');
+}
+
+/* ── Yahoo Finance JSON 파싱 ── */
+function parseYahooJson(raw) {
+  try {
+    let json = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (json.contents) json = JSON.parse(json.contents);
+    const r = json?.chart?.result?.[0];
+    if (!r) return null;
+    const m = r.meta;
+    const closes = r.indicators?.quote?.[0]?.close;
+    const p = m.regularMarketPrice || m.previousClose
+           || (closes ? closes.filter(Boolean).slice(-1)[0] : null);
+    return (p && p >= 200) ? parseFloat(p) : null;
+  } catch { return null; }
+}
+
+/* ── 2순위: CORS 프록시 순차 시도 ── */
+async function tryYahooProxies() {
+  const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?interval=1d&range=3d';
+  const proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
+    'https://thingproxy.freeboard.io/fetch/' + yfUrl,
+    yfUrl,
+  ];
+  for (const url of proxies) {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 8000);
+      let resp;
+      try {
+        resp = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' });
+      } finally { clearTimeout(tid); }
+      if (!resp || !resp.ok) continue;
+      const txt  = await resp.text();
+      const price = parseYahooJson(txt);
+      if (price) return price;
+    } catch { /* 다음 프록시 */ }
+  }
+  return null;
+}
+
+/* ── 메인 갱신 함수 ── */
 async function fetchKospi() {
+  if (_isFetching) return;
+  _isFetching = true;
+
   const btn  = document.getElementById('kospi-refresh-btn');
   const icon = document.getElementById('kospi-refresh-icon');
   const load = document.getElementById('kospi-loading');
-
-  btn.disabled   = true;
+  btn.disabled     = true;
   icon.textContent = '⏳';
-  load.style.display = 'block';
-  document.getElementById('kospi-date-label').textContent = '조회 중...';
+  load.style.display   = 'block';
+  document.getElementById('kospi-date-label').textContent   = '조회 중...';
   document.getElementById('kospi-source-label').textContent = '';
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{
-          role: 'user',
-          content: '현재 KOSPI 지수를 검색해서 최신 종가 또는 현재가를 알려줘. 반드시 JSON 형식으로만 응답해: {"kospi": 숫자, "date": "YYYY-MM-DD"}'
-        }]
-      })
-    });
-    const data = await resp.json();
-    const text = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
+    /* 1순위: Anthropic */
+    try {
+      const price = await tryAnthropic();
+      if (applyKospiValue(price, 'Anthropic Web Search')) { return; }
+    } catch(e1) { /* 2순위로 */ }
 
-    /* JSON 파싱 시도 */
-    const jsonMatch = text.match(/\{[\s\S]*?"kospi"\s*:\s*([\d.,]+)[\s\S]*?"date"\s*:\s*"([^"]+)"[\s\S]*?\}/);
-    if (jsonMatch) {
-      const kospiVal = parseFloat(jsonMatch[1].replace(/,/g,''));
-      const dateStr  = jsonMatch[2];
-      const asOf     = new Date(dateStr);
+    /* 2순위: Yahoo Finance CORS 프록시 */
+    const price = await tryYahooProxies();
+    if (price && applyKospiValue(price, 'Yahoo Finance (^KS11)')) { return; }
 
-      document.getElementById('kospi-current-val').textContent = kospiVal.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-      document.getElementById('kospi-date-label').textContent  = dateStr + ' 기준';
-      document.getElementById('kospi-source-label').textContent = '출처: 실시간 검색';
-      calcKospiRates(kospiVal, asOf);
-    } else {
-      /* 숫자만 추출 시도 */
-      const numMatch = text.match(/(\d{3,4}[\d,.]+)/);
-      if (numMatch) {
-        const kospiVal = parseFloat(numMatch[1].replace(/,/g,''));
-        const today    = new Date();
-        document.getElementById('kospi-current-val').textContent = kospiVal.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-        document.getElementById('kospi-date-label').textContent  = today.toISOString().slice(0,10) + ' 기준 (추정)';
-        document.getElementById('kospi-source-label').textContent = '출처: 실시간 검색';
-        calcKospiRates(kospiVal, today);
-      } else {
-        document.getElementById('kospi-date-label').textContent = '파싱 실패 — 기본값 사용';
-        useDefaultKospi();
-      }
-    }
-  } catch(e) {
-    document.getElementById('kospi-date-label').textContent = '조회 실패 — 기본값 사용';
-    useDefaultKospi();
+    /* 둘 다 실패 — 이전 성공값 유지 */
+    document.getElementById('kospi-date-label').textContent =
+      nowStr() + ' 기준 (이전값 유지)';
+    document.getElementById('kospi-source-label').textContent =
+      '⚠ 조회 실패 — 직전 지수 ' + _lastKospi.toLocaleString('ko-KR') + ' 유지';
+    calcKospiRates(_lastKospi, new Date());
+
   } finally {
-    btn.disabled = false;
+    btn.disabled     = false;
     icon.textContent = '↺';
-    load.style.display = 'none';
+    load.style.display   = 'none';
+    _isFetching      = false;
   }
 }
 
 function useDefaultKospi() {
-  /* 최근 알려진 KOSPI 값으로 초기 표시 (2025년 4월 기준 약 2,500) */
-  const defaultVal  = 2500;
-  const defaultDate = new Date('2025-04-10');
+  const now = new Date();
   document.getElementById('kospi-current-val').textContent =
-    defaultVal.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById('kospi-date-label').textContent  = '2025-04-10 기준 (기본값)';
-  document.getElementById('kospi-source-label').textContent = '↺ 갱신 버튼으로 실시간 조회';
-  calcKospiRates(defaultVal, defaultDate);
+    _lastKospi.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('kospi-date-label').textContent  = nowStr() + ' 기준';
+  document.getElementById('kospi-source-label').textContent = '↺ 갱신 버튼으로 최신 지수 조회';
+  calcKospiRates(_lastKospi, now);
 }
 
 /* ════════════════════════════════════════

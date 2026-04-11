@@ -662,41 +662,82 @@
      모바일 반응형 — 720px 브레이크포인트
   ══════════════════════════════════════════ */
   @media(max-width:720px){
-    /* 패딩·폰트 */
-    .wrap { padding: 20px 16px 60px; }
+    /* 전체 wrap: 좌우 여백 축소, 가로 넘침 방지 */
+    .wrap { padding: 20px 12px 60px; overflow-x: hidden; }
 
-    /* 레이아웃 1컬럼 */
+    /* 레이아웃 1컬럼, 전체 너비 100% */
     .layout { grid-template-columns: 1fr !important; gap: 14px !important; }
     .cagr-layout { grid-template-columns: 1fr !important; }
     #cpd-layout { grid-template-columns: 1fr !important; }
 
+    /* 레이아웃 자식 너비 강제 */
+    .layout > *,
+    .cagr-layout > *,
+    #cpd-layout > * { min-width: 0; width: 100%; box-sizing: border-box; }
+
     /* 요약 바 */
     .summary-bar { grid-template-columns: 1fr 1fr !important; }
-    .sum-cell { padding: 14px 14px; }
+    .sum-cell { padding: 12px 12px; }
+    .sum-cell-val { font-size: 15px; }
 
-    /* 카드 */
-    .card { padding: 16px 16px; }
+    /* 카드: 너비 강제, 넘침 방지 */
+    .card {
+      padding: 14px 14px;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
 
     /* 헤더 */
-    .header { flex-direction: column; margin-bottom: 20px; }
+    .header { flex-direction: column; margin-bottom: 20px; gap: 12px; }
     .mode-toggle { width: 100%; justify-content: center; }
+    .header-left { width: 100%; }
 
-    /* 테이블 */
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* 슬라이더 헤더: 넘침 방지 */
+    .slider-header { flex-wrap: wrap; gap: 6px; }
+    .slider-header > span { flex-shrink: 0; }
+
+    /* 단위탭+입력 래퍼: 넘침 방지 */
+    .slider-header > div { flex-wrap: wrap; max-width: 100%; }
+
+    /* 숫자 입력 너비 조정 */
+    .num-input { max-width: 100px; }
 
     /* 차트 */
     .chart-wrap { height: 180px !important; }
     .cagr-chart-wrap { height: 190px !important; }
 
+    /* 테이블: 가로 스크롤 허용 */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+    table { min-width: 420px; }
+
     /* 지수 성장률 그리드 */
     [id$="-rate-grid"] { grid-template-columns: 1fr !important; }
     [id$="-sim-grid"]  { grid-template-columns: 1fr 1fr !important; }
 
-    /* CAGR 결과 3열 → 1열 */
+    /* CAGR 결과 */
     .cagr-metric-grid { grid-template-columns: 1fr 1fr !important; }
+    .cagr-layout > div:last-child { min-width: 0; }
+
+    /* 분배금 추이 헤더 */
+    .chart-header { flex-wrap: wrap; gap: 8px; }
 
     /* 날짜 입력 그리드 */
     #cagr-period-date-panel > div { grid-template-columns: 1fr 1fr; }
+
+    /* 아코디언 내부 넘침 방지 */
+    .acc-body { overflow-x: hidden; }
+
+    /* 복리/CAGR 요약 카드 3열 → 1열 */
+    #cpd-layout > div:last-child > div:first-child { grid-template-columns: 1fr !important; }
+
+    /* 지수 갱신 헤더 */
+    .header > button { align-self: flex-start; }
   }
 
   /* ── 아코디언 ── */

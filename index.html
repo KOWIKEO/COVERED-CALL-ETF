@@ -3586,7 +3586,10 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
   if (periodYears === 0) {
     sv          = BASE_VAL;
     startDate   = BASE_DATE;
-    periodLabel = '상장이후 전체 (' + BASE_LABEL + ' ~)';
+    const totalMs   = now - BASE_DATE;
+    const totalYrs  = Math.floor(totalMs / (1000*60*60*24*365.25));
+    const totalMons = Math.floor((totalMs / (1000*60*60*24*365.25) - totalYrs) * 12);
+    periodLabel = '상장이후 전체 (' + BASE_LABEL + ' ~ 현재, ' + totalYrs + '년 ' + totalMons + '개월)';
   } else {
     sv = startVal || getFallbackVal(indexId, now.getFullYear()-periodYears);
     startDate = new Date(now.getFullYear()-periodYears, now.getMonth(), now.getDate());
@@ -3594,10 +3597,10 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
     const cachedDate = histDateStr || _histCache[ck+'_date'];
     if (cachedDate) {
       /* 실제 조회 날짜 표시 */
-      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~) (Yahoo)';
+      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (Yahoo)';
     } else {
       /* fallback: 연도만 표시 */
-      periodLabel = '최근 ' + periodYears + '년 (' + (now.getFullYear()-periodYears) + '년 추정 ~) (내장)';
+      periodLabel = '최근 ' + periodYears + '년 (' + (now.getFullYear()-periodYears) + '년 추정 ~ 현재) (내장)';
     }
   }
   if (!sv || sv <= 0) return;

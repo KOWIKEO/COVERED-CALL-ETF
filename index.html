@@ -2859,8 +2859,7 @@ function renderChart(cache) {
 
   /* 범례 레이블 */
   document.getElementById('leg-div-label').textContent = chartTab === 'annual' ? '연간 분배금' : '월간 분배금';
-  document.getElementById('leg-port').style.display =
-    (investMode === 'reinvest' && chartTab === 'annual') ? 'flex' : 'none';
+  document.getElementById('leg-port').style.display = 'none';
 
   let labels, datasets, chartType, opts;
 
@@ -2868,8 +2867,6 @@ function renderChart(cache) {
     /* ── 연간 차트 ── */
     labels = rows.map(r => r.label);
     const divData  = rows.map(r => r.div);
-    const portData = rows.map(r => r.port);
-
     datasets = [{
       label: '연간 분배금',
       data: divData,
@@ -2879,25 +2876,8 @@ function renderChart(cache) {
       order: 1,
     }];
 
-    if (investMode === 'reinvest') {
-      datasets.push({
-        label: '포트폴리오 가치',
-        data: portData,
-        type: 'line',
-        borderColor: '#0091ff',
-        backgroundColor: 'rgba(0,145,255,0.06)',
-        fill: true,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        borderWidth: 2,
-        tension: 0.4,
-        yAxisID: 'y2',
-        order: 0,
-      });
-    }
-
     chartType = 'bar';
-    opts = buildOpts(true, investMode === 'reinvest', false);
+    opts = buildOpts(true, false, false);
 
   } else {
     /* ── 월간 차트 ── */
@@ -3004,35 +2984,99 @@ function buildOpts(isBar, hasDualAxis, isMonthly) {
 }
 
 /* ── KODEX 200타겟위클리커버드콜 현재가 조회 ── */
+let _lastKodexPrice = null;
+let _isFetchingKodex = false;
+
 async function fetchKodexPrice() {
+  if (_isFetchingKodex) return;
+  _isFetchingKodex = true;
   const badge = document.getElementById('kodex-price-badge');
-  if (!badge) return;
+  if (!badge) { _isFetchingKodex = false; return; }
   badge.textContent = '조회중...';
+  badge.style.opacity = '0.6';
+
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user',
-          content: 'KODEX 200타겟위클리커버드콜 ETF 현재 주가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
-      })
-    });
-    if (!resp.ok) throw new Error('fail');
-    const data = await resp.json();
-    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
-    const m = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
-    const price = m ? parseFloat(m[1].replace(/,/g,'')) : null;
-    if (price && price > 100) {
-      badge.textContent = price.toLocaleString('ko-KR') + '원';
-      badge.title = '마지막 조회: ' + new Date().toLocaleTimeString('ko-KR');
+    /* 1순위: Anthropic API */
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 400,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user',
+            content: '지금 당장 KODEX 200타겟위클리커버드콜 ETF (종목코드 266360) 현재 주가를 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.' }]
+        })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(' ');
+        const m1 = text.match(/"v"\s*:\s*([\d,]+(?:\.\d+)?)/);
+        let price = m1 ? parseFloat(m1[1].replace(/,/g,'')) : null;
+        if (!price) {
+          const nums = [...text.matchAll(/([5-9]\d{3}|[1-9]\d{4})/g)]
+            .map(m => parseFloat(m[1])).filter(n => n >= 5000 && n <= 50000);
+          if (nums.length) price = nums[0];
+        }
+        if (price && price >= 5000 && price <= 50000) {
+          _lastKodexPrice = price;
+          badge.textContent = price.toLocaleString('ko-KR') + '원';
+          badge.title = '조회: ' + new Date().toLocaleTimeString('ko-KR') + ' (Anthropic)';
+          badge.style.opacity = '1';
+          _isFetchingKodex = false;
+          return;
+        }
+      }
+    } catch {}
+
+    /* 2순위: Yahoo Finance 266360.KS */
+    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/266360.KS?interval=1d&range=2d';
+    const proxies = [
+      'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
+      'https://thingproxy.freeboard.io/fetch/' + yfUrl,
+      yfUrl,
+    ];
+    for (const url of proxies) {
+      try {
+        const ctrl = new AbortController();
+        const tid  = setTimeout(() => ctrl.abort(), 7000);
+        let resp;
+        try { resp = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' }); }
+        finally { clearTimeout(tid); }
+        if (!resp || !resp.ok) continue;
+        const txt  = await resp.text();
+        let json;
+        try { json = JSON.parse(txt); } catch { continue; }
+        if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+        const r = json?.chart?.result?.[0];
+        if (!r) continue;
+        const m   = r.meta;
+        const cls = r.indicators?.quote?.[0]?.close;
+        const price = m.regularMarketPrice || m.previousClose
+                   || (cls ? cls.filter(Boolean).slice(-1)[0] : null);
+        if (price && price >= 5000 && price <= 50000) {
+          _lastKodexPrice = parseFloat(price);
+          badge.textContent = _lastKodexPrice.toLocaleString('ko-KR') + '원';
+          badge.title = '조회: ' + new Date().toLocaleTimeString('ko-KR') + ' (Yahoo)';
+          badge.style.opacity = '1';
+          _isFetchingKodex = false;
+          return;
+        }
+      } catch {}
+    }
+
+    /* 모두 실패 — 이전값 또는 표시 */
+    if (_lastKodexPrice) {
+      badge.textContent = _lastKodexPrice.toLocaleString('ko-KR') + '원';
+      badge.title = '이전 조회값 유지';
     } else {
       badge.textContent = '조회 실패';
     }
-  } catch {
-    badge.textContent = '조회 실패';
+    badge.style.opacity = '1';
+  } finally {
+    _isFetchingKodex = false;
   }
 }
 
@@ -3460,20 +3504,28 @@ function calcCompound() {
   const invData  = yearRows.map(r => r.totalInvest);
 
   if (cpdChart) cpdChart.destroy();
-  let datasets, yLabel, isBar = false;
+  let datasets, yLabel;
   if (cpdChartTab === 'val') {
-    datasets = [
-      { label: '원금+적립', data: invData, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 4, borderSkipped: false, order: 2, type: 'bar' },
-      { label: '총 자산', data: valData, borderColor: '#00e5b0', backgroundColor: 'rgba(0,229,176,0.08)', fill: true, type: 'line', pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.4, yAxisID: 'y', order: 1 },
-    ];
-    isBar = true;
+    datasets = [{
+      label: '총 자산',
+      data: valData,
+      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(0,229,176,0.9)' : 'rgba(0,229,176,0.55)'),
+      borderRadius: 5,
+      borderSkipped: false,
+    }];
     yLabel = v => fmt(v, true);
   } else {
-    datasets = [{ label: '수익률', data: retData, borderColor: 'var(--accent2)', backgroundColor: 'rgba(0,145,255,0.08)', fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0.4 }];
+    datasets = [{
+      label: '수익률',
+      data: retData,
+      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(0,145,255,0.9)' : 'rgba(0,145,255,0.5)'),
+      borderRadius: 5,
+      borderSkipped: false,
+    }];
     yLabel = v => v.toFixed(1) + '%';
   }
   cpdChart = new Chart(document.getElementById('cpdChart'), {
-    type: isBar ? 'bar' : 'line',
+    type: 'bar',
     data: { labels, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -3500,8 +3552,9 @@ function switchAppTab(tab, btn) {
   document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('page-' + tab).classList.add('active');
+  if (tab === 'simulator') fetchKodexPrice();
   if (tab === 'cagr')     calcCAGR();
-  if (tab === 'compound') calcCompound();
+  if (tab === 'compound') { setCpdMode('simple', document.getElementById('cpd-mode-simple')); calcCompound(); }
   if (tab === 'kospi'    && document.getElementById('kospi-current-val').textContent === '—')  useDefaultKospi();
   if (tab === 'kospi200' && document.getElementById('k200-current-val').textContent  === '—')  useDefaultKospi200();
   const usIdx = ['nasdaq','nasdaq100','dowjones','sp500'];

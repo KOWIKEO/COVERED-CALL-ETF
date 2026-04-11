@@ -3047,7 +3047,7 @@ async function fetchKodexPrice() {
           max_tokens: 400,
           tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{ role: 'user',
-            content: '한국 ETF KODEX 200타겟위클리커버드콜 종목코드 266360 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
+            content: '한국 ETF KODEX 200타겟위클리커버드콜 종목코드 498400 현재 주가를 검색해줘. 반드시 {"v":숫자} 형식으로만 답해.' }]
         })
       });
       if (resp.ok) {
@@ -3066,8 +3066,8 @@ async function fetchKodexPrice() {
       }
     } catch {}
 
-    /* 2순위: Yahoo Finance 266360.KS CORS 프록시 순차 */
-    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/266360.KS?interval=1d&range=3d';
+    /* 2순위: Yahoo Finance 498400.KS CORS 프록시 순차 */
+    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/498400.KS?interval=1d&range=3d';
     const proxies = [
       'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
       'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl),
@@ -3092,7 +3092,7 @@ async function fetchKodexPrice() {
         const cl = r.indicators?.quote?.[0]?.close;
         const price = m.regularMarketPrice || m.previousClose
                    || (cl ? cl.filter(Boolean).slice(-1)[0] : null);
-        if (applyKodexPrice(price, 'Yahoo Finance (266360.KS)')) return;
+        if (applyKodexPrice(price, 'Yahoo Finance (498400.KS)')) return;
       } catch {}
     }
 

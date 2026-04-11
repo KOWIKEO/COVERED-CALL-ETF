@@ -3899,9 +3899,11 @@ function setLoanMethod(method,btn) {
 }
 /* ════════════════════════════════════════
    기준금리 조회
-   - BOK: ECOS 공개 API (sample 키) + CORS 프록시
-   - Fed: US Treasury 공식 API (CORS 기본지원) + OECD 공개 API
+   BOK: ECOS 실인증키 + CORS 프록시
+   Fed: US Treasury Fiscal Data API (CORS 기본지원) + FRED via corsproxy
 ════════════════════════════════════════ */
+
+const BOK_API_KEY = 'RVTLLDCO3IW1YUKQSSPJ';
 
 function applyRate(valElId, dateElId, rate, src) {
   rate = parseFloat(String(rate).replace(/,/g,''));
@@ -3914,39 +3916,79 @@ function applyRate(valElId, dateElId, rate, src) {
   return true;
 }
 
-/* ── CORS 프록시 GET ── */
+/* CORS 프록시 경유 fetch */
 async function proxyGet(url, ms) {
-  ms = ms || 9000;
-  const proxies = [
-    'https://api.allorigins.win/get?url=' + encodeURIComponent(url),
-    'https://corsproxy.io/?' + encodeURIComponent(url),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  ms = ms || 10000;
+  const strategies = [
+    // corsproxy.io — FRED/ECOS에 가장 신뢰성 높음
+    async () => {
+      const r = await fetchWithTimeout('https://corsproxy.io/?' + encodeURIComponent(url), ms);
+      return r.ok ? r.text() : null;
+    },
+    // allorigins /get — {contents, status} 래핑 형태
+    async () => {
+      const r = await fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), ms);
+      if (!r.ok) return null;
+      const j = await r.json();
+      return j.contents || null;
+    },
+    // allorigins /raw
+    async () => {
+      const r = await fetchWithTimeout('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), ms);
+      return r.ok ? r.text() : null;
+    },
   ];
-  for (const pu of proxies) {
-    try {
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), ms);
-      let r;
-      try { r = await fetch(pu, { cache:'no-cache', signal: ctrl.signal }); }
-      finally { clearTimeout(tid); }
-      if (!r || !r.ok) continue;
-      const txt = await r.text();
-      if (!txt || txt.length < 5) continue;
-      // allorigins /get 방식: {"contents":"...","status":{...}}
-      try {
-        const wrapped = JSON.parse(txt);
-        if (wrapped.contents !== undefined) return wrapped.contents;
-      } catch {}
-      return txt;
-    } catch {}
+  for (const fn of strategies) {
+    try { const t = await fn(); if (t && t.length > 5) return t; } catch {}
   }
   return null;
 }
 
+async function fetchWithTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const tid  = setTimeout(() => ctrl.abort(), ms);
+  try { return await fetch(url, { cache: 'no-cache', signal: ctrl.signal }); }
+  finally { clearTimeout(tid); }
+}
+
+/* FRED 텍스트 파일 파싱 */
+function parseFredTxt(txt) {
+  if (!txt) return null;
+  const lines = txt.split('\n').filter(l => /^\d{4}-\d{2}-\d{2}\s+[\d.]+/.test(l.trim()));
+  if (!lines.length) return null;
+  const parts = lines[lines.length-1].trim().split(/\s+/);
+  const v = parseFloat(parts[parts.length-1]);
+  return (v > 0 && v <= 20) ? v : null;
+}
+
+/* BOK ECOS JSON 파싱 */
+function parseEcos(txt) {
+  if (!txt) return null;
+  try {
+    let obj = JSON.parse(txt);
+    // allorigins /get 래핑 해제
+    if (obj && typeof obj.contents === 'string') {
+      try { obj = JSON.parse(obj.contents); } catch {}
+    }
+    if (obj?.RESULT?.CODE) {
+      console.warn('ECOS API 오류:', obj.RESULT.MESSAGE);
+      return null;
+    }
+    const rows = obj?.StatisticSearch?.row;
+    if (!rows?.length) return null;
+    for (let i = rows.length-1; i >= 0; i--) {
+      const v = parseFloat(rows[i].DATA_VALUE);
+      if (v > 0 && v <= 20) return v;
+    }
+  } catch (e) { console.log('ECOS parse error:', e, txt?.slice(0,200)); }
+  return null;
+}
+
 /* ── 미국 연준 기준금리 ──
-   1순위: US Treasury Fiscal Data API (CORS 기본지원, 인증불필요)
-   2순위: OECD 공개 API (CORS 기본지원, 인증불필요)
-   3순위: 프록시 경유 Yahoo Finance ^IRX (13주 T-bill, fed rate와 매우 유사) */
+   1순위: US Treasury Fiscal Data API (CORS 기본지원, 인증 불필요)
+          → avg_interest_rates 에서 단기 채권 금리 사용
+   2순위: FRED FEDFUNDS.txt via corsproxy.io
+   3순위: FRED DFEDTARU.txt (Fed 목표범위 상단) via corsproxy.io */
 async function fetchFedRate() {
   const btn  = document.getElementById('fed-refresh-btn');
   const icon = document.getElementById('fed-icon');
@@ -3954,97 +3996,61 @@ async function fetchFedRate() {
   btn.disabled = true; icon.textContent = '⏳';
   dEl.textContent = '조회 중...';
 
-  /* ① US Treasury Fiscal Data API — CORS 기본지원 */
+  /* ① US Treasury Fiscal Data API (직접 호출, CORS 기본지원) */
   try {
-    const url  = 'https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/avg_interest_rates'
-               + '?fields=record_date,security_desc,avg_interest_rate_amt'
-               + '&filter=security_type_desc:eq:Bills'
-               + '&sort=-record_date&limit=50';
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 10000);
-    let resp;
-    try { resp = await fetch(url, { cache:'no-cache', signal: ctrl.signal }); }
-    finally { clearTimeout(tid); }
-    if (resp && resp.ok) {
+    const url = 'https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/avg_interest_rates'
+              + '?fields=record_date,security_type_desc,security_desc,avg_interest_rate_amt'
+              + '&sort=-record_date&limit=50'
+              + '&filter=security_type_desc:eq:Marketable';
+    const resp = await fetchWithTimeout(url, 10000);
+    if (resp.ok) {
       const json = await resp.json();
-      /* federal funds 관련 행 탐색 */
       const rows = json?.data || [];
+      /* Federal Funds 직접 탐색 */
       const fedRow = rows.find(r =>
-        (r.security_desc || '').toLowerCase().includes('federal') ||
-        (r.security_desc || '').toLowerCase().includes('fed fund')
+        /federal.?fund/i.test(r.security_desc || '')
       );
       if (fedRow) {
         const v = parseFloat(fedRow.avg_interest_rate_amt);
         if (v > 0 && v <= 20) {
-          applyRate('fed-rate', 'fed-date', v, 'US Treasury API');
+          applyRate('fed-rate', 'fed-date', v, 'US Treasury (Federal Funds)');
           btn.disabled = false; icon.textContent = '↺'; return;
         }
       }
-      /* 가장 최근 단기금리 사용 */
-      for (const row of rows) {
-        const v = parseFloat(row.avg_interest_rate_amt);
+      /* 단기 T-Bill 금리 사용 (fed rate와 가장 유사) */
+      const billRow = rows.find(r => /bill/i.test(r.security_desc || ''));
+      if (billRow) {
+        const v = parseFloat(billRow.avg_interest_rate_amt);
         if (v > 0 && v <= 20) {
-          applyRate('fed-rate', 'fed-date', v, 'US Treasury (' + (row.security_desc||'') + ')');
+          applyRate('fed-rate', 'fed-date', v, 'US Treasury T-Bill (' + (billRow.security_desc||'') + ')');
           btn.disabled = false; icon.textContent = '↺'; return;
         }
       }
     }
   } catch (e) { console.log('Treasury API fail:', e); }
 
-  /* ② OECD 공개 API — 미국 중앙은행 정책금리 IRSTCB01 */
-  try {
-    const now  = new Date();
-    const sp   = (now.getFullYear()-1) + '-' + String(now.getMonth()+1).padStart(2,'0');
-    const url  = 'https://stats.oecd.org/sdmx-json/data/MEI_FIN/IRSTCB01.USA.M/OECD?startPeriod=' + sp;
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 10000);
-    let resp;
-    try { resp = await fetch(url, { cache:'no-cache', signal: ctrl.signal }); }
-    finally { clearTimeout(tid); }
-    if (resp && resp.ok) {
-      const json = await resp.json();
-      const series = json?.dataSets?.[0]?.series;
-      if (series) {
-        const key   = Object.keys(series)[0];
-        const obs   = series[key]?.observations;
-        if (obs) {
-          const keys  = Object.keys(obs).map(Number).sort((a,b)=>b-a);
-          const val   = obs[keys[0]]?.[0];
-          if (val > 0 && val <= 20) {
-            applyRate('fed-rate', 'fed-date', val, 'OECD (US 정책금리)');
-            btn.disabled = false; icon.textContent = '↺'; return;
-          }
-        }
+  /* ② FRED FEDFUNDS.txt via corsproxy.io */
+  for (const series of ['FEDFUNDS', 'DFEDTARU', 'DFEDTARL']) {
+    try {
+      const txt = await proxyGet('https://fred.stlouisfed.org/data/' + series + '.txt', 9000);
+      const v   = parseFredTxt(txt);
+      if (v !== null) {
+        applyRate('fed-rate', 'fed-date', v, 'FRED (' + series + ')');
+        btn.disabled = false; icon.textContent = '↺'; return;
       }
-    }
-  } catch (e) { console.log('OECD Fed fail:', e); }
-
-  /* ③ Yahoo Finance ^IRX (13주 T-bill) — 프록시 경유 */
-  try {
-    const yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/%5EIRX?interval=1d&range=5d';
-    const txt   = await proxyGet(yfUrl, 9000);
-    if (txt) {
-      let json; try { json = JSON.parse(txt); } catch {}
-      if (json) {
-        const r = json?.chart?.result?.[0];
-        const m = r?.meta;
-        const p = m?.regularMarketPrice || m?.previousClose;
-        if (p > 0 && p <= 20) {
-          applyRate('fed-rate', 'fed-date', p, 'Yahoo Finance (^IRX 13주 T-bill)');
-          btn.disabled = false; icon.textContent = '↺'; return;
-        }
-      }
-    }
-  } catch (e) { console.log('Yahoo ^IRX fail:', e); }
+    } catch {}
+  }
 
   dEl.textContent = '조회 실패 — ↺ 재시도';
   btn.disabled = false; icon.textContent = '↺';
 }
 
 /* ── 한국은행 기준금리 ──
-   1순위: BOK ECOS 공개 API (sample 키) — 프록시 경유
-          URL 파라미터: startNo=1, endNo=1 (최신 1건)
-   2순위: OECD 공개 API — 한국 중앙은행 정책금리 IRSTCB01 */
+   실인증키 RVTLLDCO3IW1YUKQSSPJ 사용
+   1순위: 직접 호출 (ECOS가 인증된 키에 CORS 허용하는 경우)
+   2순위: corsproxy.io 경유
+   3순위: allorigins 경유
+   통계표 722Y001 / 항목 0101000 (기준금리) */
 async function fetchBokRate() {
   const btn  = document.getElementById('bok-refresh-btn');
   const icon = document.getElementById('bok-icon');
@@ -4052,60 +4058,38 @@ async function fetchBokRate() {
   btn.disabled = true; icon.textContent = '⏳';
   dEl.textContent = '조회 중...';
 
-  /* ① BOK ECOS — 기준금리 722Y001, 최신 1개월 데이터 1건만 요청 */
   const now     = new Date();
   const endYM   = now.getFullYear() + String(now.getMonth()+1).padStart(2,'0');
-  /* 시작날짜: 6개월 전 */
-  const d6 = new Date(now); d6.setMonth(d6.getMonth()-6);
+  const d6      = new Date(now); d6.setMonth(d6.getMonth()-6);
   const startYM = d6.getFullYear() + String(d6.getMonth()+1).padStart(2,'0');
-  /* startNo=1, endNo=1 (최신 1건) */
-  const ecosUrl = 'https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/1/722Y001/MM/'
-                + startYM + '/' + endYM + '/0101000';
 
-  const ecosTxt = await proxyGet(ecosUrl, 10000);
-  if (ecosTxt) {
-    try {
-      let obj = JSON.parse(ecosTxt);
-      if (obj.contents) { try { obj = JSON.parse(obj.contents); } catch {} }
-      const rows = obj?.StatisticSearch?.row;
-      if (rows?.length) {
-        for (let i = rows.length-1; i >= 0; i--) {
-          const v = parseFloat(rows[i].DATA_VALUE);
-          if (v > 0 && v <= 20) {
-            applyRate('bok-rate', 'bok-date', v, 'BOK ECOS API');
-            btn.disabled = false; icon.textContent = '↺'; return;
-          }
-        }
-      }
-    } catch (e) { console.log('ECOS parse fail:', e, ecosTxt?.slice(0,200)); }
-  }
+  /* 실인증키 URL (startNo=1, endNo=10, 기준금리 항목) */
+  const ecosUrl = 'https://ecos.bok.or.kr/api/StatisticSearch/'
+    + BOK_API_KEY + '/json/kr/1/10/722Y001/MM/'
+    + startYM + '/' + endYM + '/0101000';
 
-  /* ② OECD 공개 API — 한국 중앙은행 정책금리 */
+  /* ① 직접 호출 */
   try {
-    const sp   = d6.getFullYear() + '-' + String(d6.getMonth()+1).padStart(2,'0');
-    const url  = 'https://stats.oecd.org/sdmx-json/data/MEI_FIN/IRSTCB01.KOR.M/OECD?startPeriod=' + sp;
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 10000);
-    let resp;
-    try { resp = await fetch(url, { cache:'no-cache', signal: ctrl.signal }); }
-    finally { clearTimeout(tid); }
-    if (resp && resp.ok) {
-      const json = await resp.json();
-      const series = json?.dataSets?.[0]?.series;
-      if (series) {
-        const key = Object.keys(series)[0];
-        const obs = series[key]?.observations;
-        if (obs) {
-          const keys = Object.keys(obs).map(Number).sort((a,b)=>b-a);
-          const val  = obs[keys[0]]?.[0];
-          if (val > 0 && val <= 20) {
-            applyRate('bok-rate', 'bok-date', val, 'OECD (KOR 정책금리)');
-            btn.disabled = false; icon.textContent = '↺'; return;
-          }
-        }
+    const resp = await fetchWithTimeout(ecosUrl, 10000);
+    if (resp.ok) {
+      const txt = await resp.text();
+      const v   = parseEcos(txt);
+      if (v !== null) {
+        applyRate('bok-rate', 'bok-date', v, 'BOK ECOS API (직접)');
+        btn.disabled = false; icon.textContent = '↺'; return;
       }
     }
-  } catch (e) { console.log('OECD BOK fail:', e); }
+  } catch {}
+
+  /* ② CORS 프록시 경유 */
+  try {
+    const txt = await proxyGet(ecosUrl, 10000);
+    const v   = parseEcos(txt);
+    if (v !== null) {
+      applyRate('bok-rate', 'bok-date', v, 'BOK ECOS API (proxy)');
+      btn.disabled = false; icon.textContent = '↺'; return;
+    }
+  } catch (e) { console.log('BOK proxy fail:', e); }
 
   dEl.textContent = '조회 실패 — ↺ 재시도';
   btn.disabled = false; icon.textContent = '↺';

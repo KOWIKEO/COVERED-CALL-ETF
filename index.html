@@ -54,7 +54,7 @@
     flex-wrap: wrap;
     gap: 16px;
   }
-  @media(max-width:600px){
+  @media(max-width:480px){
     .header { flex-direction: column; }
     .mode-toggle { width: 100%; justify-content: center; }
     h1 { font-size: 20px; }
@@ -659,97 +659,84 @@
   }
 
   /* ══════════════════════════════════════════
-     모바일 반응형 — 전체 강화
+     모바일 반응형 — 480px 단일 브레이크포인트
   ══════════════════════════════════════════ */
-
-  /* viewport 기준 패딩 */
-  @media(max-width:768px){
-    .wrap { padding: 20px 14px 60px; }
-    h1 { font-size: 18px !important; }
-    .subtitle { font-size: 12px; }
+  @media(max-width:480px){
+    /* 패딩·폰트 기본 */
+    .wrap { padding: 14px 10px 50px; }
+    h1 { font-size: 16px !important; line-height: 1.3; }
+    .subtitle { font-size: 11px; }
+    .badge { font-size: 10px; padding: 3px 10px; }
 
     /* 요약 바 */
     .summary-bar { grid-template-columns: 1fr 1fr !important; }
-    .sum-cell { padding: 14px 12px; }
+    .sum-cell { padding: 12px 10px; }
     .sum-cell-val { font-size: 14px; }
+    .sum-cell-label { font-size: 10px; }
+    .sum-cell-sub { font-size: 10px; }
 
     /* 레이아웃 1컬럼 */
-    .layout { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .layout { grid-template-columns: 1fr !important; gap: 10px !important; }
     .cagr-layout { grid-template-columns: 1fr !important; }
     #cpd-layout { grid-template-columns: 1fr !important; }
 
-    /* 카드 패딩 축소 */
-    .card { padding: 14px 14px; border-radius: 12px; }
+    /* 카드 */
+    .card { padding: 12px 12px; border-radius: 10px; }
 
-    /* 슬라이더 헤더 */
-    .slider-header { gap: 4px; }
+    /* 슬라이더 */
+    .slider-block { margin-bottom: 14px; }
+    .slider-header { gap: 4px; flex-wrap: wrap; }
     .slider-label { font-size: 12px; }
-    .num-input { width: 80px !important; font-size: 12px; }
+    .num-input { width: 75px !important; font-size: 11px; padding: 4px 22px 4px 8px !important; }
 
     /* 단위 버튼 */
-    .unit-btn { padding: 2px 5px !important; font-size: 9px !important; min-width: 24px !important; }
+    .unit-tabs { gap: 1px; }
+    .unit-btn { padding: 2px 5px !important; font-size: 9px !important; min-width: 22px !important; }
 
     /* 아코디언 */
-    .acc-title { font-size: 12px; }
-    .acc-header { padding: 10px 8px; }
+    .acc-title { font-size: 11px; }
+    .acc-header { padding: 9px 8px; margin-top: 4px; }
 
-    /* 차트 높이 축소 */
-    .chart-wrap { height: 160px !important; }
-    .cagr-chart-wrap { height: 170px !important; }
+    /* 차트 */
+    .chart-wrap { height: 150px !important; }
+    .cagr-chart-wrap { height: 160px !important; }
 
     /* 모드 토글 */
     .mode-toggle { width: 100%; }
-    .mode-btn { font-size: 12px; padding: 7px 10px; }
+    .mode-btn { font-size: 11px; padding: 6px 8px; }
 
     /* 앱 탭 */
-    .app-tab { font-size: 11px; padding: 8px 10px; }
-    .tab-group-btn { font-size: 11px; padding: 8px 10px; }
-
-    /* 테이블 */
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .cagr-table td, .cagr-table th { padding: 6px 8px; font-size: 11px; }
-
-    /* CAGR 결과 그리드 */
-    .cagr-metric-grid { grid-template-columns: 1fr 1fr !important; }
-    #cagr-period-years-panel, #cagr-period-date-panel { width: 100%; }
-
-    /* 지수 성장률 그리드 */
-    #kospi-rate-grid { grid-template-columns: 1fr !important; }
-    #k200-rate-grid  { grid-template-columns: 1fr !important; }
-    [id$="-rate-grid"] { grid-template-columns: 1fr !important; }
-    [id$="-sim-grid"]  { grid-template-columns: 1fr 1fr !important; }
-
-    /* 복리 계산기 요약 */
-    #cpd-layout > div:first-child > div[style*="grid-template-columns:repeat(3"] {
-      grid-template-columns: 1fr !important;
-    }
-
-    /* 현재가 패널 */
-    #kodex-price-val { font-size: 18px !important; }
-
-    /* 헤더 내 현재가 패널 wrap */
-    .header { gap: 10px; margin-bottom: 20px; }
-  }
-
-  @media(max-width:480px){
-    .wrap { padding: 14px 10px 50px; }
-    h1 { font-size: 16px !important; }
-    .summary-bar { grid-template-columns: 1fr !important; }
-    .sum-cell-val { font-size: 16px; }
-    .app-nav { gap: 2px; }
+    .app-nav { gap: 1px; padding-bottom: 0; }
     .app-tab { font-size: 10px; padding: 7px 8px; }
     .tab-group-btn { font-size: 10px; padding: 7px 8px; }
 
-    /* 성장률 3열 → 1열 */
+    /* 테이블 */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .cagr-table td, .cagr-table th { padding: 5px 7px; font-size: 10px; }
+    table td, table th { font-size: 10px; }
+
+    /* CAGR 결과 */
+    .cagr-metric-grid { grid-template-columns: 1fr 1fr !important; }
+    .cagr-result-big { font-size: 28px !important; }
+
+    /* 지수 성장률 그리드 */
     [id$="-rate-grid"] { grid-template-columns: 1fr !important; }
-    [id$="-sim-grid"]  { grid-template-columns: 1fr !important; }
+    [id$="-sim-grid"]  { grid-template-columns: 1fr 1fr !important; }
 
-    /* 단위탭 더 작게 */
-    .unit-tabs { gap: 1px; }
-    .unit-btn { padding: 2px 4px !important; font-size: 8px !important; min-width: 20px !important; }
+    /* 현재가 패널 */
+    #kodex-price-val { font-size: 17px !important; }
 
-    /* CAGR 성장률 3개 → 1열 */
-    #cagr-result-grid { grid-template-columns: 1fr !important; }
+    /* 헤더 */
+    .header { gap: 8px; margin-bottom: 16px; }
+
+    /* CAGR 날짜 그리드 */
+    #cagr-period-date-panel > div { grid-template-columns: 1fr !important; }
+
+    /* 지수 페이지 성장률 숫자 */
+    #kospi-annual, #kospi-monthly, #kospi-daily,
+    [id$="-annual"], [id$="-monthly"], [id$="-daily"] {
+      font-size: 24px !important;
+    }
   }
 
   /* ── 아코디언 ── */
@@ -4157,9 +4144,9 @@ function calcCAGR() {
     if (i === rows.length - 1) tr.classList.add('cagr-highlight');
     tr.innerHTML = `
       <td>${r.y}년차</td>
-      <td>${fmtC(Math.round(r.val))}</td>
-      <td class="${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${fmtC(Math.round(r.profit))}</td>
-      <td class="${r.cumProfit>=0?'pos':'neg'}">${r.cumProfit>=0?'+':''}${fmtC(Math.round(r.cumProfit))}</td>
+      <td>${fmt(Math.round(r.val))}</td>
+      <td class="${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${fmt(Math.round(r.profit))}</td>
+      <td class="${r.cumProfit>=0?'pos':'neg'}">${r.cumProfit>=0?'+':''}${fmt(Math.round(r.cumProfit))}</td>
       <td class="${r.cumRet>=0?'pos':'neg'}">${r.cumRet>=0?'+':''}${r.cumRet.toFixed(2)}%</td>`;
     tbody.appendChild(tr);
   });

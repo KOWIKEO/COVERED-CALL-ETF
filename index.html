@@ -878,7 +878,7 @@
 
   <nav class="app-nav" id="mainNav">
     <button class="app-tab active" onclick="switchAppTab('simulator',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M9 6v6M7 7.5h2.5a1.5 1.5 0 0 1 0 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M14.5 4.5 L16.5 2.5 M14.5 2.5 h2 v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>분배&nbsp;시뮬레이터</button>
-    <button class="app-tab" onclick="switchAppTab('loan',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 계산기</button>
+    <button class="app-tab" onclick="switchAppTab('loan',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 7h14" stroke="currentColor" stroke-width="1.3"/><path d="M5 11h2M9 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>대출 이자 계산기</button>
     <button class="app-tab" onclick="switchAppTab('compound',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 3.5 C5.96 3.5 3.5 5.96 3.5 9 C3.5 12.04 5.96 14.5 9 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 14.5 C12.04 14.5 14.5 12.04 14.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2 1.5"/><path d="M12 7 L14.5 9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7.5 L9.5 9 L11 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><circle cx="9" cy="9" r="1" fill="currentColor"/></svg>복리 계산기</button>
     <button class="app-tab" onclick="switchAppTab('cagr',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
 
@@ -3900,73 +3900,130 @@ function setLoanMethod(method,btn) {
 /* ════════════════════════════════════════
    기준금리 조회 (Anthropic API)
 ════════════════════════════════════════ */
+/* ── 기준금리 파싱 헬퍼 ── */
 function applyRate(valElId, dateElId, rate, src) {
   rate = parseFloat(String(rate).replace(/,/g,''));
   if (isNaN(rate) || rate < 0 || rate > 30) return false;
   const now = new Date();
-  const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
+            + String(now.getDate()).padStart(2,'0');
   document.getElementById(valElId).textContent  = rate.toFixed(2) + '%';
   document.getElementById(dateElId).textContent = ns + ' 기준 | ' + src;
   return true;
 }
 
-async function tryAnthropicRate(prompt) {
+function parseRateFromText(text) {
+  // 전략1: {"v":X.XX}
+  let m = text.match(/"v"\s*:\s*([\d]+(?:\.[\d]+)?)/);
+  if (m) { const r = parseFloat(m[1]); if (r >= 0 && r <= 20) return r; }
+  // 전략2: X.XX% 패턴
+  const pcts = [...text.matchAll(/(\d{1,2}(?:\.\d{1,2})?)\s*%/g)]
+    .map(x => parseFloat(x[1])).filter(n => n > 0 && n <= 20);
+  if (pcts.length) return pcts[0];
+  // 전략3: 소수점 독립 숫자
+  const nums = [...text.matchAll(/(\d{1,2}\.\d{2})/g)]
+    .map(x => parseFloat(x[1])).filter(n => n >= 0.1 && n <= 20);
+  if (nums.length) return nums[0];
+  return null;
+}
+
+async function callAnthropicSearch(userMsg) {
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
+      max_tokens: 512,
+      system: '당신은 금융 데이터 조회 전문가입니다. 반드시 요청된 형식으로만 답하세요.',
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: userMsg }]
     })
   });
   if (!resp.ok) throw new Error('http ' + resp.status);
   const data = await resp.json();
-  const text = (data.content||[]).filter(b => b.type==='text').map(b => b.text).join(' ');
-  // {"v":숫자} 형식 파싱
-  const m1 = text.match(/\{[^}]*"v"\s*:\s*([\d.]+)[^}]*\}/);
-  if (m1) { const r = parseFloat(m1[1]); if (r >= 0 && r <= 30) return r; }
-  // fallback: 0.00% ~ 30.00% 숫자 추출
-  const nums = [...text.matchAll(/(\d{1,2}(?:\.\d{1,2})?)\s*%/g)]
-    .map(m => parseFloat(m[1])).filter(n => n >= 0 && n <= 30);
-  if (nums.length) return nums[0];
-  throw new Error('parse fail');
+  let allText = '';
+  (data.content || []).forEach(blk => {
+    if (blk.type === 'text') allText += ' ' + blk.text;
+    if (blk.type === 'tool_result') allText += ' ' + JSON.stringify(blk);
+  });
+  return allText;
+}
+
+async function tryFredApi() {
+  const url = 'https://api.stlouisfed.org/fred/series/observations?series_id=DFEDTARU&sort_order=desc&limit=1&file_type=json&api_key=f8a05c3d33e3ff2c1e69a7c1d7b6d8a4';
+  const proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(url),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  ];
+  for (const pu of proxies) {
+    try {
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), 7000);
+      let r;
+      try { r = await fetch(pu, { signal: ctrl.signal }); } finally { clearTimeout(tid); }
+      if (!r || !r.ok) continue;
+      const txt = await r.text();
+      let json; try { json = JSON.parse(txt); } catch { continue; }
+      if (json.contents) { try { json = JSON.parse(json.contents); } catch {} }
+      const val = json?.observations?.[0]?.value;
+      if (val && val !== '.') { const n = parseFloat(val); if (n >= 0 && n <= 30) return n; }
+    } catch {}
+  }
+  return null;
 }
 
 async function fetchBokRate() {
-  const btnId = 'bok-refresh-btn', iconId = 'bok-icon';
-  const btn = document.getElementById(btnId), icon = document.getElementById(iconId);
+  const btn = document.getElementById('bok-refresh-btn');
+  const icon = document.getElementById('bok-icon');
   btn.disabled = true; icon.textContent = '⏳';
   document.getElementById('bok-date').textContent = '조회 중...';
   try {
-    const rate = await tryAnthropicRate(
-      '지금 즉시 한국은행(BOK) 기준금리 현재값을 검색해줘. 반드시 {"v":숫자} 형식으로만 숫자를 답해. 예: {"v":3.00}'
-    );
-    applyRate('bok-rate', 'bok-date', rate, 'Anthropic Web Search');
-  } catch {
-    document.getElementById('bok-date').textContent = '조회 실패 — 다시 시도하세요';
+    const queries = [
+      '한국은행 기준금리 현재 몇 퍼센트입니까? 숫자만 {"v":X.XX} 형식으로 답하세요.',
+      'Bank of Korea base rate current value. Answer only {"v":X.XX} format.',
+      '한국은행 기준금리 현재. 답: {"v":숫자}',
+    ];
+    for (const q of queries) {
+      try {
+        const text = await callAnthropicSearch(q);
+        const rate = parseRateFromText(text);
+        if (rate !== null && applyRate('bok-rate', 'bok-date', rate, 'Anthropic')) return;
+      } catch {}
+    }
+    document.getElementById('bok-date').textContent = '조회 실패 — ↺ 재시도';
   } finally {
     btn.disabled = false; icon.textContent = '↺';
   }
 }
 
 async function fetchFedRate() {
-  const btnId = 'fed-refresh-btn', iconId = 'fed-icon';
-  const btn = document.getElementById(btnId), icon = document.getElementById(iconId);
+  const btn = document.getElementById('fed-refresh-btn');
+  const icon = document.getElementById('fed-icon');
   btn.disabled = true; icon.textContent = '⏳';
   document.getElementById('fed-date').textContent = '조회 중...';
   try {
-    const rate = await tryAnthropicRate(
-      '지금 즉시 미국 연방준비제도(Fed) FOMC 기준금리(federal funds rate) 현재 목표범위 상단값을 검색해줘. 반드시 {"v":숫자} 형식으로만 숫자를 답해. 예: {"v":4.50}'
-    );
-    applyRate('fed-rate', 'fed-date', rate, 'Anthropic Web Search');
-  } catch {
-    document.getElementById('fed-date').textContent = '조회 실패 — 다시 시도하세요';
+    // 1순위: FRED API (St. Louis Fed 공식 데이터)
+    const fredRate = await tryFredApi();
+    if (fredRate !== null && applyRate('fed-rate', 'fed-date', fredRate, 'FRED (Federal Reserve)')) return;
+    // 2순위: Anthropic 검색
+    const queries = [
+      'US Federal Reserve federal funds rate target upper bound today. Answer only {"v":X.XX} format.',
+      '미국 연준 기준금리 현재 목표범위 상단 퍼센트. 답: {"v":숫자}',
+      'Fed funds rate 2025 current. Answer {"v":X.XX} only.',
+    ];
+    for (const q of queries) {
+      try {
+        const text = await callAnthropicSearch(q);
+        const rate = parseRateFromText(text);
+        if (rate !== null && applyRate('fed-rate', 'fed-date', rate, 'Anthropic')) return;
+      } catch {}
+    }
+    document.getElementById('fed-date').textContent = '조회 실패 — ↺ 재시도';
   } finally {
     btn.disabled = false; icon.textContent = '↺';
   }
 }
+
 
 function calcLoan() {
   const principal=getLoanWon('amount');

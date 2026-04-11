@@ -3510,8 +3510,21 @@ async function fetchHistoricalPrice(ticker, targetDate) {
       let json; try { json = JSON.parse(txt); } catch { continue; }
       const r = json?.chart?.result?.[0];
       if (!r) continue;
-      const closes = r.indicators?.quote?.[0]?.close || [];
-      for (const v of closes) { if (v && v > 0) return parseFloat(v); }
+      const closes    = r.indicators?.quote?.[0]?.close || [];
+      const timestamps = r.timestamp || [];
+      for (let i = 0; i < closes.length; i++) {
+        if (closes[i] && closes[i] > 0) {
+          /* 실제 날짜 문자열 생성 */
+          let dateStr = '';
+          if (timestamps[i]) {
+            const d = new Date(timestamps[i] * 1000);
+            dateStr = d.getFullYear() + '-'
+              + String(d.getMonth()+1).padStart(2,'0') + '-'
+              + String(d.getDate()).padStart(2,'0');
+          }
+          return { price: parseFloat(closes[i]), date: dateStr };
+        }
+      }
     } catch {}
   }
   return null;
@@ -3534,28 +3547,35 @@ async function setKospiPeriod(indexId, years, btn) {
     return;
   }
 
-  const cacheKey = indexId + '_' + years;
-  const now      = new Date();
-  const startYear = now.getFullYear() - years;
+  const cacheKey     = indexId + '_' + years;
+  const cacheDateKey = cacheKey + '_date';
+  const now          = new Date();
+  const startYear    = now.getFullYear() - years;
 
-  let startVal = _histCache[cacheKey] || null;
+  let startVal  = _histCache[cacheKey]     || null;
+  let startDate = _histCache[cacheDateKey] || null;
+
   if (!startVal) {
     const origText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳';
     const ticker   = indexId === 'kospi' ? '%5EKS11' : '%5EKS200';
     const targetDt = new Date(startYear, 0, 15);
-    startVal = await fetchHistoricalPrice(ticker, targetDt);
+    const result   = await fetchHistoricalPrice(ticker, targetDt);
     if (btn) btn.textContent = origText;
-    if (startVal && startVal > 0) {
-      _histCache[cacheKey] = startVal;
+    if (result && result.price > 0) {
+      startVal  = result.price;
+      startDate = result.date;
+      _histCache[cacheKey]     = startVal;
+      _histCache[cacheDateKey] = startDate;
     } else {
-      startVal = getFallbackVal(indexId, startYear);
+      startVal  = getFallbackVal(indexId, startYear);
+      startDate = null; /* fallback: 날짜 없음 */
     }
   }
-  if (startVal) calcIndexRatesByPeriod(indexId, curVal, now, years, startVal);
+  if (startVal) calcIndexRatesByPeriod(indexId, curVal, now, years, startVal, startDate);
 }
 
-function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, startVal) {
+function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, startVal, histDateStr) {
   const now = asOfDate || new Date();
   const isKospi    = indexId === 'kospi';
   const BASE_DATE  = isKospi ? KOSPI_BASE_DATE : K200_BASE_DATE;
@@ -3568,11 +3588,17 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
     startDate   = BASE_DATE;
     periodLabel = '상장이후 전체 (' + BASE_LABEL + ' ~)';
   } else {
-    sv          = startVal || getFallbackVal(indexId, now.getFullYear()-periodYears);
-    startDate   = new Date(now.getFullYear()-periodYears, 0, 1);
-    const ck    = indexId+'_'+periodYears;
-    const src   = _histCache[ck] ? '(Yahoo)' : '(내장)';
-    periodLabel = '최근 ' + periodYears + '년 (' + (now.getFullYear()-periodYears) + '년 연초 ~) ' + src;
+    sv = startVal || getFallbackVal(indexId, now.getFullYear()-periodYears);
+    startDate = new Date(now.getFullYear()-periodYears, 0, 1);
+    const ck  = indexId + '_' + periodYears;
+    const cachedDate = histDateStr || _histCache[ck+'_date'];
+    if (cachedDate) {
+      /* 실제 조회 날짜 표시 */
+      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~) (Yahoo)';
+    } else {
+      /* fallback: 연도만 표시 */
+      periodLabel = '최근 ' + periodYears + '년 (' + (now.getFullYear()-periodYears) + '년 추정 ~) (내장)';
+    }
   }
   if (!sv || sv <= 0) return;
 
@@ -3591,9 +3617,9 @@ function calcIndexRatesByPeriod(indexId, currentVal, asOfDate, periodYears, star
   if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color='var(--accent2)'; }
   if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#ffaa55'; }
 
-  const cp      = (cagr*100).toFixed(2);
-  const startFmt = sv.toLocaleString('ko-KR',{maximumFractionDigits:2});
-  const curFmt   = currentVal.toLocaleString('ko-KR',{maximumFractionDigits:2});
+  const cp       = (cagr*100).toFixed(2);
+  const startFmt = sv.toLocaleString('ko-KR', {maximumFractionDigits:2});
+  const curFmt   = currentVal.toLocaleString('ko-KR', {maximumFractionDigits:2});
   const as = document.getElementById(p+'-annual-sub');
   const ms = document.getElementById(p+'-monthly-sub');
   const ds = document.getElementById(p+'-daily-sub');

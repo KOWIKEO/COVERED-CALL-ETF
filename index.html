@@ -1272,7 +1272,7 @@
     <div class="mode-toggle" style="flex-wrap:wrap;">
       <button class="mode-btn" onclick="setMode('receive',this)">분배금 수령</button>
       <button class="mode-btn active" onclick="setMode('reinvest',this)">분배금 재투자</button>
-      <button class="mode-btn" onclick="setMode('partial',this)">일부 재투자</button>
+      <button class="mode-btn" onclick="setMode('partial',this)">분배금 일부 재투자</button>
     </div>
   </div>
 
@@ -1310,15 +1310,9 @@
     <!-- ── 왼쪽: 설정 ── -->
     <div class="card" style="padding-top:8px;padding-bottom:12px;">
 
-      <!-- ① 투자 조건 설정 -->
-      <div class="acc-header" onclick="toggleAcc('acc-invest', this)">
-        <span class="acc-title">투자 조건 설정</span>
-        <span class="acc-arrow open">▼</span>
-      </div>
-      <div class="acc-body default-open" id="acc-invest">
 
       <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
-      <div id="partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <div id="partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;">
         <div class="slider-header" style="margin-bottom:8px;">
           <span class="slider-label">재투자 비율</span>
           <div class="num-pill"><input class="num-input" id="ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="syncPartial()"><span class="num-unit">%</span></div>
@@ -1326,7 +1320,12 @@
         <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
         <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
       </div>
-
+      <!-- ① 투자 조건 설정 -->
+      <div class="acc-header" onclick="toggleAcc('acc-invest', this)">
+        <span class="acc-title">투자 조건 설정</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="acc-invest">
       <div class="slider-block">
         <div class="slider-header">
           <span class="slider-label">투자 금액</span>
@@ -1450,7 +1449,7 @@
           <div class="switch on" id="tax-switch" onclick="toggleTax()">
             <div class="switch-thumb"></div>
           </div>
-          <span style="font-size:12px;color:#ff7070;" id="tax-on-label">ON</span>
+          <span style="font-size:12px;color:var(--accent);" id="tax-on-label">ON</span>
         </label>
       </div>
 
@@ -2534,7 +2533,7 @@ function toggleTax() {
   block.style.opacity       = taxOn ? '1' : '0.3';
   block.style.pointerEvents = taxOn ? 'auto' : 'none';
   document.getElementById('tax-off-label').style.color = taxOn ? 'var(--text3)' : 'var(--text2)';
-  document.getElementById('tax-on-label').style.color  = taxOn ? '#ff7070'       : 'var(--text3)';
+  document.getElementById('tax-on-label').style.color  = taxOn ? 'var(--accent)' : 'var(--text3)';
   if (taxOn) updateBracketUI();
   update();
 }

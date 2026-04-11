@@ -3898,11 +3898,14 @@ function setLoanMethod(method,btn) {
   calcLoan();
 }
 /* ════════════════════════════════════════
-   기준금리 조회 (Anthropic API)
+   기준금리 조회 — 순수 공개 API (CORS 프록시)
+   Anthropic API 미사용 (외부 사이트 CORS 차단)
 ════════════════════════════════════════ */
-/* ════════════════════════════════════════
-   기준금리 조회
-════════════════════════════════════════ */
+const _RATE_PROXIES = [
+  s => 'https://corsproxy.io/?' + encodeURIComponent(s),
+  s => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(s),
+  s => 'https://thingproxy.freeboard.io/fetch/' + s,
+];
 
 function applyRate(valElId, dateElId, rate, src) {
   rate = parseFloat(String(rate).replace(/,/g,''));
@@ -3911,104 +3914,55 @@ function applyRate(valElId, dateElId, rate, src) {
   const ns  = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-'
             + String(now.getDate()).padStart(2,'0');
   document.getElementById(valElId).textContent  = rate.toFixed(2) + '%';
-  document.getElementById(dateElId).textContent = ns + ' | ' + src;
+  document.getElementById(dateElId).textContent = ns + ' 기준 | ' + src;
   return true;
 }
 
-/* 텍스트에서 금리 추출 — 최대한 관대하게 */
-function extractRate(text) {
-  if (!text) return null;
-  // 1순위: {"v":3.50}
-  let m = text.match(/"v"\s*:\s*([\d]+(?:\.[\d]+)?)/);
-  if (m) { const r=parseFloat(m[1]); if(r>0&&r<=20) return r; }
-  // 2순위: 숫자% 패턴 (소수점 옵션)
-  const arr1 = [...text.matchAll(/(\d{1,2}(?:\.\d{1,2})?)\s*%/g)]
-    .map(x=>parseFloat(x[1])).filter(n=>n>0&&n<=20);
-  if (arr1.length) return arr1[0];
-  // 3순위: X.XX 독립 소수 (금리 범위)
-  const arr2 = [...text.matchAll(/(\d{1,2}\.\d{2})/g)]
-    .map(x=>parseFloat(x[1])).filter(n=>n>0&&n<=20);
-  if (arr2.length) return arr2[0];
-  // 4순위: 단순 정수 퍼센트 "3 percent" 등
-  const arr3 = [...text.matchAll(/(\d{1,2})\s*(?:퍼센트|percent|pct)/gi)]
-    .map(x=>parseFloat(x[1])).filter(n=>n>0&&n<=20);
-  if (arr3.length) return arr3[0];
-  return null;
+/* FRED 텍스트 파일 파싱 (인증 불필요, 순수 공개 데이터) */
+function parseFredTxt(txt) {
+  const lines = txt.split('\n').filter(l => /^\d{4}-\d{2}-\d{2}\s+[\d.]+/.test(l.trim()));
+  if (!lines.length) return null;
+  const last = lines[lines.length - 1].trim().split(/\s+/);
+  const val  = parseFloat(last[last.length - 1]);
+  return (val > 0 && val <= 20) ? val : null;
 }
 
-/* Anthropic API 호출 (KODEX/지수 조회와 완전 동일 패턴) */
-async function callAPI(content) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user', content: content }]
-    })
-  });
-  if (!resp.ok) throw new Error('status ' + resp.status);
-  const data = await resp.json();
-  /* text + tool_result 모든 블록에서 텍스트 추출 */
-  return (data.content||[]).map(b => {
-    if (b.type === 'text') return b.text;
-    if (b.type === 'tool_result') return JSON.stringify(b.content||'');
-    return '';
-  }).join(' ');
-}
-
-/* US Treasury 공식 무료 API — Fed 실효금리 (CORS 허용) */
-async function tryTreasuryAPI() {
-  const url = 'https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/avg_interest_rates'
-            + '?fields=record_date,security_desc,avg_interest_rate_amt'
-            + '&filter=security_desc:eq:Federal%20Funds%20Effective%20Rate'
-            + '&sort=-record_date&limit=1';
+/* BOK ECOS 응답 파싱 */
+function parseEcos(json) {
   try {
-    const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 8000);
-    let r;
-    try { r = await fetch(url, { signal: ctrl.signal, cache: 'no-cache' }); }
-    finally { clearTimeout(tid); }
-    if (!r || !r.ok) return null;
-    const json = await r.json();
-    const val = json?.data?.[0]?.avg_interest_rate_amt;
-    if (val) { const n = parseFloat(val); if (n > 0 && n <= 20) return n; }
+    const rows = json?.StatisticSearch?.row;
+    if (!rows?.length) return null;
+    // 가장 최근 행 (마지막)
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const v = parseFloat(rows[i].DATA_VALUE);
+      if (v > 0 && v <= 20) return v;
+    }
   } catch {}
   return null;
 }
 
-/* ── 한국은행 기준금리 ── */
-async function fetchBokRate() {
-  const btn  = document.getElementById('bok-refresh-btn');
-  const icon = document.getElementById('bok-icon');
-  const dateEl = document.getElementById('bok-date');
-  btn.disabled = true; icon.textContent = '⏳';
-  dateEl.textContent = '조회 중...';
-
-  const queries = [
-    '지금 당장 한국은행 기준금리 현재값을 검색해줘. 반드시 {"v":숫자} 형식으로만 답해. 예: {"v":3.25}',
-    'Search: Bank of Korea base rate today. Reply ONLY with {"v":number}. Example: {"v":3.25}',
-    '한국은행 기준금리를 검색해서 퍼센트 숫자만 알려줘. 반드시 {"v":숫자} 형식으로.',
-  ];
-
-  for (const q of queries) {
+async function fetchWithProxy(url, timeoutMs) {
+  for (const mkProxy of _RATE_PROXIES) {
+    const pu = mkProxy(url);
     try {
-      const text = await callAPI(q);
-      const rate = extractRate(text);
-      if (rate !== null && applyRate('bok-rate', 'bok-date', rate, 'Anthropic')) {
-        btn.disabled = false; icon.textContent = '↺';
-        return;
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), timeoutMs || 8000);
+      let resp;
+      try { resp = await fetch(pu, { signal: ctrl.signal, cache: 'no-cache' }); }
+      finally { clearTimeout(tid); }
+      if (resp && resp.ok) {
+        const txt = await resp.text();
+        return txt;
       }
-    } catch (e) {
-      console.error('BOK query failed:', e);
-    }
+    } catch {}
   }
-  dateEl.textContent = '조회 실패 — ↺ 재시도';
-  btn.disabled = false; icon.textContent = '↺';
+  return null;
 }
 
-/* ── 미국 연준 기준금리 ── */
+/* ── 미국 연준 기준금리 ──
+   FRED 공개 데이터: DFEDTARU (Federal Funds Target Rate Upper)
+   https://fred.stlouisfed.org/data/DFEDTARU.txt
+   인증 불필요, 무료, 공개 */
 async function fetchFedRate() {
   const btn  = document.getElementById('fed-refresh-btn');
   const icon = document.getElementById('fed-icon');
@@ -4016,34 +3970,80 @@ async function fetchFedRate() {
   btn.disabled = true; icon.textContent = '⏳';
   dateEl.textContent = '조회 중...';
 
-  /* 1순위: US Treasury 공식 API (인증 불필요, CORS 허용) */
-  try {
-    const rate = await tryTreasuryAPI();
-    if (rate !== null && applyRate('fed-rate', 'fed-date', rate, 'US Treasury API')) {
-      btn.disabled = false; icon.textContent = '↺';
-      return;
-    }
-  } catch {}
+  const series = ['DFEDTARU', 'DFEDTARL', 'FEDFUNDS'];
+  const labels = ['목표범위 상단', '목표범위 하단', '실효금리'];
 
-  /* 2순위: Anthropic 검색 */
-  const queries = [
-    '지금 당장 미국 연방준비제도 기준금리 federal funds rate 현재값 검색해줘. 반드시 {"v":숫자} 형식으로만 답해. 예: {"v":4.50}',
-    'Search: US Federal Reserve federal funds rate today. Reply ONLY {"v":number}. Example: {"v":4.50}',
-    'Fed funds rate current 2025. Answer ONLY {"v":number} format.',
-  ];
-
-  for (const q of queries) {
+  for (let i = 0; i < series.length; i++) {
+    const url = 'https://fred.stlouisfed.org/data/' + series[i] + '.txt';
     try {
-      const text = await callAPI(q);
-      const rate = extractRate(text);
-      if (rate !== null && applyRate('fed-rate', 'fed-date', rate, 'Anthropic')) {
+      const txt = await fetchWithProxy(url, 7000);
+      if (txt) {
+        const rate = parseFredTxt(txt);
+        if (rate !== null) {
+          applyRate('fed-rate', 'fed-date', rate, 'FRED (' + labels[i] + ')');
+          btn.disabled = false; icon.textContent = '↺';
+          return;
+        }
+      }
+    } catch {}
+  }
+
+  dateEl.textContent = '조회 실패 — ↺ 재시도';
+  btn.disabled = false; icon.textContent = '↺';
+}
+
+/* ── 한국은행 기준금리 ──
+   BOK ECOS 공개 API (sample 키: 비상업 무료 사용 가능)
+   통계코드 722Y001 = 한국은행 기준금리 */
+async function fetchBokRate() {
+  const btn  = document.getElementById('bok-refresh-btn');
+  const icon = document.getElementById('bok-icon');
+  const dateEl = document.getElementById('bok-date');
+  btn.disabled = true; icon.textContent = '⏳';
+  dateEl.textContent = '조회 중...';
+
+  const now   = new Date();
+  const endYM = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0');
+  const y2    = now.getFullYear() - 1;
+  const startYM = y2 + String(now.getMonth() + 1).padStart(2, '0');
+
+  const ecosUrl = 'https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/12/722Y001/MM/'
+    + startYM + '/' + endYM + '/0101000';
+
+  /* 1순위: ECOS 직접 호출 */
+  try {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 8000);
+    let resp;
+    try { resp = await fetch(ecosUrl, { signal: ctrl.signal, cache: 'no-cache' }); }
+    finally { clearTimeout(tid); }
+    if (resp && resp.ok) {
+      const json = await resp.json();
+      const rate = parseEcos(json);
+      if (rate !== null) {
+        applyRate('bok-rate', 'bok-date', rate, 'BOK ECOS API');
         btn.disabled = false; icon.textContent = '↺';
         return;
       }
-    } catch (e) {
-      console.error('Fed query failed:', e);
     }
-  }
+  } catch {}
+
+  /* 2순위: CORS 프록시 */
+  try {
+    const txt = await fetchWithProxy(ecosUrl, 7000);
+    if (txt) {
+      let json; try { json = JSON.parse(txt); } catch {}
+      if (json) {
+        const rate = parseEcos(json);
+        if (rate !== null) {
+          applyRate('bok-rate', 'bok-date', rate, 'BOK ECOS (proxy)');
+          btn.disabled = false; icon.textContent = '↺';
+          return;
+        }
+      }
+    }
+  } catch {}
+
   dateEl.textContent = '조회 실패 — ↺ 재시도';
   btn.disabled = false; icon.textContent = '↺';
 }

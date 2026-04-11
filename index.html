@@ -3912,82 +3912,57 @@ function applyRate(valElId, dateElId, rate, src) {
   return true;
 }
 
+/* 텍스트에서 금리 수치 추출 */
 function parseRateFromText(text) {
-  // 전략1: {"v":X.XX}
-  let m = text.match(/"v"\s*:\s*([\d]+(?:\.[\d]+)?)/);
-  if (m) { const r = parseFloat(m[1]); if (r >= 0 && r <= 20) return r; }
-  // 전략2: X.XX% 패턴
-  const pcts = [...text.matchAll(/(\d{1,2}(?:\.\d{1,2})?)\s*%/g)]
+  // 1: {"v":3.50}
+  const m1 = text.match(/"v"\s*:\s*([\d]+(?:\.[\d]+)?)/);
+  if (m1) { const r = parseFloat(m1[1]); if (r > 0 && r <= 20) return r; }
+  // 2: X.XX% 패턴
+  const pcts = [...text.matchAll(/\b(\d{1,2}(?:\.\d{1,2})?)\s*%/g)]
     .map(x => parseFloat(x[1])).filter(n => n > 0 && n <= 20);
   if (pcts.length) return pcts[0];
-  // 전략3: 소수점 독립 숫자
-  const nums = [...text.matchAll(/(\d{1,2}\.\d{2})/g)]
-    .map(x => parseFloat(x[1])).filter(n => n >= 0.1 && n <= 20);
+  // 3: 소수점 독립 숫자 (3.00, 4.50 등)
+  const nums = [...text.matchAll(/\b(\d{1,2}\.\d{2})\b/g)]
+    .map(x => parseFloat(x[1])).filter(n => n > 0 && n <= 20);
   if (nums.length) return nums[0];
   return null;
 }
 
-async function callAnthropicSearch(userMsg) {
+/* KODEX/지수 조회와 완전히 동일한 Anthropic API 호출 패턴 (system 없음) */
+async function anthropicRateSearch(content) {
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
-      system: '당신은 금융 데이터 조회 전문가입니다. 반드시 요청된 형식으로만 답하세요.',
+      max_tokens: 400,
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-      messages: [{ role: 'user', content: userMsg }]
+      messages: [{ role: 'user', content: content }]
     })
   });
   if (!resp.ok) throw new Error('http ' + resp.status);
   const data = await resp.json();
-  let allText = '';
-  (data.content || []).forEach(blk => {
-    if (blk.type === 'text') allText += ' ' + blk.text;
-    if (blk.type === 'tool_result') allText += ' ' + JSON.stringify(blk);
-  });
-  return allText;
+  return (data.content||[]).filter(b => b.type === 'text').map(b => b.text).join(' ');
 }
 
-async function tryFredApi() {
-  const url = 'https://api.stlouisfed.org/fred/series/observations?series_id=DFEDTARU&sort_order=desc&limit=1&file_type=json&api_key=f8a05c3d33e3ff2c1e69a7c1d7b6d8a4';
-  const proxies = [
-    'https://corsproxy.io/?' + encodeURIComponent(url),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-  ];
-  for (const pu of proxies) {
-    try {
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 7000);
-      let r;
-      try { r = await fetch(pu, { signal: ctrl.signal }); } finally { clearTimeout(tid); }
-      if (!r || !r.ok) continue;
-      const txt = await r.text();
-      let json; try { json = JSON.parse(txt); } catch { continue; }
-      if (json.contents) { try { json = JSON.parse(json.contents); } catch {} }
-      const val = json?.observations?.[0]?.value;
-      if (val && val !== '.') { const n = parseFloat(val); if (n >= 0 && n <= 30) return n; }
-    } catch {}
-  }
-  return null;
-}
-
+/* ── 한국은행 기준금리 조회 ── */
 async function fetchBokRate() {
   const btn = document.getElementById('bok-refresh-btn');
   const icon = document.getElementById('bok-icon');
   btn.disabled = true; icon.textContent = '⏳';
   document.getElementById('bok-date').textContent = '조회 중...';
   try {
+    // KODEX 조회와 동일한 방식 — 쿼리 3개 순차 시도
     const queries = [
-      '한국은행 기준금리 현재 몇 퍼센트입니까? 숫자만 {"v":X.XX} 형식으로 답하세요.',
-      'Bank of Korea base rate current value. Answer only {"v":X.XX} format.',
-      '한국은행 기준금리 현재. 답: {"v":숫자}',
+      '지금 당장 한국은행 기준금리 현재값을 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.',
+      'Bank of Korea base interest rate current value. Answer only {"v":number} format.',
+      '한국은행 기준금리 검색해서 {"v":숫자} 형식으로만 답해.',
     ];
     for (const q of queries) {
       try {
-        const text = await callAnthropicSearch(q);
+        const text = await anthropicRateSearch(q);
         const rate = parseRateFromText(text);
-        if (rate !== null && applyRate('bok-rate', 'bok-date', rate, 'Anthropic')) return;
+        if (rate !== null && applyRate('bok-rate', 'bok-date', rate, 'Anthropic Web Search')) return;
       } catch {}
     }
     document.getElementById('bok-date').textContent = '조회 실패 — ↺ 재시도';
@@ -3996,26 +3971,24 @@ async function fetchBokRate() {
   }
 }
 
+/* ── 미국 연준 기준금리 조회 ── */
 async function fetchFedRate() {
   const btn = document.getElementById('fed-refresh-btn');
   const icon = document.getElementById('fed-icon');
   btn.disabled = true; icon.textContent = '⏳';
   document.getElementById('fed-date').textContent = '조회 중...';
   try {
-    // 1순위: FRED API (St. Louis Fed 공식 데이터)
-    const fredRate = await tryFredApi();
-    if (fredRate !== null && applyRate('fed-rate', 'fed-date', fredRate, 'FRED (Federal Reserve)')) return;
-    // 2순위: Anthropic 검색
+    // 1순위: Yahoo Finance ^FVX 또는 관련 지표 대신 직접 검색
     const queries = [
-      'US Federal Reserve federal funds rate target upper bound today. Answer only {"v":X.XX} format.',
-      '미국 연준 기준금리 현재 목표범위 상단 퍼센트. 답: {"v":숫자}',
-      'Fed funds rate 2025 current. Answer {"v":X.XX} only.',
+      '지금 당장 미국 연방준비제도 기준금리 federal funds rate 현재값을 검색해줘. 숫자만 {"v":숫자} 형식으로 답해.',
+      'US Federal Reserve federal funds rate current percentage today. Answer only {"v":number} format.',
+      'Fed interest rate 2025 current. Answer {"v":number} only.',
     ];
     for (const q of queries) {
       try {
-        const text = await callAnthropicSearch(q);
+        const text = await anthropicRateSearch(q);
         const rate = parseRateFromText(text);
-        if (rate !== null && applyRate('fed-rate', 'fed-date', rate, 'Anthropic')) return;
+        if (rate !== null && applyRate('fed-rate', 'fed-date', rate, 'Anthropic Web Search')) return;
       } catch {}
     }
     document.getElementById('fed-date').textContent = '조회 실패 — ↺ 재시도';

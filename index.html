@@ -819,6 +819,8 @@
     #dowjones-rate-grid,
     #sp500-rate-grid { grid-template-columns: 1fr !important; }
 
+    #kospi-sim-grid,
+    #k200-sim-grid,
     #nasdaq-sim-grid,
     #nasdaq100-sim-grid,
     #dowjones-sim-grid,
@@ -2185,6 +2187,16 @@
       </div>
       <div id="nasdaq-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
     </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="nasdaq-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq',10,this)">최근 10년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq',30,this)">최근 30년</button>
+      <button class="period-btn active" id="nasdaq-period-all" onclick="setIndexPeriod('nasdaq',0,this)">전체 기간</button>
+    </div>
+
     <div id="nasdaq-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
@@ -2243,6 +2255,16 @@
       </div>
       <div id="nasdaq100-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
     </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="nasdaq100-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq100',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq100',10,this)">최근 10년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq100',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq100',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('nasdaq100',30,this)">최근 30년</button>
+      <button class="period-btn active" id="nasdaq100-period-all" onclick="setIndexPeriod('nasdaq100',0,this)">전체 기간</button>
+    </div>
+
     <div id="nasdaq100-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
@@ -2301,6 +2323,16 @@
       </div>
       <div id="dowjones-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
     </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="dowjones-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('dowjones',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('dowjones',10,this)">최근 10년</button>
+      <button class="period-btn" onclick="setIndexPeriod('dowjones',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('dowjones',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('dowjones',30,this)">최근 30년</button>
+      <button class="period-btn active" id="dowjones-period-all" onclick="setIndexPeriod('dowjones',0,this)">전체 기간</button>
+    </div>
+
     <div id="dowjones-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
@@ -2347,7 +2379,7 @@
       <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">S&P 500란?</p>
       <p style="font-size:13px;color:var(--text2);line-height:1.9;">S&P 500은 뉴욕증권거래소(NYSE)와 나스닥에 상장된 미국 대형주 500개 종목으로 구성되는 시가총액 가중 지수입니다. 미국 전체 주식 시가총액의 약 80%를 커버하며, 전 세계에서 가장 널리 추적되는 주가지수입니다.</p>
     </div>
-    <div style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div id="sp500-status" style="background:var(--bg3);border:1px solid var(--card-border);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
       <div>
         <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">현재 S&P 500 지수</p>
         <p style="font-family:var(--mono);font-size:28px;font-weight:500;color:var(--text);" id="sp500-current-val">—</p>
@@ -2359,6 +2391,16 @@
       </div>
       <div id="sp500-loading" style="display:none;font-size:12px;color:var(--text3);">⏳ 조회 중...</div>
     </div>
+    <!-- 기간 선택 -->
+    <div class="period-tabs" id="sp500-period-tabs">
+      <button class="period-btn" onclick="setIndexPeriod('sp500',5,this)">최근 5년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sp500',10,this)">최근 10년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sp500',15,this)">최근 15년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sp500',20,this)">최근 20년</button>
+      <button class="period-btn" onclick="setIndexPeriod('sp500',30,this)">최근 30년</button>
+      <button class="period-btn active" id="sp500-period-all" onclick="setIndexPeriod('sp500',0,this)">전체 기간</button>
+    </div>
+
     <div id="sp500-rate-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
       <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px 24px;">
         <p style="font-size:11px;color:var(--text3);letter-spacing:0.05em;margin-bottom:8px;">연평균 성장률 (CAGR)</p>
@@ -4388,31 +4430,115 @@ const INDEX_CONFIG = {
   sp500:    { name:'S&P 500',    ticker:'%5EGSPC', baseDate:'1928-01-03', baseVal:17.66, defaultVal:5800,  minP:100,   maxP:50000  },
 };
 
+/* 해외 지수 연간 fallback 테이블 (연초 기준) */
+const OVERSEAS_HIST = {
+  nasdaq:   {1990:455,1995:1052,2000:4069,2005:2175,2010:2326,2015:4777,2020:8973,2021:12888,2022:15645,2023:10939,2024:15011,2025:19310},
+  nasdaq100:{1990:455,1995:1052,2000:4069,2005:1660,2010:1860,2015:4236,2020:8733,2021:12667,2022:16320,2023:11630,2024:16543,2025:20940},
+  dowjones: {1990:2810,1995:3838,2000:11497,2005:10783,2010:10428,2015:17832,2020:28538,2021:30606,2022:36338,2023:33136,2024:37690,2025:42732},
+  sp500:    {1990:353,1995:459,2000:1469,2005:1248,2010:1115,2015:2059,2020:3231,2021:3756,2022:4797,2023:3853,2024:4770,2025:5882},
+};
+
 const _indexCache    = {};
 const _indexFetching = {};
+/* 해외 지수 기간 상태 */
+const _indexPeriod   = { nasdaq:0, nasdaq100:0, dowjones:0, sp500:0 };
+const _indexHistCache = {}; /* {id_years: {price, date}} */
 
-function calcIndexRates(id, price, asOf) {
+function calcIndexRates(id, price, asOf, periodYears, startVal, histDateStr) {
   const cfg      = INDEX_CONFIG[id];
   const baseDate = new Date(cfg.baseDate);
-  const diffYrs  = (asOf - baseDate) / (1000 * 60 * 60 * 24 * 365.25);
-  const cagr     = Math.pow(price / cfg.baseVal, 1 / diffYrs) - 1;
-  const monthly  = Math.pow(1 + cagr, 1/12) - 1;
-  const daily    = Math.pow(1 + cagr, 1/365.25) - 1;
+  const now      = asOf || new Date();
+  periodYears    = periodYears || 0;
+
+  let sv, startDate, periodLabel;
+  if (periodYears === 0) {
+    sv          = cfg.baseVal;
+    startDate   = baseDate;
+    const totalMs   = now - baseDate;
+    const totalYrs  = Math.floor(totalMs / (1000*60*60*24*365.25));
+    const totalMons = Math.floor((totalMs / (1000*60*60*24*365.25) - totalYrs) * 12);
+    const bdLabel   = cfg.baseDate.replace(/-/g,'.');
+    periodLabel = '상장이후 전체 (' + bdLabel + ' ~ 현재, ' + totalYrs + '년 ' + totalMons + '개월)';
+  } else {
+    const sy = now.getFullYear() - periodYears;
+    const ck = id + '_' + periodYears;
+    sv = startVal || (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][sy]) || null;
+    if (!sv) return;
+    startDate = new Date(sy, now.getMonth(), now.getDate());
+    const cachedDate = histDateStr || (_indexHistCache[ck] && _indexHistCache[ck].date);
+    if (cachedDate) {
+      periodLabel = '최근 ' + periodYears + '년 (' + cachedDate + ' ~ 현재) (Yahoo)';
+    } else {
+      periodLabel = '최근 ' + periodYears + '년 (' + sy + '년 추정 ~ 현재) (내장)';
+    }
+  }
+  if (!sv || sv <= 0) return;
+
+  const diffYrs = (now - startDate) / (1000*60*60*24*365.25);
+  if (diffYrs <= 0.1) return;
+
+  const cagr    = Math.pow(price / sv, 1 / diffYrs) - 1;
+  const monthly = Math.pow(1 + cagr, 1/12) - 1;
+  const daily   = Math.pow(1 + cagr, 1/365.25) - 1;
+  const cp      = (cagr*100).toFixed(2);
+  const startFmt = sv.toLocaleString('ko-KR', {maximumFractionDigits:2});
+  const curFmt   = price.toLocaleString('ko-KR', {maximumFractionDigits:2});
 
   const annEl = document.getElementById(id+'-annual');
   const monEl = document.getElementById(id+'-monthly');
   const dayEl = document.getElementById(id+'-daily');
-  if (annEl) { annEl.textContent = (cagr*100).toFixed(4) + '%';    annEl.style.color = 'var(--accent)'; }
-  if (monEl) { monEl.textContent = (monthly*100).toFixed(4) + '%'; monEl.style.color = 'var(--accent2)'; }
-  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6) + '%';   dayEl.style.color = '#ffaa55'; }
-  document.getElementById(id+'-annual-sub').textContent  = '기준 ' + cfg.baseDate.replace(/-/g,'.') + ' → 경과 ' + diffYrs.toFixed(1) + '년';
-  document.getElementById(id+'-monthly-sub').textContent = '연 ' + (cagr*100).toFixed(2) + '% → 월 환산';
-  document.getElementById(id+'-daily-sub').textContent   = '연 ' + (cagr*100).toFixed(2) + '% → 일 환산';
+  if (annEl) { annEl.textContent = (cagr*100).toFixed(4)+'%'; annEl.style.color='var(--accent)'; }
+  if (monEl) { monEl.textContent = (monthly*100).toFixed(4)+'%'; monEl.style.color='var(--accent2)'; }
+  if (dayEl) { dayEl.textContent = (daily*100).toFixed(6)+'%'; dayEl.style.color='#ffaa55'; }
+
+  const as = document.getElementById(id+'-annual-sub');
+  const ms = document.getElementById(id+'-monthly-sub');
+  const ds = document.getElementById(id+'-daily-sub');
+  if (as) as.textContent = periodLabel + ' | ' + startFmt + ' → ' + curFmt;
+  if (ms) ms.textContent = '연 '+cp+'% → 월 환산';
+  if (ds) ds.textContent = '연 '+cp+'% → 일 환산';
 
   [10,20,30,40].forEach(y => {
     const el = document.getElementById(id+'-sim-'+y);
-    if (el) el.textContent = fmtWon(Math.round(1e8 * Math.pow(1+cagr, y)));
+    if (el) el.textContent = fmtWon(Math.round(1e8*Math.pow(1+cagr,y)));
   });
+}
+
+/* 기간 선택 버튼 클릭 */
+async function setIndexPeriod(id, years, btn) {
+  _indexPeriod[id] = years;
+  const tabsEl = document.getElementById(id+'-period-tabs');
+  if (tabsEl) tabsEl.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const curVal = _indexCache[id] || INDEX_CONFIG[id].defaultVal;
+  if (years === 0) {
+    calcIndexRates(id, curVal, new Date(), 0, null, null);
+    return;
+  }
+
+  const ck  = id + '_' + years;
+  const now = new Date();
+  const sy  = now.getFullYear() - years;
+
+  let cached = _indexHistCache[ck];
+  if (!cached) {
+    const origText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳';
+    /* Yahoo Finance로 N년 전 일봉 조회 */
+    const cfg = INDEX_CONFIG[id];
+    const targetDt = new Date(sy, now.getMonth(), now.getDate());
+    const result   = await fetchHistoricalPrice(cfg.ticker, targetDt);
+    if (btn) btn.textContent = origText;
+    if (result && result.price > 0) {
+      cached = result;
+      _indexHistCache[ck] = cached;
+    }
+  }
+
+  const sv   = cached ? cached.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][sy]) || null;
+  const hd   = cached ? cached.date  : null;
+  if (sv) calcIndexRates(id, curVal, now, years, sv, hd);
 }
 
 function applyIndexValue(id, price, src) {
@@ -4427,7 +4553,12 @@ function applyIndexValue(id, price, src) {
     + String(now.getDate()).padStart(2,'0') + ' ' + now.toTimeString().slice(0,8);
   document.getElementById(id+'-date-label').textContent    = nowStr + ' 기준';
   document.getElementById(id+'-source-label').textContent  = '출처: ' + src;
-  calcIndexRates(id, price, now);
+  const py  = _indexPeriod[id] || 0;
+  const ck  = id + '_' + py;
+  const hc  = _indexHistCache[ck];
+  const sv2 = py === 0 ? null : (hc ? hc.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][(now.getFullYear()-py)]) || null);
+  const hd2 = hc ? hc.date : null;
+  calcIndexRates(id, price, now, py, sv2, hd2);
   return true;
 }
 
@@ -4531,7 +4662,11 @@ function useDefaultIndex(id) {
     def.toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
   document.getElementById(id+'-date-label').textContent    = ns + ' 기준';
   document.getElementById(id+'-source-label').textContent  = '↺ 갱신 버튼으로 최신 지수 조회';
-  calcIndexRates(id, def, now);
+  const py3 = _indexPeriod[id] || 0;
+  const ck3 = id + '_' + py3;
+  const hc3 = _indexHistCache[ck3];
+  const sv3 = py3 === 0 ? null : (hc3 ? hc3.price : (OVERSEAS_HIST[id] && OVERSEAS_HIST[id][(now.getFullYear()-py3)]) || null);
+  calcIndexRates(id, def, now, py3, sv3, hc3 ? hc3.date : null);
 }
 
 /* ═══════════════════════════════════════

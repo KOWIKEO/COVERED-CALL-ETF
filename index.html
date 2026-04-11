@@ -39,8 +39,10 @@
     position: relative;
     z-index: 1;
     max-width: 1280px;
+    width: 100%;
     margin: 0 auto;
     padding: 40px 32px 80px;
+    box-sizing: border-box;
   }
 
   /* ── Header ── */
@@ -654,6 +656,100 @@
   }
   @media(max-width:480px){
     #kospi-sim-grid  { grid-template-columns: 1fr !important; }
+  }
+
+  /* ══════════════════════════════════════════
+     모바일 반응형 — 전체 강화
+  ══════════════════════════════════════════ */
+
+  /* viewport 기준 패딩 */
+  @media(max-width:768px){
+    .wrap { padding: 20px 14px 60px; }
+    h1 { font-size: 18px !important; }
+    .subtitle { font-size: 12px; }
+
+    /* 요약 바 */
+    .summary-bar { grid-template-columns: 1fr 1fr !important; }
+    .sum-cell { padding: 14px 12px; }
+    .sum-cell-val { font-size: 14px; }
+
+    /* 레이아웃 1컬럼 */
+    .layout { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .cagr-layout { grid-template-columns: 1fr !important; }
+    #cpd-layout { grid-template-columns: 1fr !important; }
+
+    /* 카드 패딩 축소 */
+    .card { padding: 14px 14px; border-radius: 12px; }
+
+    /* 슬라이더 헤더 */
+    .slider-header { gap: 4px; }
+    .slider-label { font-size: 12px; }
+    .num-input { width: 80px !important; font-size: 12px; }
+
+    /* 단위 버튼 */
+    .unit-btn { padding: 2px 5px !important; font-size: 9px !important; min-width: 24px !important; }
+
+    /* 아코디언 */
+    .acc-title { font-size: 12px; }
+    .acc-header { padding: 10px 8px; }
+
+    /* 차트 높이 축소 */
+    .chart-wrap { height: 160px !important; }
+    .cagr-chart-wrap { height: 170px !important; }
+
+    /* 모드 토글 */
+    .mode-toggle { width: 100%; }
+    .mode-btn { font-size: 12px; padding: 7px 10px; }
+
+    /* 앱 탭 */
+    .app-tab { font-size: 11px; padding: 8px 10px; }
+    .tab-group-btn { font-size: 11px; padding: 8px 10px; }
+
+    /* 테이블 */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .cagr-table td, .cagr-table th { padding: 6px 8px; font-size: 11px; }
+
+    /* CAGR 결과 그리드 */
+    .cagr-metric-grid { grid-template-columns: 1fr 1fr !important; }
+    #cagr-period-years-panel, #cagr-period-date-panel { width: 100%; }
+
+    /* 지수 성장률 그리드 */
+    #kospi-rate-grid { grid-template-columns: 1fr !important; }
+    #k200-rate-grid  { grid-template-columns: 1fr !important; }
+    [id$="-rate-grid"] { grid-template-columns: 1fr !important; }
+    [id$="-sim-grid"]  { grid-template-columns: 1fr 1fr !important; }
+
+    /* 복리 계산기 요약 */
+    #cpd-layout > div:first-child > div[style*="grid-template-columns:repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* 현재가 패널 */
+    #kodex-price-val { font-size: 18px !important; }
+
+    /* 헤더 내 현재가 패널 wrap */
+    .header { gap: 10px; margin-bottom: 20px; }
+  }
+
+  @media(max-width:480px){
+    .wrap { padding: 14px 10px 50px; }
+    h1 { font-size: 16px !important; }
+    .summary-bar { grid-template-columns: 1fr !important; }
+    .sum-cell-val { font-size: 16px; }
+    .app-nav { gap: 2px; }
+    .app-tab { font-size: 10px; padding: 7px 8px; }
+    .tab-group-btn { font-size: 10px; padding: 7px 8px; }
+
+    /* 성장률 3열 → 1열 */
+    [id$="-rate-grid"] { grid-template-columns: 1fr !important; }
+    [id$="-sim-grid"]  { grid-template-columns: 1fr !important; }
+
+    /* 단위탭 더 작게 */
+    .unit-tabs { gap: 1px; }
+    .unit-btn { padding: 2px 4px !important; font-size: 8px !important; min-width: 20px !important; }
+
+    /* CAGR 성장률 3개 → 1열 */
+    #cagr-result-grid { grid-template-columns: 1fr !important; }
   }
 
   /* ── 아코디언 ── */
@@ -4100,26 +4196,18 @@ function renderCagrChart(cache) {
     datasets = [{
       label: '자산 규모',
       data: valData,
-      borderColor: accentColor,
-      backgroundColor: 'rgba(0,229,176,0.08)',
-      fill: true,
-      pointRadius: 3,
-      pointBackgroundColor: accentColor,
-      borderWidth: 2,
-      tension: 0.3,
+      backgroundColor: valData.map((v,i) => i === valData.length-1 ? 'rgba(0,229,176,0.9)' : 'rgba(0,229,176,0.5)'),
+      borderRadius: 5,
+      borderSkipped: false,
     }];
     yLabel = v => fmtC(v, true) || fmt(v, true);
   } else {
     datasets = [{
       label: '누적 수익률',
       data: retData,
-      borderColor: blueColor,
-      backgroundColor: 'rgba(0,145,255,0.08)',
-      fill: true,
-      pointRadius: 3,
-      pointBackgroundColor: blueColor,
-      borderWidth: 2,
-      tension: 0.3,
+      backgroundColor: retData.map((v,i) => i === retData.length-1 ? 'rgba(0,145,255,0.9)' : 'rgba(0,145,255,0.5)'),
+      borderRadius: 5,
+      borderSkipped: false,
     }];
     yLabel = v => v.toFixed(1) + '%';
   }
@@ -4163,7 +4251,7 @@ function renderCagrChart(cache) {
 
   if (cagrChart2) cagrChart2.destroy();
   cagrChart2 = new Chart(document.getElementById('cagrChart'), {
-    type: 'line',
+    type: 'bar',
     data: { labels, datasets },
     options: opts,
   });

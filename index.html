@@ -1269,9 +1269,10 @@
         </div>
       </div>
     </div>
-    <div class="mode-toggle">
-      <button class="mode-btn" onclick="setMode('receive',this)"><span class="txt-div">분배금</span> 수령</button>
-      <button class="mode-btn active" onclick="setMode('reinvest',this)"><span class="txt-div">분배</span> 재투자</button>
+    <div class="mode-toggle" style="flex-wrap:wrap;">
+      <button class="mode-btn" onclick="setMode('receive',this)">분배금 수령</button>
+      <button class="mode-btn active" onclick="setMode('reinvest',this)">분배금 재투자</button>
+      <button class="mode-btn" onclick="setMode('partial',this)">일부 재투자</button>
     </div>
   </div>
 
@@ -1315,6 +1316,16 @@
         <span class="acc-arrow open">▼</span>
       </div>
       <div class="acc-body default-open" id="acc-invest">
+
+      <!-- 일부 재투자 비율 (partial 모드에서만 표시) -->
+      <div id="partial-ratio-block" style="display:none;background:var(--bg3);border:1px solid rgba(0,229,176,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+        <div class="slider-header" style="margin-bottom:8px;">
+          <span class="slider-label">재투자 비율</span>
+          <div class="num-pill"><input class="num-input" id="ni-partial" type="number" min="1" max="99" step="1" value="50" style="width:60px;" oninput="syncPartial()"><span class="num-unit">%</span></div>
+        </div>
+        <input type="range" id="sl-partial" min="1" max="99" step="1" value="50" oninput="document.getElementById('ni-partial').value=this.value; syncPartial();">
+        <p style="font-size:11px;color:var(--text3);margin-top:6px;" id="partial-desc">분배금의 50%는 재투자, 50%는 수령</p>
+      </div>
 
       <div class="slider-block">
         <div class="slider-header">
@@ -1389,7 +1400,7 @@
         <span class="slider-label">매월 추가 투자</span>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
           <span style="font-size:12px;color:var(--text3);" id="dca-off-label">OFF</span>
-          <div class="switch" onclick="toggleDCA()">
+          <div class="switch" id="dca-switch" onclick="toggleDCA()">
             <div class="switch-thumb" id="switch-thumb"></div>
           </div>
           <span style="font-size:12px;color:var(--text3);" id="dca-on-label">ON</span>
@@ -2490,12 +2501,22 @@ function setMode(m, btn) {
   investMode = m;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const pb = document.getElementById('partial-ratio-block');
+  if (pb) pb.style.display = (m === 'partial') ? 'block' : 'none';
+  update();
+}
+
+function syncPartial() {
+  document.getElementById('sl-partial').value = document.getElementById('ni-partial').value;
+  const v = document.getElementById('ni-partial').value;
+  const el = document.getElementById('partial-desc');
+  if (el) el.textContent = '분배금의 ' + v + '%는 재투자, ' + (100-v) + '%는 수령';
   update();
 }
 
 function toggleDCA() {
   dcaOn = !dcaOn;
-  const sw    = document.querySelector('.switch');
+  const sw    = document.getElementById('dca-switch');
   const block = document.getElementById('dca-block');
   sw.classList.toggle('on', dcaOn);
   block.style.opacity        = dcaOn ? '1' : '0.3';
@@ -3114,6 +3135,10 @@ function update() {
          재투자: 세후 분배금을 즉시 재투자 후 주가 변동 적용 */
       if (investMode === 'reinvest') {
         portfolio = (portfolio + mDivNet) * (1 + monthGrow);
+      } else if (investMode === 'partial') {
+        const partialRatio = (parseFloat(document.getElementById('ni-partial')?.value) || 50) / 100;
+        const reinvestAmt  = mDivNet * partialRatio;
+        portfolio = (portfolio + reinvestAmt) * (1 + monthGrow);
       } else {
         portfolio = portfolio * (1 + monthGrow);
       }

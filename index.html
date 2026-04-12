@@ -4828,11 +4828,12 @@ update();
     const el = $id('kodex-price-val');
     if (el) el.textContent = price.toLocaleString('ko-KR');
     const now = new Date();
-    const ds  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    const ns  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'
+               +String(now.getDate()).padStart(2,'0')+' '+now.toTimeString().slice(0,8);
     const de  = $id('kodex-price-date');
     const se  = $id('kodex-price-src');
-    if (de) de.textContent = ds + ' 기준';
-    if (se) se.textContent = '출처: ' + src;
+    if (de) de.textContent = ns + ' 기준';
+    if (se) se.textContent = '출처: ' + src + ' (0167B0.KS)';
     solUpdate();
   }
 
@@ -5298,11 +5299,12 @@ update();
     const el = $id('kodex-price-val');
     if (el) el.textContent = price.toLocaleString('ko-KR');
     const now = new Date();
-    const ds  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+    const ns  = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'
+               +String(now.getDate()).padStart(2,'0')+' '+now.toTimeString().slice(0,8);
     const de  = $id('kodex-price-date');
     const se  = $id('kodex-price-src');
-    if (de) de.textContent = ds + ' 기준';
-    if (se) se.textContent = '출처: ' + src;
+    if (de) de.textContent = ns + ' 기준';
+    if (se) se.textContent = '출처: ' + src + ' (0104N0.KS)';
     tigerUpdate();
   }
 

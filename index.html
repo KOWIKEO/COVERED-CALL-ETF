@@ -1984,7 +1984,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="onFancyInput('amount')" onblur="onFancyBlur('amount')">
+                     oninput="solOnAmtInput()" onblur="solOnAmtBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)">억원</button>
@@ -2511,7 +2511,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="onFancyInput('amount')" onblur="onFancyBlur('amount')">
+                     oninput="tigerOnAmtInput()" onblur="tigerOnAmtBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)">억원</button>
@@ -3039,7 +3039,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tigerdiv-ni-amount" type="text" inputmode="numeric" value="100,000,000"
                      style="padding-right:8px;width:110px;"
-                     oninput="onFancyInput('amount')" onblur="onFancyBlur('amount')">
+                     oninput="tigerdivOnAmtInput()" onblur="tigerdivOnAmtBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)">억원</button>
@@ -3049,7 +3049,7 @@
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-amount" min="1000000" max="500000000" step="1000000" value="100000000"
-               oninput="tigerSyncAmount()">
+               oninput="tigerdivSyncAmount()">
       </div>
 
       <div class="slider-block">
@@ -3118,7 +3118,7 @@
           <span class="slider-label">월 적립 금액</span>
           <div style="display:flex;align-items:center;gap:4px;">
             <div class="num-pill" style="flex-shrink:0;">
-              <input class="num-input comma-input" id="tigerdiv-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
+              <input class="num-input comma-input" id="tigerdiv-ni-monthly-" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
                      oninput="onFancyInput('monthly')" onblur="onFancyBlur('monthly')">
             </div>
@@ -3130,7 +3130,7 @@
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-monthly" min="0" max="50000000" step="100000" value="1000000"
-               oninput="tigerSyncMonthly()">
+               oninput="tigerdivSyncMonthly()">
         <div style="margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid rgba(0,229,176,0.12);">
           <p style="font-size:11px;color:var(--text3);margin-bottom:4px;">연간 추가 투자액</p>
           <p style="font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;" id="tigerdiv-dca-annual-label">—</p>
@@ -3367,7 +3367,7 @@
           </div>
         </div>
         <input type="range" id="tigerdiv-sl-target" min="100000" max="10000000" step="100000" value="5000000"
-               oninput="tigerSyncTarget()">
+               oninput="tigerdivSyncTarget()">
       </div>
 
       <div class="target-box">
@@ -6199,6 +6199,8 @@ update();
     const ni=$id('ni-amount'); if(!ni) return;
     const ns=ni.value.replace(/[^0-9]/g,'');
     ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+    const sl=$id('sl-amount');
+    if(sl && ns) sl.value = Math.min(Math.max(parseInt(ns), parseInt(sl.min)), parseInt(sl.max));
     solUpdate();
   };
   window.solOnAmtBlur     = function() {
@@ -6550,7 +6552,7 @@ update();
   window.tigerSyncAmount=function(){const sl=$id('sl-amount'),ni=$id('ni-amount');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
   window.tigerSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
   window.tigerSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
-  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';tigerUpdate();};
+  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-amount');if(sl&&ns)sl.value=Math.min(Math.max(parseInt(ns),parseInt(sl.min)),parseInt(sl.max));tigerUpdate();};
   window.tigerOnAmtBlur=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'100,000,000';tigerUpdate();};
   window.tigerOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;ni.value=ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');tigerUpdate();};
   window.tigerOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerUpdate();};
@@ -6864,13 +6866,13 @@ update();
   function syncSL(key,scale,dec){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;ni.value=(parseFloat(sl.value)/scale).toFixed(dec);tigerdivUpdate();}
   window.tigerdivSyncToSlider=key=>syncNI(key);
   window.tigerdivSyncToNum=(k,s,d)=>syncSL(k,s,d);
-  window.tigerSyncAmount=function(){const sl=$id('sl-amount'),ni=$id('ni-amount');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
-  window.tigerSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
-  window.tigerSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
-  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';tigerdivUpdate();};
-  window.tigerOnAmtBlur=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'100,000,000';tigerdivUpdate();};
-  window.tigerOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;ni.value=ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');tigerdivUpdate();};
-  window.tigerOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerdivUpdate();};
+  
+  window.tigerdivSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
+  window.tigerdivSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
+  
+  
+  window.tigerdivOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;ni.value=ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');tigerdivUpdate();};
+  window.tigerdivOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerdivUpdate();};
   window.tigerdivSetDetailTab=function(tab,btn){
     /* 상세 탭 버튼 active 직접 제어 */
     ['annual','monthly'].forEach(function(t) {
@@ -6886,6 +6888,48 @@ update();
     });if(_tigerdivCache)renderTigerdivChart(_tigerdivCache.rows,_tigerdivCache.years,_tigerdivCache.rate,_tigerdivCache.keepRate);};
 
   /* 배당 프리셋 (일반/특별배당) */
+  window.tigerdivOnAmtInput  = function() {
+    const ni=$id('ni-amount'); if(!ni) return;
+    const ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+    const sl=$id('sl-amount'); if(sl) sl.value=parseInt(ns)||0;
+    tigerdivUpdate();
+  };
+  window.tigerdivOnAmtBlur   = function() {
+    const ni=$id('ni-amount'); if(!ni) return;
+    const ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
+  };
+  window.tigerdivSyncAmount  = function() {
+    const sl=$id('sl-amount'), ni=$id('ni-amount');
+    if(!sl||!ni) return;
+    ni.value = Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');
+    tigerdivUpdate();
+  };
+  window.tigerdivSyncMonthly = function() {
+    const sl=$id('sl-monthly'), ni=$id('ni-monthly');
+    if(!sl||!ni) return;
+    ni.value = Math.round(parseFloat(sl.value)/10000).toLocaleString('ko-KR');
+    tigerdivUpdate();
+  };
+  window.tigerdivOnMonthlyInput = function() {
+    const ni=$id('ni-monthly'); if(!ni) return;
+    const ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+    tigerdivUpdate();
+  };
+  window.tigerdivOnMonthlyBlur  = function() {
+    const ni=$id('ni-monthly'); if(!ni) return;
+    const ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
+  };
+  window.tigerdivSyncTarget  = function() {
+    const sl=$id('sl-target'), ni=$id('ni-target');
+    if(!sl||!ni) return;
+    ni.value = Math.round(parseFloat(sl.value)/10000).toLocaleString('ko-KR');
+    tigerdivUpdate();
+  };
+
   window.tigerdivSetPreset = function(mode, btn) {
     const pg = document.getElementById('page-tigerdiv');
     if (!pg) return;

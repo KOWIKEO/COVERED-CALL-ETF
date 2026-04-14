@@ -1598,9 +1598,9 @@
         <!-- ── 직접 입력 패널 ── -->
         <div id="tax-panel-manual" style="margin-top:10px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="preset-btn" onclick="setTaxPreset(15.4)">일반 15.4%</button>
-            <button class="preset-btn" onclick="setTaxPreset(9.9)">소득세 9.9%</button>
-            <button class="preset-btn" onclick="setTaxPreset(49.5)">금융종합 49.5%</button>
+            <button class="preset-btn" onclick="setTaxPreset(15.4, this)">일반 15.4%</button>
+            <button class="preset-btn" onclick="setTaxPreset(9.9, this)">소득세 9.9%</button>
+            <button class="preset-btn" onclick="setTaxPreset(49.5, this)">금융종합 49.5%</button>
           </div>
         </div>
 
@@ -2065,7 +2065,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('monthly')" onblur="onFancyBlur('monthly')">
+                     oninput="solOnMonthlyInput()" onblur="solOnMonthlyBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)" data-unit="eok">억원</button>
@@ -2125,9 +2125,9 @@
         <!-- ── 직접 입력 패널 ── -->
         <div id="sol-tax-panel-manual" style="margin-top:10px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="preset-btn" onclick="setTaxPreset(15.4)">일반 15.4%</button>
-            <button class="preset-btn" onclick="setTaxPreset(9.9)">소득세 9.9%</button>
-            <button class="preset-btn" onclick="setTaxPreset(49.5)">금융종합 49.5%</button>
+            <button class="preset-btn" onclick="setTaxPreset(15.4, this)">일반 15.4%</button>
+            <button class="preset-btn" onclick="setTaxPreset(9.9, this)">소득세 9.9%</button>
+            <button class="preset-btn" onclick="setTaxPreset(49.5, this)">금융종합 49.5%</button>
           </div>
         </div>
 
@@ -2158,7 +2158,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="sol-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="onFancyInput('otherincome')" onblur="onFancyBlur('otherincome')">
+                           oninput="solOnOtherIncomeInput()" onblur="solOnOtherIncomeBlur()">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -2246,7 +2246,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="sol-ni-calloption" type="number" min="0" max="99" step="0.1" value="13"
-                     style="width:100%;color:var(--accent);" oninput="onKodexRatioChange()">
+                     style="width:100%;color:var(--accent);" oninput="solOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2254,7 +2254,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="sol-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="onKodexRatioChange()">
+                     style="width:100%;color:#ff9090;" oninput="solOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2302,7 +2302,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="sol-ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('target')" onblur="onFancyBlur('target')">
+                     oninput="solOnTargetInput()" onblur="solOnTargetBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)" data-unit="eok">억원</button>
@@ -2592,7 +2592,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-monthly" type="text" inputmode="numeric" value="1,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('monthly')" onblur="onFancyBlur('monthly')">
+                     oninput="tigerOnMonthlyInput()" onblur="tigerOnMonthlyBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="monthly" data-unit="eok" onclick="setFancyUnit('monthly','eok',this)" data-unit="eok">억원</button>
@@ -2652,9 +2652,9 @@
         <!-- ── 직접 입력 패널 ── -->
         <div id="tiger-tax-panel-manual" style="margin-top:10px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="preset-btn" onclick="setTaxPreset(15.4)">일반 15.4%</button>
-            <button class="preset-btn" onclick="setTaxPreset(9.9)">소득세 9.9%</button>
-            <button class="preset-btn" onclick="setTaxPreset(49.5)">금융종합 49.5%</button>
+            <button class="preset-btn" onclick="setTaxPreset(15.4, this)">일반 15.4%</button>
+            <button class="preset-btn" onclick="setTaxPreset(9.9, this)">소득세 9.9%</button>
+            <button class="preset-btn" onclick="setTaxPreset(49.5, this)">금융종합 49.5%</button>
           </div>
         </div>
 
@@ -2685,7 +2685,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="tiger-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="onFancyInput('otherincome')" onblur="onFancyBlur('otherincome')">
+                           oninput="tigerOnOtherIncomeInput()" onblur="tigerOnOtherIncomeBlur()">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -2773,7 +2773,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tiger-ni-calloption" type="number" min="0" max="99" step="0.1" value="5"
-                     style="width:100%;color:var(--accent);" oninput="onKodexRatioChange()">
+                     style="width:100%;color:var(--accent);" oninput="tigerOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2781,7 +2781,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tiger-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="onKodexRatioChange()">
+                     style="width:100%;color:#ff9090;" oninput="tigerOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -2829,7 +2829,7 @@
             <div class="num-pill" style="flex-shrink:0;">
               <input class="num-input comma-input" id="tiger-ni-target" type="text" inputmode="numeric" value="5,000,000"
                      style="padding-right:8px;width:100px;"
-                     oninput="onFancyInput('target')" onblur="onFancyBlur('target')">
+                     oninput="tigerOnTargetInput()" onblur="tigerOnTargetBlur()">
             </div>
             <div class="unit-tabs">
               <button class="unit-btn" data-field="target" data-unit="eok" onclick="setFancyUnit('target','eok',this)" data-unit="eok">억원</button>
@@ -3173,16 +3173,16 @@
                oninput="tigerdivSyncToNum('tax', 1, 4); if(taxMode==='manual') _manualTaxValue=document.getElementById('tigerdiv-ni-tax').value;">
         <!-- 과세 방식 탭 -->
         <div class="tax-mode-tabs">
-          <button class="tax-mode-tab active" id="tigerdiv-ttab-manual"   onclick="tigerSetTaxMode('manual',this)">직접 입력</button>
-          <button class="tax-mode-tab"        id="tigerdiv-ttab-bracket"  onclick="tigerSetTaxMode('bracket',this)">과세표준 계산</button>
+          <button class="tax-mode-tab active" id="tigerdiv-ttab-manual"   onclick="tigerdivSetTaxMode('manual',this)">직접 입력</button>
+          <button class="tax-mode-tab"        id="tigerdiv-ttab-bracket"  onclick="tigerdivSetTaxMode('bracket',this)">과세표준 계산</button>
         </div>
 
         <!-- ── 직접 입력 패널 ── -->
         <div id="tigerdiv-tax-panel-manual" style="margin-top:10px;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="preset-btn" onclick="setTaxPreset(15.4)">일반 15.4%</button>
-            <button class="preset-btn" onclick="setTaxPreset(9.9)">소득세 9.9%</button>
-            <button class="preset-btn" onclick="setTaxPreset(49.5)">금융종합 49.5%</button>
+            <button class="preset-btn" onclick="setTaxPreset(15.4, this)">일반 15.4%</button>
+            <button class="preset-btn" onclick="setTaxPreset(9.9, this)">소득세 9.9%</button>
+            <button class="preset-btn" onclick="setTaxPreset(49.5, this)">금융종합 49.5%</button>
           </div>
         </div>
 
@@ -3190,8 +3190,8 @@
         <div id="tigerdiv-tax-panel-bracket" style="display:none;margin-top:10px;">
           <!-- 분리과세 / 종합과세 선택 -->
           <div class="tax-type-toggle">
-            <button class="tax-type-btn active" id="tigerdiv-ttype-separate"      onclick="tigerSetTaxType('separate',this)">분리과세</button>
-            <button class="tax-type-btn"        id="tigerdiv-ttype-comprehensive" onclick="tigerSetTaxType('comprehensive',this)">금융소득 종합과세</button>
+            <button class="tax-type-btn active" id="tigerdiv-ttype-separate"      onclick="tigerdivSetTaxType('separate',this)">분리과세</button>
+            <button class="tax-type-btn"        id="tigerdiv-ttype-comprehensive" onclick="tigerdivSetTaxType('comprehensive',this)">금융소득 종합과세</button>
           </div>
 
           <!-- 분리과세 안내 -->
@@ -3213,7 +3213,7 @@
                   <div class="num-pill" style="flex-shrink:0;">
                     <input class="num-input comma-input" id="tigerdiv-ni-otherincome" type="text" inputmode="numeric" value="50,000,000"
                            style="padding-right:8px;width:90px;"
-                           oninput="onFancyInput('otherincome')" onblur="onFancyBlur('otherincome')">
+                           oninput="tigerdivOnOtherIncomeInput()" onblur="tigerdivOnOtherIncomeBlur()">
                   </div>
                   <div class="unit-tabs">
                     <button class="unit-btn" data-field="otherincome" data-unit="eok" onclick="setFancyUnit('otherincome','eok',this)" data-unit="eok">억원</button>
@@ -3301,7 +3301,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">콜옵션 수익 (비과세)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tigerdiv-ni-calloption" type="number" min="0" max="99" step="0.1" value="5"
-                     style="width:100%;color:var(--accent);" oninput="onKodexRatioChange()">
+                     style="width:100%;color:var(--accent);" oninput="tigerdivOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -3309,7 +3309,7 @@
             <p style="font-size:10px;color:var(--text3);margin-bottom:6px;">배당금 (과세 15.4%)</p>
             <div class="num-pill" style="width:100%;">
               <input class="num-input" id="tigerdiv-ni-divportion" type="number" min="0" max="99" step="0.1" value="2"
-                     style="width:100%;color:#ff9090;" oninput="onKodexRatioChange()">
+                     style="width:100%;color:#ff9090;" oninput="tigerdivOnKodexRatioChange()">
               <span class="num-unit">%</span>
             </div>
           </div>
@@ -4824,14 +4824,27 @@ function updateKodexUI() {
   document.getElementById('kodex-taxbase-label').textContent = taxBase.toLocaleString('ko-KR') + '원/년';
 }
 
-function setTaxPreset(v) {
-  const ni = document.getElementById('ni-tax');
-  const sl = document.getElementById('sl-tax');
+function setTaxPreset(v, btn) {
+  /* 어느 페이지 버튼인지 파악 */
+  var page = btn ? btn.closest('.app-page') : null;
+  var pageId = page ? page.id : 'page-simulator';
+  var prefixMap = {'page-simulator':'', 'page-sol':'sol-', 'page-tiger':'tiger-', 'page-tigerdiv':'tigerdiv-'};
+  var prefix = prefixMap[pageId] !== undefined ? prefixMap[pageId] : '';
+
+  var ni = document.getElementById(prefix + 'ni-tax');
+  var sl = document.getElementById(prefix + 'sl-tax');
+  if (!ni || !sl) return;
   ni.value = fmtRate(v);
   sl.value = v;
   ni.classList.remove('error');
-  _manualTaxValue = ni.value;  // 프리셋 클릭 시도 저장값 갱신
-  update();
+
+  /* 페이지별 manual 값 저장 및 update 호출 */
+  if (pageId === 'page-simulator') {
+    _manualTaxValue = ni.value;
+    update();
+  } else if (pageId === 'page-sol'      && window.solUpdate)      { window.solUpdate(); }
+  else if (pageId === 'page-tiger'    && window.tigerUpdate)    { window.tigerUpdate(); }
+  else if (pageId === 'page-tigerdiv' && window.tigerdivUpdate) { window.tigerdivUpdate(); }
 }
 
 function setTaxMode(mode, btn) {
@@ -5099,7 +5112,7 @@ function setChartTab(tab, btn) {
 /* ════════════════════════════════════════
    콤마 입력 + 단위 탭 시스템
 ════════════════════════════════════════ */
-const fancyUnit = { amount: 'won', otherincome: 'won', target: 'won', monthly: 'won' };
+var fancyUnit = { amount: 'won', otherincome: 'won', target: 'won', monthly: 'won' };
 let cpdMode = 'simple'; let cpdTaxOn = true; let cpdChart = null; let cpdChartTab = 'val';
 const cpdUnit = { principal: 'won', monthly: 'won' };
 
@@ -5814,11 +5827,33 @@ update();
     dcaOn:    false,
     taxOn:    true,
     kodexOn:  true,
+    taxMode:     'manual',
+    bracketType: 'separate',
   };
 
   // DOM 헬퍼
   function $id(id)       { return document.getElementById('sol-' + id); }
   function getV(id)      { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
+
+  /* 단위 인식 값 읽기/쓰기 헬퍼 */
+  function getVWon(fieldId) {
+    var el = $id(fieldId);
+    if (!el) return 0;
+    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
+    var field = fieldId.replace('ni-', '');
+    var unit = (window.fancyUnit && (window.fancyUnit['page-sol_' + field] || window.fancyUnit[field])) || 'won';
+    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  }
+  function setDispFromWon(fieldId, wonValue) {
+    var el = $id(fieldId);
+    if (!el) return;
+    var field = fieldId.replace('ni-', '');
+    var unit = (window.fancyUnit && (window.fancyUnit['page-sol_' + field] || window.fancyUnit[field])) || 'won';
+    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+    el.value = unit === 'won'
+      ? Math.round(disp).toLocaleString('ko-KR')
+      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
+  }
   function fmt(n)        { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -5888,11 +5923,94 @@ update();
   }
 
   // ── 계산 ──────────────────────────────────
+
+  function solUpdateBracketUI() {
+    if (!S.taxOn || S.taxMode !== 'bracket') return;
+
+    var otherIncome = getVWon('ni-otherincome');
+    var amount  = getVWon('ni-amount');
+    var ratePct = getV('ni-rate') || 15;
+    var monthly = S.dcaOn ? getVWon('ni-monthly') : 0;
+
+    /* ── 1년차 총 분배금 추정 ── */
+    var mRate = (ratePct / 100) / 12;
+    var port = amount, est1stTotal = 0;
+    for (var mi = 0; mi < 12; mi++) { port += monthly; est1stTotal += port * mRate; }
+
+    /* ── 과세 비율: SOL 비과세 구조 ON이면 배당 부분만 과세 ── */
+    var taxRatio = 1; /* 기본: 전액 과세 */
+    if (S.kodexOn) {
+      var cpPct = getV('ni-calloption') || 13;
+      var dpPct = getV('ni-divportion') || 2;
+      var tot = cpPct + dpPct;
+      if (tot > 0) taxRatio = dpPct / tot; /* 예: 2/15 */
+    }
+    var est1stDiv = est1stTotal * taxRatio; /* 과세 대상 금액 */
+
+    /* ── 세금 계산: 과세표준에 따른 실제 세금 ── */
+    function solCalcTax(taxableDiv) {
+      if (S.bracketType === 'separate') return taxableDiv * 0.154;
+      var THRESHOLD = 20000000;
+      if (taxableDiv <= THRESHOLD) return taxableDiv * 0.154;
+      var baseTax = THRESHOLD * 0.154;
+      var excess  = taxableDiv - THRESHOLD;
+      var taxOther = calcProgressiveTax(otherIncome);
+      var rawTax = baseTax + (calcProgressiveTax(otherIncome + excess) - taxOther);
+      return Math.min(rawTax, taxableDiv * 0.495);
+    }
+
+    /* ── bracket-table 구간 하이라이트 + eff-rate 셀 ──
+       각 구간의 실효세율 = 세금(과세금액) / 전체분배금
+       과세금액이 midBase인 경우 전체 분배금 = midBase / taxRatio                */
+    var THRESHOLD = 20000000;
+    var excessBase = (S.bracketType === 'comprehensive' && est1stDiv > THRESHOLD)
+      ? otherIncome + (est1stDiv - THRESHOLD) : 0;
+
+    var tbl = $id('bracket-table');
+    if (tbl) {
+      tbl.querySelectorAll('tbody tr').forEach(function(tr) {
+        var maxVal = tr.dataset.max === 'Infinity' ? Infinity : parseFloat(tr.dataset.max);
+        var prev   = tr.previousElementSibling;
+        var minVal = prev ? parseFloat(prev.dataset.max) : 0;
+        tr.classList.toggle('bracket-active',
+          S.bracketType === 'comprehensive' && excessBase > minVal && excessBase <= maxVal);
+        var midBase  = maxVal === Infinity ? (minVal + 2e8) : (minVal + maxVal) / 2;
+        /* midBase = 이 구간 중간의 과세금액. 전체분배금 = midBase/taxRatio */
+        var taxAtMid   = solCalcTax(THRESHOLD + midBase);
+        var totalAtMid = taxRatio > 0 ? (THRESHOLD + midBase) / taxRatio : (THRESHOLD + midBase);
+        var effAtMid   = totalAtMid > 0 ? taxAtMid / totalAtMid : 0;
+        var effCell = tr.querySelector('.eff-rate');
+        if (effCell) effCell.textContent = fmtRate(effAtMid * 100) + '%';
+      });
+    }
+
+    /* ── 1년차 실효세율 = 세금 / 전체 분배금 ── */
+    var tax1st      = solCalcTax(est1stDiv);
+    var eff1st      = est1stTotal > 0 ? tax1st / est1stTotal : 0;
+    var displayRate = fmtRate(eff1st * 100);
+
+    var effEl = $id('bracket-eff-rate');
+    if (effEl) effEl.textContent = displayRate + '%';
+    var ni = $id('ni-tax');
+    var sl = $id('sl-tax');
+    if (ni) ni.value = displayRate;
+    if (sl) sl.value = Math.min(eff1st * 100, 49.5);
+
+    /* ── 전체 대비 실효세율도 kodex-eff-rate에 표시 ── */
+    var tp0 = (getV('ni-calloption') || 13) + (getV('ni-divportion') || 2);
+    var effPct0 = tp0 > 0 ? fmtRate(eff1st * 100) : '0.00';
+    setT('kodex-eff-rate', effPct0 + '%');
+    return eff1st;  /* solUpdate에서 DOM 경유 없이 직접 사용 */
+  }
+
+  window.solOnKodexRatioChange = function() {
+    solUpdate();
+  };
   window.solUpdate = function() {
     const FEE  = 0.003;
     const rate0  = (getV('ni-rate') || 15) / 100;
     const rate   = Math.max(0, rate0 - FEE);
-        const amount = getV('ni-amount');
+        const amount = getVWon('ni-amount');
     if (amount === 0) {
       [$id('s-annual'),$id('s-weekly'),$id('s-final'),$id('s-total'),$id('s-port')]
         .forEach(e => { if(e) e.textContent='0원'; });
@@ -5902,17 +6020,45 @@ update();
     }
     const years  = Math.round(getV('ni-years')) || 10;
     const growth = (getV('ni-growth') || 0) / 100;
-    const monthly= S.dcaOn ? (getV('ni-monthly') || 0) : 0;
-    const taxRate= S.taxOn ? (getV('ni-tax') || 15.4) / 100 : 0;
-
-    // 과세구조
-    let effTax = taxRate;
-    let cpPct = 0, dpPct = 0;
+    const monthly= S.dcaOn ? getVWon('ni-monthly') : 0;
+    /* ── 과세 비율 및 실효세율 계산 ── */
+    let cpPct = 0, dpPct = 0, taxRatio = 1;
     if (S.kodexOn) {
-      cpPct  = getV('ni-calloption') || 13;
-      dpPct  = getV('ni-divportion') || 2;
-      effTax = (cpPct+dpPct) > 0 ? taxRate * dpPct/(cpPct+dpPct) : 0;
+      cpPct = getV('ni-calloption') || 13;
+      dpPct = getV('ni-divportion') || 2;
+      taxRatio = (cpPct + dpPct) > 0 ? dpPct / (cpPct + dpPct) : 1;
     }
+
+    let effTax;
+    if (S.taxOn && S.taxMode === 'bracket') {
+      /* bracket 모드: 직접 계산 (solUpdateBracketUI와 독립적) */
+      const _rate_pct = getV('ni-rate') || 15;
+      const _amt = getVWon('ni-amount');
+      const _mR = (_rate_pct / 100) / 12;
+      let _est = 0;
+      for (let _i = 0; _i < 12; _i++) _est += _amt * _mR;
+      const _taxable = _est * taxRatio;
+      const _T = 20000000;
+      let _tax;
+      if (S.bracketType !== 'comprehensive') {
+        _tax = _taxable * 0.154;
+      } else {
+        const _oi = getVWon('ni-otherincome');
+        _tax = (_taxable <= _T)
+          ? _taxable * 0.154
+          : _T * 0.154 + (calcProgressiveTax(_oi + _taxable - _T) - calcProgressiveTax(_oi));
+      }
+      effTax = _est > 0 ? _tax / _est : 0;
+      /* bracket UI 갱신 (계산과 분리) */
+      try { solUpdateBracketUI(); } catch(e) {}
+    } else if (S.taxOn) {
+      /* manual 모드 */
+      const _manualRate = (getV('ni-tax') || 15.4) / 100;
+      effTax = S.kodexOn ? _manualRate * taxRatio : _manualRate;
+    } else {
+      effTax = 0;
+    }
+    const taxRate = effTax;
     const keepRate = 1 - effTax;
     const mRate    = rate / 12;
     const mGrow    = Math.pow(1 + growth, 1/12) - 1;
@@ -5974,14 +6120,14 @@ update();
     setT('s-cagr-sub',   '월 평균 ' + (cagrMon>=0?'+':'') + (cagrMon*100).toFixed(3) + '%');
 
     // ── 역산 ───────────────────────────────
-    const targetV = getV('ni-target');
+    const targetV = getVWon('ni-target');
     if (targetV > 0) {
       setT('target-result', fmt((targetV * 12) / rate));
       setT('target-sub',    '분배율 ' + (rate0*100).toFixed(1) + '% 기준');
     }
 
     // ── DCA 연간 레이블 ──────────────────────
-    setT('dca-annual-label', fmt((getV('ni-monthly')||0)*12) + ' / 년');
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
 
     // ── 세금 요약 ───────────────────────────
     if (S.taxOn) {
@@ -6125,6 +6271,7 @@ update();
 
   // ── 세금 모드 ─────────────────────────────
   window.solSetTaxMode = function(mode, btn) {
+    S.taxMode = mode;
     const ni=$id('ni-tax'), sl=$id('sl-tax');
     if (!ni||!sl) return;
     if (mode==='manual') {
@@ -6139,9 +6286,25 @@ update();
     const mp=$id('tax-panel-manual'), bp=$id('tax-panel-bracket');
     if (mp) mp.style.display = mode==='manual'?'':'none';
     if (bp) bp.style.display = mode==='bracket'?'':'none';
+    /* bracket 모드에서 슬라이더·입력란 dimming */
+    var niTax = $id('ni-tax');
+    var slTax = $id('sl-tax');
+    if (niTax && slTax) {
+      var sliderHdr = niTax.closest('.slider-header');
+      var dim = (mode === 'bracket');
+      if (sliderHdr) {
+        sliderHdr.style.opacity      = dim ? '0.4' : '1';
+        sliderHdr.style.pointerEvents = dim ? 'none' : 'auto';
+      }
+      slTax.style.opacity      = dim ? '0.4' : '1';
+      slTax.style.pointerEvents = dim ? 'none' : 'auto';
+      if (mode === 'bracket') niTax.dataset.manual = niTax.value;
+      if (mode === 'manual' && niTax.dataset.manual) niTax.value = niTax.dataset.manual;
+    }
     solUpdate();
   };
   window.solSetTaxType = function(type, btn) {
+    S.bracketType = type;
     const pg = document.getElementById('page-sol');
     if (pg) pg.querySelectorAll('.tax-type-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
@@ -6227,19 +6390,19 @@ update();
   window.solSyncAmount    = function() {
     const sl=$id('sl-amount'), ni=$id('ni-amount');
     if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');
+    setDispFromWon('ni-amount', parseFloat(sl.value));
     solUpdate();
   };
   window.solSyncMonthly   = function() {
     const sl=$id('sl-monthly'), ni=$id('ni-monthly');
     if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');
+    setDispFromWon('ni-monthly', parseFloat(sl.value));
     solUpdate();
   };
   window.solSyncTarget    = function() {
     const sl=$id('sl-target'), ni=$id('ni-target');
     if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');
+    setDispFromWon('ni-target', parseFloat(sl.value));
     solUpdate();
   };
   window.solOnAmtInput    = function() {
@@ -6247,7 +6410,7 @@ update();
     const ns=ni.value.replace(/[^0-9]/g,'');
     ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
     const sl=$id('sl-amount');
-    if(sl && ns) sl.value = Math.min(Math.max(parseInt(ns), parseInt(sl.min)), parseInt(sl.max));
+    if(sl && ns) { var wonV=getVWon('ni-amount'); sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max)); }
     solUpdate();
   };
   window.solOnAmtBlur     = function() {
@@ -6258,7 +6421,10 @@ update();
   };
   window.solOnMonthlyInput= function() {
     const ni=$id('ni-monthly'); if(!ni) return;
-    ni.value = ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    const ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
+    const sl=$id('sl-monthly');
+    if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
     solUpdate();
   };
   window.solOnMonthlyBlur = function() {
@@ -6269,7 +6435,33 @@ update();
   };
 
   // ── setDetailTab / setChartTab ────────────
-  window.solSetDetailTab = function(tab, btn) {
+  
+  window.solOnTargetInput = function() {
+    var ni=$id('ni-target'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    var sl=$id('sl-target');
+    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
+    solUpdate();
+  };
+  window.solOnTargetBlur = function() {
+    var ni=$id('ni-target'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
+  };
+  window.solOnOtherIncomeInput = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    solUpdate();
+  };
+  window.solOnOtherIncomeBlur = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
+  };
+
+window.solSetDetailTab = function(tab, btn) {
     const pg=document.getElementById('page-sol');
     if(pg) pg.querySelectorAll('#sol-dtab-annual,#sol-dtab-monthly').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
@@ -6285,7 +6477,7 @@ update();
       var b=document.getElementById('sol-tab-'+t);
       if(b) b.classList.toggle('active',t===tab);
     });
-    if(_solCache) renderSolChart(_solCache,tab);
+    if(_solCache) renderSolChart(_solCache.rows, _solCache.years, _solCache.rate, _solCache.keepRate);
   };
 
 })();
@@ -6296,10 +6488,32 @@ update();
     dcaOn:    false,
     taxOn:    true,
     kodexOn:  true,
+    taxMode:     'manual',
+    bracketType: 'separate',
   };
 
   function $id(id)  { return document.getElementById('tiger-' + id); }
   function getV(id) { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
+
+  /* 단위 인식 값 읽기/쓰기 헬퍼 */
+  function getVWon(fieldId) {
+    var el = $id(fieldId);
+    if (!el) return 0;
+    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
+    var field = fieldId.replace('ni-', '');
+    var unit = (window.fancyUnit && (window.fancyUnit['page-tiger_' + field] || window.fancyUnit[field])) || 'won';
+    return num * (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+  }
+  function setDispFromWon(fieldId, wonValue) {
+    var el = $id(fieldId);
+    if (!el) return;
+    var field = fieldId.replace('ni-', '');
+    var unit = (window.fancyUnit && (window.fancyUnit['page-tiger_' + field] || window.fancyUnit[field])) || 'won';
+    var disp = wonValue / (unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1);
+    el.value = unit === 'won'
+      ? Math.round(disp).toLocaleString('ko-KR')
+      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
+  }
   function fmt(n)   { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -6370,11 +6584,15 @@ update();
   let _tigerChartTab = 'annual';
   let _tigerCache = null;
 
+
+  window.tigerOnKodexRatioChange = function() {
+    tigerUpdate();
+  };
   window.tigerUpdate = function() {
     const FEE  = 0.0025;
     const rate0  = (getV('ni-rate') || 7) / 100;
     const rate   = Math.max(0, rate0 - FEE);
-        const amount = getV('ni-amount');
+        const amount = getVWon('ni-amount');
     if (amount === 0) {
       [$id('s-annual'),$id('s-weekly'),$id('s-final'),$id('s-total'),$id('s-port')]
         .forEach(e => { if(e) e.textContent='0원'; });
@@ -6384,7 +6602,7 @@ update();
     }
     const years  = Math.round(getV('ni-years')) || 10;
     const growth = (getV('ni-growth') || 0) / 100;
-    const monthly= S.dcaOn ? (getV('ni-monthly') || 0) : 0;
+    const monthly= S.dcaOn ? getVWon('ni-monthly') : 0;
     const taxRate= S.taxOn ? (getV('ni-tax') || 15.4) / 100 : 0;
 
     let cpPct = 0, dpPct = 0;
@@ -6446,9 +6664,9 @@ update();
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className='sum-cell-val '+(cagr>=0?'green':'sum-cell-red'); }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
-    const targetV = getV('ni-target');
+    const targetV = getVWon('ni-target');
     if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
-    setT('dca-annual-label', fmt((getV('ni-monthly')||0)*12) + ' / 년');
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
     if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
     if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
 
@@ -6575,6 +6793,7 @@ update();
     tigerUpdate();
   };
   window.tigerSetTaxMode = function(mode,btn) {
+    S.taxMode = mode;
     const ni=$id('ni-tax'),sl=$id('sl-tax'); if(!ni||!sl) return;
     if(mode==='manual'){ni.value=ni.dataset.manual||'15.4';sl.value=Math.min(parseFloat(ni.value)||15.4,49.5);}
     else{ni.dataset.manual=ni.value;}
@@ -6587,6 +6806,7 @@ update();
     tigerUpdate();
   };
   window.tigerSetTaxType = function(type,btn) {
+    S.bracketType = type;
     const pg=document.getElementById('page-tiger');
     if(pg) pg.querySelectorAll('.tax-type-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
@@ -6599,21 +6819,47 @@ update();
   function syncSL(key,scale,dec){const ni=$id('ni-'+key),sl=$id('sl-'+key);if(!ni||!sl)return;ni.value=(parseFloat(sl.value)/scale).toFixed(dec);tigerUpdate();}
   window.tigerSyncToSlider=key=>syncNI(key);
   window.tigerSyncToNum=(k,s,d)=>syncSL(k,s,d);
-  window.tigerSyncAmount=function(){const sl=$id('sl-amount'),ni=$id('ni-amount');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
-  window.tigerSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
-  window.tigerSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerUpdate();};
-  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-amount');if(sl&&ns)sl.value=Math.min(Math.max(parseInt(ns),parseInt(sl.min)),parseInt(sl.max));tigerUpdate();};
+  window.tigerSyncAmount=function(){const sl=$id('sl-amount'),ni=$id('ni-amount');if(!sl||!ni)return;setDispFromWon('ni-amount',parseFloat(sl.value));tigerUpdate();};
+  window.tigerSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;setDispFromWon('ni-monthly',parseFloat(sl.value));tigerUpdate();};
+  window.tigerSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;setDispFromWon('ni-target',parseFloat(sl.value));tigerUpdate();};
+  window.tigerOnAmtInput=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-amount');if(sl&&ns){var wonV=getVWon('ni-amount');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}tigerUpdate();};
   window.tigerOnAmtBlur=function(){const ni=$id('ni-amount');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'100,000,000';tigerUpdate();};
-  window.tigerOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;ni.value=ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');tigerUpdate();};
+  window.tigerOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';const sl=$id('sl-monthly');if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}tigerUpdate();};
   window.tigerOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerUpdate();};
-  window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('page-tiger');if(pg) pg.querySelectorAll('#tiger-dtab-annual,#tiger-dtab-monthly').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const da=$id('detail-annual'),dm=$id('detail-monthly'),dt=$id('detail-title');if(da)da.style.display=tab==='annual'?'':'none';if(dm)dm.style.display=tab==='monthly'?'':'none';if(dt)dt.textContent=tab==='annual'?'연간 상세 내역':'월간 상세 내역';if(tab==='monthly'&&_tigerCache)renderTigerMonthlyTable(_tigerCache);};
+  
+  window.tigerOnTargetInput = function() {
+    var ni=$id('ni-target'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    var sl=$id('sl-target');
+    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
+    tigerUpdate();
+  };
+  window.tigerOnTargetBlur = function() {
+    var ni=$id('ni-target'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
+  };
+  window.tigerOnOtherIncomeInput = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    tigerUpdate();
+  };
+  window.tigerOnOtherIncomeBlur = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
+  };
+
+window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('page-tiger');if(pg) pg.querySelectorAll('#tiger-dtab-annual,#tiger-dtab-monthly').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const da=$id('detail-annual'),dm=$id('detail-monthly'),dt=$id('detail-title');if(da)da.style.display=tab==='annual'?'':'none';if(dm)dm.style.display=tab==='monthly'?'':'none';if(dt)dt.textContent=tab==='annual'?'연간 상세 내역':'월간 상세 내역';if(tab==='monthly'&&_tigerCache)renderTigerMonthlyTable(_tigerCache);};
     window.tigerSetChartTab = function(tab,btn) {
     _tigerChartTab=tab;
     ['annual','monthly'].forEach(function(t){
       var b=document.getElementById('tiger-tab-'+t);
       if(b) b.classList.toggle('active',t===tab);
     });
-    if(_tigerCache) renderTigerChart(_tigerCache.rows,tab);
+    if(_tigerCache) renderTigerChart(_tigerCache.rows, _tigerCache.years, _tigerCache.rate, _tigerCache.keepRate);
   };
 
 })();
@@ -6624,10 +6870,42 @@ update();
     dcaOn:    false,
     taxOn:    true,
     kodexOn:  true,
+    taxMode:     'manual',
+    bracketType: 'separate',
   };
 
   function $id(id)  { return document.getElementById('tigerdiv-' + id); }
   function getV(id) { const el=$id(id); return el ? parseFloat(el.value.replace(/,/g,''))||0 : 0; }
+
+  /* ── 단위 인식 값 읽기/쓰기 헬퍼 ── */
+  function _tdUnitMult(field) {
+    if (field === 'monthly') {
+      return _tdMonthlyUnit === 'eok' ? 1e8 : _tdMonthlyUnit === 'man' ? 1e4 : 1;
+    }
+    if (field === 'target') {
+      return (_tdTargetUnit || 'won') === 'eok' ? 1e8 : (_tdTargetUnit || 'won') === 'man' ? 1e4 : 1;
+    }
+    /* amount: fancyUnit['page-tigerdiv_amount'] 참조 */
+    var u = (window.fancyUnit && (window.fancyUnit['page-tigerdiv_' + field] || window.fancyUnit[field])) || 'won';
+    return u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1;
+  }
+  function getVWon(fieldId) {
+    var el = $id(fieldId);
+    if (!el) return 0;
+    var num = parseFloat(el.value.replace(/,/g,'')) || 0;
+    var field = fieldId.replace('ni-', '');
+    return num * _tdUnitMult(field);
+  }
+  function setDispFromWon(fieldId, wonValue) {
+    var el = $id(fieldId);
+    if (!el) return;
+    var field = fieldId.replace('ni-', '');
+    var mult = _tdUnitMult(field);
+    var disp = wonValue / mult;
+    el.value = mult === 1
+      ? Math.round(disp).toLocaleString('ko-KR')
+      : parseFloat(disp.toFixed(6)).toLocaleString('ko-KR');
+  }
   function fmt(n)   { return Math.round(n).toLocaleString('ko-KR'); }
 
   // ── 현재가 조회 ──────────────────────────
@@ -6698,11 +6976,15 @@ update();
   let _tigerdivChartTab = 'annual';
   let _tigerdivCache = null;
 
+
+  window.tigerdivOnKodexRatioChange = function() {
+    tigerdivUpdate();
+  };
   window.tigerdivUpdate = function() {
     const FEE  = 0.005;
     const rate0  = (getV('ni-rate') || 7) / 100;
     const rate   = Math.max(0, rate0 - FEE);
-        const amount = getV('ni-amount');
+        const amount = getVWon('ni-amount');
     if (amount === 0) {
       [$id('s-annual'),$id('s-weekly'),$id('s-final'),$id('s-total'),$id('s-port')]
         .forEach(e => { if(e) e.textContent='0원'; });
@@ -6712,7 +6994,7 @@ update();
     }
     const years  = Math.round(getV('ni-years')) || 10;
     const growth = (getV('ni-growth') || 0) / 100;
-    const monthly= S.dcaOn ? (getV('ni-monthly') || 0) : 0;
+    const monthly= S.dcaOn ? getVWon('ni-monthly') : 0;
     const taxRate= S.taxOn ? (getV('ni-tax') || 15.4) / 100 : 0;
 
     let cpPct = 0, dpPct = 0;
@@ -6774,9 +7056,9 @@ update();
     const cagrEl = $id('s-cagr');
     if (cagrEl) { cagrEl.textContent=(cagr>=0?'+':'')+cagr.toFixed(2)+'%'; cagrEl.className='sum-cell-val '+(cagr>=0?'green':'sum-cell-red'); }
     setT('s-cagr-sub',   '월 평균 '+(cagrMon>=0?'+':'')+(cagrMon*100).toFixed(3)+'%');
-    const rawTargetV=getV('ni-target'); const targetV=rawTargetV*((_tdTargetUnit||'won')==='eok'?1e8:(_tdTargetUnit||'won')==='man'?1e4:1);
+    const targetV=getVWon('ni-target');
     if (targetV > 0) { setT('target-result', fmt((targetV*12)/rate)); setT('target-sub','분배율 '+(rate0*100).toFixed(1)+'% 기준'); }
-    setT('dca-annual-label', fmt((getV('ni-monthly')||0)*12) + ' / 년');
+    setT('dca-annual-label', fmt(getVWon('ni-monthly')*12) + ' / 년');
     if (S.taxOn) { setT('tax-first-label', fmt(rows[0].tax)); setT('tax-total-label', fmt(Math.round(totTax))); }
     if (S.kodexOn) { const tp=cpPct+dpPct; setT('kodex-eff-rate',(tp>0?(effTax*100).toFixed(2):'0.00')+'%'); setT('kodex-total-rate',tp.toFixed(1)+'%'); setT('kodex-taxbase-label',fmt(Math.round(rows[0].taxBase))); }
 
@@ -6905,7 +7187,8 @@ update();
     if(on)  on.style.color =S.kodexOn?'var(--accent)':'var(--text3)';
     tigerdivUpdate();
   };
-  window.tigerSetTaxMode = function(mode,btn) {
+  window.tigerdivSetTaxMode = function(mode,btn) {
+    S.taxMode = mode;
     const ni=$id('ni-tax'),sl=$id('sl-tax'); if(!ni||!sl) return;
     if(mode==='manual'){ni.value=ni.dataset.manual||'15.4';sl.value=Math.min(parseFloat(ni.value)||15.4,49.5);}
     else{ni.dataset.manual=ni.value;}
@@ -6917,7 +7200,8 @@ update();
     if(bp) bp.style.display=mode==='bracket'?'':'none';
     tigerdivUpdate();
   };
-  window.tigerSetTaxType = function(type,btn) {
+  window.tigerdivSetTaxType = function(type,btn) {
+    S.bracketType = type;
     const pg=document.getElementById('page-tigerdiv');
     if(pg) pg.querySelectorAll('.tax-type-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
@@ -6931,12 +7215,40 @@ update();
   window.tigerdivSyncToSlider=key=>syncNI(key);
   window.tigerdivSyncToNum=(k,s,d)=>syncSL(k,s,d);
   
-  window.tigerdivSyncMonthly=function(){const sl=$id('sl-monthly'),ni=$id('ni-monthly');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
-  window.tigerdivSyncTarget=function(){const sl=$id('sl-target'),ni=$id('ni-target');if(!sl||!ni)return;ni.value=Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');tigerdivUpdate();};
+  window.tigerdivSyncMonthly=function(){
+    var sl=$id('sl-monthly'); if(!sl) return;
+    setDispFromWon('ni-monthly', parseFloat(sl.value));
+    tigerdivUpdate();
+  };
+  window.tigerdivSyncTarget=function(){
+    var sl=$id('sl-target'); if(!sl) return;
+    setDispFromWon('ni-target', parseFloat(sl.value));
+    tigerdivUpdate();
+  };
   
   
-  window.tigerdivOnMonthlyInput=function(){const ni=$id('ni-monthly');if(!ni)return;ni.value=ni.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');tigerdivUpdate();};
+  window.tigerdivOnMonthlyInput=function(){
+    var ni=$id('ni-monthly'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    var sl=$id('sl-monthly');
+    if(sl&&ns){var wonV=getVWon('ni-monthly');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
+    tigerdivUpdate();
+  };
   window.tigerdivOnMonthlyBlur=function(){const ni=$id('ni-monthly');if(!ni)return;const ns=ni.value.replace(/[^0-9]/g,'');ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';tigerdivUpdate();};
+  
+  window.tigerdivOnOtherIncomeInput = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    tigerdivUpdate();
+  };
+  window.tigerdivOnOtherIncomeBlur = function() {
+    var ni=$id('ni-otherincome'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'0';
+  };
+
   window.tigerdivSetDetailTab=function(tab,btn){
     /* 상세 탭 버튼 active 직접 제어 */
     ['annual','monthly'].forEach(function(t) {
@@ -6953,10 +7265,11 @@ update();
 
   /* 배당 프리셋 (일반/특별배당) */
   window.tigerdivOnAmtInput  = function() {
-    const ni=$id('ni-amount'); if(!ni) return;
-    const ns=ni.value.replace(/[^0-9]/g,'');
-    ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '';
-    const sl=$id('sl-amount'); if(sl) sl.value=parseInt(ns)||0;
+    var ni=$id('ni-amount'); if(!ni) return;
+    var ns=ni.value.replace(/[^0-9]/g,'');
+    ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
+    var sl=$id('sl-amount');
+    if(sl&&ns){var wonV=getVWon('ni-amount');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
     tigerdivUpdate();
   };
   window.tigerdivOnAmtBlur   = function() {
@@ -6965,9 +7278,9 @@ update();
     ni.value = ns ? parseInt(ns,10).toLocaleString('ko-KR') : '0';
   };
   window.tigerdivSyncAmount  = function() {
-    const sl=$id('sl-amount'), ni=$id('ni-amount');
-    if(!sl||!ni) return;
-    ni.value = Math.round(parseFloat(sl.value)).toLocaleString('ko-KR');
+    const sl=$id('sl-amount');
+    if(!sl) return;
+    setDispFromWon('ni-amount', parseFloat(sl.value));
     tigerdivUpdate();
   };
   window.tigerdivSyncMonthly = function() {
@@ -6998,13 +7311,12 @@ update();
   window.tigerdivSetMonthlyUnit = function(unit, btn) {
     var ni = $id('ni-monthly');
     if (!ni) return;
-    var rawWon = (parseFloat(ni.value.replace(/,/g,''))||0) * (_tdMonthlyUnit==='eok'?1e8:_tdMonthlyUnit==='man'?1e4:1);
-    _tdMonthlyUnit = unit;
-    var disp = rawWon / (unit==='eok'?1e8:unit==='man'?1e4:1);
-    ni.value = unit==='won' ? Math.round(disp).toLocaleString('ko-KR') : parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
+    var wonV = getVWon('ni-monthly');  /* 현재 단위로 원화 변환 */
+    _tdMonthlyUnit = unit;             /* 단위 먼저 업데이트 */
+    setDispFromWon('ni-monthly', wonV); /* 새 단위로 표시 */
     var sl = $id('sl-monthly');
-    if (sl) sl.value = Math.min(Math.max(rawWon,parseInt(sl.min)),parseInt(sl.max));
-    var pg=document.getElementById('page-tigerdiv');
+    if (sl) sl.value = Math.min(Math.max(wonV, parseInt(sl.min)), parseInt(sl.max));
+    var pg = document.getElementById('page-tigerdiv');
     if(pg) pg.querySelectorAll('[data-tdunit="monthly"]').forEach(function(b){b.classList.toggle('active',b===btn);});
     tigerdivUpdate();
   };
@@ -7013,13 +7325,12 @@ update();
   window.tigerdivSetTargetUnit = function(unit, btn) {
     var ni = $id('ni-target');
     if (!ni) return;
-    var rawWon = (parseFloat(ni.value.replace(/,/g,''))||0) * (_tdTargetUnit==='eok'?1e8:_tdTargetUnit==='man'?1e4:1);
-    _tdTargetUnit = unit;
-    var disp = rawWon / (unit==='eok'?1e8:unit==='man'?1e4:1);
-    ni.value = unit==='won' ? Math.round(disp).toLocaleString('ko-KR') : parseFloat(disp.toFixed(4)).toLocaleString('ko-KR');
+    var wonV = getVWon('ni-target');   /* 현재 단위로 원화 변환 */
+    _tdTargetUnit = unit;              /* 단위 먼저 업데이트 */
+    setDispFromWon('ni-target', wonV);  /* 새 단위로 표시 */
     var sl = $id('sl-target');
-    if (sl) sl.value = Math.min(Math.max(rawWon,parseInt(sl.min)),parseInt(sl.max));
-    var pg=document.getElementById('page-tigerdiv');
+    if (sl) sl.value = Math.min(Math.max(wonV, parseInt(sl.min)), parseInt(sl.max));
+    var pg = document.getElementById('page-tigerdiv');
     if(pg) pg.querySelectorAll('[data-tdunit="target"]').forEach(function(b){b.classList.toggle('active',b===btn);});
     tigerdivUpdate();
   };
@@ -7029,7 +7340,7 @@ update();
     var ns=ni.value.replace(/[^0-9.]/g,'');
     ni.value=ns?parseInt(ns,10).toLocaleString('ko-KR'):'';
     var sl=$id('sl-target');
-    if(sl&&ns){var won=parseInt(ns)*(_tdTargetUnit==='eok'?1e8:_tdTargetUnit==='man'?1e4:1);sl.value=Math.min(Math.max(won,parseInt(sl.min)),parseInt(sl.max));}
+    if(sl&&ns){var wonV=getVWon('ni-target');sl.value=Math.min(Math.max(wonV,parseInt(sl.min)),parseInt(sl.max));}
     tigerdivUpdate();
   };
   window.tigerdivOnTargetBlur = function() {
@@ -8355,6 +8666,31 @@ function switchSubTab(tab, grpId, btn) {
       const pb = document.getElementById('tigerdiv-partial-ratio-block');
       if (pb) pb.style.display = curMode === 'partial' ? 'block' : 'none';
     }
+      /* ── tax-mode-tab (직접입력/과세표준) 복원 ── */
+      if (window._tigerdivState) {
+        var _taxMode     = window._tigerdivState.taxMode     || 'manual';
+        var _bracketType = window._tigerdivState.bracketType || 'separate';
+        var _solPg2 = document.getElementById('page-tigerdiv');
+        if (_solPg2) {
+          _solPg2.querySelectorAll('.tax-mode-tab').forEach(function(b) {
+            b.classList.toggle('active', b.id === 'tigerdiv-ttab-' + _taxMode);
+          });
+          _solPg2.querySelectorAll('.tax-type-btn').forEach(function(b) {
+            b.classList.toggle('active',
+              b.id === 'tigerdiv-ttype-' + _bracketType);
+          });
+          /* 패널 표시 */
+          var _mp = document.getElementById('tigerdiv-tax-panel-manual');
+          var _bp = document.getElementById('tigerdiv-tax-panel-bracket');
+          if (_mp) _mp.style.display = _taxMode === 'manual'  ? '' : 'none';
+          if (_bp) _bp.style.display = _taxMode === 'bracket' ? '' : 'none';
+          /* 종합/분리 정보 패널 */
+          var _si = document.getElementById('tigerdiv-tax-separate-info');
+          var _ci = document.getElementById('tigerdiv-tax-comprehensive-info');
+          if (_si) _si.style.display = _bracketType === 'separate'      ? '' : 'none';
+          if (_ci) _ci.style.display = _bracketType === 'comprehensive' ? '' : 'none';
+        }
+      }
     tigerdivUpdate(); tigerdivFetchPrice();
   }
   if (tab === 'tiger')     {
@@ -8368,6 +8704,31 @@ function switchSubTab(tab, grpId, btn) {
       const pb = document.getElementById('tiger-partial-ratio-block');
       if (pb) pb.style.display = window._tigerState.investMode === 'partial' ? 'block' : 'none';
     }
+      /* ── tax-mode-tab (직접입력/과세표준) 복원 ── */
+      if (window._tigerState) {
+        var _taxMode     = window._tigerState.taxMode     || 'manual';
+        var _bracketType = window._tigerState.bracketType || 'separate';
+        var _solPg2 = document.getElementById('page-tiger');
+        if (_solPg2) {
+          _solPg2.querySelectorAll('.tax-mode-tab').forEach(function(b) {
+            b.classList.toggle('active', b.id === 'tiger-ttab-' + _taxMode);
+          });
+          _solPg2.querySelectorAll('.tax-type-btn').forEach(function(b) {
+            b.classList.toggle('active',
+              b.id === 'tiger-ttype-' + _bracketType);
+          });
+          /* 패널 표시 */
+          var _mp = document.getElementById('tiger-tax-panel-manual');
+          var _bp = document.getElementById('tiger-tax-panel-bracket');
+          if (_mp) _mp.style.display = _taxMode === 'manual'  ? '' : 'none';
+          if (_bp) _bp.style.display = _taxMode === 'bracket' ? '' : 'none';
+          /* 종합/분리 정보 패널 */
+          var _si = document.getElementById('tiger-tax-separate-info');
+          var _ci = document.getElementById('tiger-tax-comprehensive-info');
+          if (_si) _si.style.display = _bracketType === 'separate'      ? '' : 'none';
+          if (_ci) _ci.style.display = _bracketType === 'comprehensive' ? '' : 'none';
+        }
+      }
     tigerUpdate(); tigerFetchPrice();
   }
   if (tab === 'sol')       {
@@ -8382,6 +8743,41 @@ function switchSubTab(tab, grpId, btn) {
       const pb = document.getElementById('sol-partial-ratio-block');
       if (pb) pb.style.display = window._solState.investMode === 'partial' ? 'block' : 'none';
     }
+      /* ── tax-mode-tab (직접입력/과세표준) 복원 ── */
+      if (window._solState) {
+        var _taxMode     = window._solState.taxMode     || 'manual';
+        var _bracketType = window._solState.bracketType || 'separate';
+        var _solPg2 = document.getElementById('page-sol');
+        if (_solPg2) {
+          _solPg2.querySelectorAll('.tax-mode-tab').forEach(function(b) {
+            b.classList.toggle('active', b.id === 'sol-ttab-' + _taxMode);
+          });
+          _solPg2.querySelectorAll('.tax-type-btn').forEach(function(b) {
+            b.classList.toggle('active',
+              b.id === 'sol-ttype-' + _bracketType);
+          });
+          /* 패널 표시 */
+          var _mp = document.getElementById('sol-tax-panel-manual');
+          var _bp = document.getElementById('sol-tax-panel-bracket');
+          if (_mp) _mp.style.display = _taxMode === 'manual'  ? '' : 'none';
+          if (_bp) _bp.style.display = _taxMode === 'bracket' ? '' : 'none';
+          /* 종합/분리 정보 패널 */
+          var _si = document.getElementById('sol-tax-separate-info');
+          var _ci = document.getElementById('sol-tax-comprehensive-info');
+          if (_si) _si.style.display = _bracketType === 'separate'      ? '' : 'none';
+          if (_ci) _ci.style.display = _bracketType === 'comprehensive' ? '' : 'none';
+          /* 슬라이더 dimming 복원 */
+          var _niTax = document.getElementById('sol-ni-tax');
+          var _slTax = document.getElementById('sol-sl-tax');
+          if (_niTax && _slTax) {
+            var _hdr = _niTax.closest('.slider-header');
+            var _dim = (_taxMode === 'bracket');
+            if (_hdr) { _hdr.style.opacity = _dim ? '0.4' : '1'; _hdr.style.pointerEvents = _dim ? 'none' : 'auto'; }
+            _slTax.style.opacity = _dim ? '0.4' : '1';
+            _slTax.style.pointerEvents = _dim ? 'none' : 'auto';
+          }
+        }
+      }
     solUpdate(); solFetchPrice();
   }
   if (tab === 'loan')      calcLoan();

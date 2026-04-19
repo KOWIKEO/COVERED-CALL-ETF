@@ -6447,7 +6447,7 @@ update();
   // ── 월간 테이블 렌더 ────────────────────────
   function renderSolMonthlyTable(cache) {
     const { rows, years } = cache;
-    const _priceNow = parseFloat((($id('sol-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _priceNow = parseFloat(($id('kodex-price-val')||{textContent:'0'}).textContent.replace(/[^0-9.]/g,'')) || 0;
     const _growth = (parseFloat(($id('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody = $id('monthlyTableBody');
     if (!tbody) return;
@@ -7308,7 +7308,7 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
 
   function renderTigerdivMonthlyTable(cache) {
     const {rows,years} = cache;
-    const _priceNow = parseFloat(((document.getElementById('tiger-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
+    const _priceNow = parseFloat(((document.getElementById('tigerdiv-kodex-price-val')||{textContent:'0'}).textContent).replace(/[^0-9.]/g,'')) || 0;
     const _growth = (parseFloat((document.getElementById('ni-growth')||{value:'0'}).value) || 0) / 100;
     const tbody=$id('monthlyTableBody'); if(!tbody) return;
     saveOpenYears(tbody);

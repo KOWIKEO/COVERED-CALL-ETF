@@ -1494,6 +1494,7 @@
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
               <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)" data-unit="man">만원</button>
               <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="joo" onclick="setFancyUnit('amount','joo',this)">주</button>
             </div>
           </div>
         </div>
@@ -1997,6 +1998,7 @@
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
               <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)" data-unit="man">만원</button>
               <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="joo" onclick="setFancyUnit('amount','joo',this)">주</button>
             </div>
           </div>
         </div>
@@ -2502,6 +2504,7 @@
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
               <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)" data-unit="man">만원</button>
               <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="joo" onclick="setFancyUnit('amount','joo',this)">주</button>
             </div>
           </div>
         </div>
@@ -3008,6 +3011,7 @@
               <button class="unit-btn" data-field="amount" data-unit="eok" onclick="setFancyUnit('amount','eok',this)" data-unit="eok">억원</button>
               <button class="unit-btn" data-field="amount" data-unit="man" onclick="setFancyUnit('amount','man',this)" data-unit="man">만원</button>
               <button class="unit-btn active" data-field="amount" data-unit="won" onclick="setFancyUnit('amount','won',this)">원</button>
+              <button class="unit-btn" data-field="amount" data-unit="joo" onclick="setFancyUnit('amount','joo',this)">주</button>
             </div>
           </div>
         </div>
@@ -5238,8 +5242,23 @@ let cpdMode = 'simple'; let cpdTaxOn = true; let cpdChart = null; let cpdChartTa
 const cpdUnit = { principal: 'won', monthly: 'won' };
 
 /* 단위 → 원 변환 배율 */
-function unitToWon(unit) {
-  return unit === 'eok' ? 1e8 : unit === 'man' ? 1e4 : 1;
+function unitToWon(unit, pageId) {
+  if (unit === 'eok') return 1e8;
+  if (unit === 'man') return 1e4;
+  if (unit === 'joo') {
+    /* 현재가로 환산 */
+    var pid = pageId || (document.querySelector('.app-page.active') || {id:'page-simulator'}).id;
+    var priceMap = {
+      'page-simulator': 'kodex-price-val',
+      'page-sol':       'sol-kodex-price-val',
+      'page-tiger':     'tiger-kodex-price-val',
+      'page-tigerdiv':  'tigerdiv-kodex-price-val'
+    };
+    var el = document.getElementById(priceMap[pid] || 'kodex-price-val');
+    var price = el ? parseFloat(el.textContent.replace(/[^0-9.]/g,'')) || 0 : 0;
+    return price > 0 ? price : 1;
+  }
+  return 1;
 }
 
 /* 내부 값 읽기: 항상 만원 단위로 반환 */
@@ -5250,12 +5269,21 @@ function getFancyWan(id) {
   const activePage = document.querySelector('.app-page.active');
   const pageId = activePage ? activePage.id : 'page-simulator';
   const unit = fancyUnit[pageId + '_' + id] || fancyUnit[id] || 'won';
-  return num * unitToWon(unit) / 10000;
+  /* joo 단위: 주수 × 현재가 */
+  if (unit === 'joo') {
+    var won = num * unitToWon('joo', pageId);
+    return won / 10000;
+  }
+  return num * unitToWon(unit, pageId) / 10000;
 }
 
 /* 만원 → 현재 단위 표시값 */
-function wanToDisplay(wan, unit) {
+function wanToDisplay(wan, unit, pageId) {
   const won = wan * 10000;
+  if (unit === 'joo') {
+    var mul = unitToWon('joo', pageId);
+    return mul > 1 ? won / mul : won;
+  }
   return won / unitToWon(unit);
 }
 
@@ -5331,7 +5359,7 @@ function setFancyUnit(id, unit, btn) {
     const wan      = won / 10000;
     fancyUnit[prevKey] = unit;                              /* 페이지별 저장 */
     fancyUnit[id]      = unit;                              /* KODEX 호환 유지 */
-    const disp = wanToDisplay(wan, unit);
+    const disp = wanToDisplay(wan, unit, pageId);
     inputEl.value = commaFmt(unit === 'won' ? Math.round(disp) : parseFloat(disp.toFixed(4)));
   }
 
@@ -5339,6 +5367,40 @@ function setFancyUnit(id, unit, btn) {
   const scope = page || document;
   scope.querySelectorAll('.unit-btn[data-field="' + id + '"]')
     .forEach(b => b.classList.toggle('active', b === btn));
+
+  /* ── joo 단위: 입력창 hint 표시 ── */
+  if (inputEl) {
+    if (unit === 'joo') {
+      inputEl.placeholder = '주 수량 입력';
+      inputEl.style.width = '110px';
+      /* 현재가 표시 */
+      var priceMap2 = {
+        'page-simulator':'kodex-price-val','page-sol':'sol-kodex-price-val',
+        'page-tiger':'tiger-kodex-price-val','page-tigerdiv':'tigerdiv-kodex-price-val'
+      };
+      var priceEl2 = document.getElementById(priceMap2[pageId] || 'kodex-price-val');
+      var price2 = priceEl2 ? parseFloat(priceEl2.textContent.replace(/[^0-9.]/g,'')) || 0 : 0;
+      /* 현재 원화 값을 주 수로 변환해서 표시 */
+      if (price2 > 0) {
+        var prevKey2 = pageId + '_' + id;
+        var prevUnit2 = fancyUnit[prevKey2] || fancyUnit[id] || 'won';
+        if (prevUnit2 !== 'joo') {
+          var rawNum2 = parseFloat(inputEl.value.replace(/,/g,'')) || 0;
+          var won2 = rawNum2 * unitToWon(prevUnit2, pageId);
+          fancyUnit[prevKey2] = unit;
+          fancyUnit[id] = unit;
+          var shares = Math.round(won2 / price2);
+          inputEl.value = commaFmt(shares);
+        }
+      } else {
+        fancyUnit[pageId + '_' + id] = unit;
+        fancyUnit[id] = unit;
+        inputEl.value = '';
+      }
+    } else {
+      inputEl.placeholder = '';
+    }
+  }
 
   /* ── 슬라이더 동기화 및 업데이트: 현재 페이지에 맞게 ── */
   if (pageId === 'page-simulator') { syncFancyToSlider(id); update(); }
@@ -7103,6 +7165,11 @@ window.tigerSetDetailTab=function(tab,btn){const pg=document.getElementById('pag
     }
     /* amount: fancyUnit['page-tigerdiv_amount'] 참조 */
     var u = (window.fancyUnit && (window.fancyUnit['page-tigerdiv_' + field] || window.fancyUnit[field])) || 'won';
+    if (u === 'joo') {
+      var priceEl = document.getElementById('tigerdiv-kodex-price-val') || document.getElementById('kodex-price-val');
+      var price = priceEl ? (parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 0) : 0;
+      return price > 0 ? price : 1;
+    }
     return u === 'eok' ? 1e8 : u === 'man' ? 1e4 : 1;
   }
   function getVWon(fieldId) {

@@ -974,6 +974,10 @@
   #sol-acc-chart, #tiger-acc-chart, #tigerdiv-acc-chart {
     padding-left: 20px;
     padding-right: 20px;
+  }
+  #fear-explain-body {
+    padding-left: 20px;
+    padding-right: 20px;
   }</style>
 </head>
 <body>
@@ -4676,9 +4680,59 @@
 
       <!-- 5개 구성 지표 -->
       <div class="card">
-        <p class="card-title">구성 지표</p>
-        <div id="fear-components" style="display:flex;flex-direction:column;gap:12px;">
+        <p class="card-title" style="margin-bottom:4px;">구성 지표</p>
+        <div id="fear-components" style="display:flex;flex-direction:column;gap:0;">
           <div style="color:var(--text3);font-size:12px;">데이터 로딩 중...</div>
+        </div>
+      </div>
+
+      <!-- 구성 지표 설명 (접이식) -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="acc-header" onclick="toggleAcc('fear-explain-body',this)"
+             style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+          <span class="acc-title" style="color:var(--text);font-size:13px;font-weight:500;">구성 지표 설명</span>
+          <span class="acc-arrow open">▼</span>
+        </div>
+        <div class="acc-body default-open" id="fear-explain-body">
+          <div style="display:flex;flex-direction:column;gap:0;">
+
+            <!-- 1. VOLATILITY -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">1. VOLATILITY <span style="color:var(--text3);font-weight:400;">(변동성 - VIX)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 시카고옵션거래소(CBOE)에서 산출하는 VIX(Volatility Index)를 사용합니다. S&amp;P 500 지수 옵션 가격을 기반으로 향후 30일간의 시장 변동성 기대를 나타냅니다.</p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; VIX가 상승하면 시장이 불확실성에 공포를 느끼고 있다는 뜻으로 <span style="color:#e53935;">공포(Fear)</span>를 의미합니다. 반대로 VIX가 낮으면 시장이 안정적이라 판단하여 <span style="color:#66bb6a;">탐욕(Greed)</span>으로 분류됩니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">지수 반영</span>&nbsp; VIX의 50일 이동평균을 사용하여 평균보다 높으면 공포, 낮으면 탐욕으로 해석합니다.</p>
+            </div>
+
+            <!-- 2. MOMENTUM -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">2. MOMENTUM <span style="color:var(--text3);font-weight:400;">(모멘텀 - S&amp;P 500)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; S&amp;P 500 지수의 현재 수준을 125일 이동평균선과 비교하여 산출합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 현재 주가가 125일 이동평균선보다 높으면 상승 모멘텀이 강한 것으로 보아 <span style="color:#66bb6a;">탐욕</span>으로 해석합니다. 반대로 이동평균선보다 낮으면 하락세가 강한 것으로 보아 <span style="color:#e53935;">공포</span>로 해석합니다.</p>
+            </div>
+
+            <!-- 3. PUT/CALL -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">3. PUT/CALL <span style="color:var(--text3);font-weight:400;">(풋/콜 비율)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식을 팔 권리인 '풋옵션(Put)' 거래량을 살 권리인 '콜옵션(Call)' 거래량으로 나눈 비율의 5일 평균을 측정합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 풋옵션이 많아지면(비율 상승) 투자자들이 하락을 예상하고 헷지를 한다는 뜻이므로 <span style="color:#e53935;">공포</span> 신호입니다. 콜옵션이 많아지면(비율 하락) 상승을 예상하므로 <span style="color:#66bb6a;">탐욕</span>입니다. 풋/콜 비율이 낮을수록 탐욕, 높을수록 공포를 의미합니다.</p>
+            </div>
+
+            <!-- 4. SAFE HAVEN -->
+            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">4. SAFE HAVEN <span style="color:var(--text3);font-weight:400;">(안전 자산 수요)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 주식(위험 자산)과 국채(안전 자산)의 최근 20거래일 수익률 차이를 분석합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 주식보다 국채를 선호하면(안전 자산으로 도피) <span style="color:#e53935;">공포</span> 상황입니다. 20일 동안 국채 수익률이 주식 수익률보다 높거나 주식 수익률이 저조하면 안전 자산 선호도가 높아진 것으로 보아 공포로 해석합니다.</p>
+            </div>
+
+            <!-- 5. JUNK BONDS -->
+            <div style="padding:14px 0;">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:var(--accent);">5. JUNK BONDS <span style="color:var(--text3);font-weight:400;">(정크본드 수요)</span></p>
+              <p style="margin:0 0 5px;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">설명</span>&nbsp; 신용등급이 낮은 투기등급 채권(정크본드)과 안전한 국채 간의 수익률 차이(Spread)를 분석합니다.</p>
+              <p style="margin:0;font-size:12px;color:var(--text2);line-height:1.6;"><span style="color:var(--text3);font-size:11px;">해석</span>&nbsp; 투자자들이 위험을 감수하고 정크본드를 매수하면(수요 증가) 스프레드가 좁아지며 <span style="color:#66bb6a;">탐욕</span>을 나타냅니다. 경계감이 커져 정크본드를 매도하면(스프레드 확대) <span style="color:#e53935;">공포</span> 상황으로 봅니다.</p>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -8378,11 +8432,13 @@ function renderFearHistory(history) {
 function renderFearComponents(components) {
   var el = document.getElementById('fear-components');
   if (!el) return;
-  el.innerHTML = components.map(function(comp) {
+  el.innerHTML = components.map(function(comp, idx, arr) {
     var pct = comp.val || 0;
     var col = fearColor(pct);
     var lbl = fearLabel(pct);
-    return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">' +
+    var isLast = idx === arr.length - 1;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;' +
+      (isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.05);') + '">' +
       '<div style="width:160px;font-size:11px;color:var(--text3);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (comp.name||'') + '</div>' +
       '<div style="flex:1;background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;">' +
         '<div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:4px;"></div>' +

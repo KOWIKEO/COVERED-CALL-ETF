@@ -941,13 +941,13 @@
     padding-bottom: 0;
   }
   .acc-body.open {
-    max-height: 2400px;
+    max-height: 4000px;
     padding-top: 16px;
     padding-bottom: 4px;
   }
   /* 첫 번째 아코디언: 기본으로 열려 있음 */
   .acc-body.default-open {
-    max-height: 2400px;
+    max-height: 4000px;
     padding-top: 16px;
     padding-bottom: 4px;
   }
@@ -978,7 +978,12 @@
   #fear-explain-body {
     padding-left: 20px;
     padding-right: 20px;
-  }</style>
+  }
+  /* 돈,자산,노동의 가치속도 페이지 전용 */
+  #page-moneyspeed .header { margin-bottom: 20px; }
+  #page-moneyspeed .card { margin-bottom: 16px; }
+  #page-moneyspeed .card:last-child { margin-bottom: 0; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1015,10 +1020,10 @@
       </button>
     </div>
 
-    <!-- 공포 & 탐욕 지수 그룹 -->
-    <div class="tab-group" id="grp-fear">
-      <button class="tab-group-btn" id="grp-fear-btn" onclick="switchSubTabDirect('fear','fear',this)">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>공포 &amp; 탐욕 지수
+    <!-- 기타 금융 자료 그룹 -->
+    <div class="tab-group" id="grp-etc">
+      <button class="tab-group-btn" id="grp-etc-btn" onclick="toggleTabGroup('etc')">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="5" cy="9" r="1.5" fill="currentColor"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><circle cx="13" cy="9" r="1.5" fill="currentColor"/></svg>기타 금융 자료<span class="tab-group-arrow">▼</span>
       </button>
     </div>
 
@@ -4637,14 +4642,25 @@
   <div class="app-page" id="page-fear">
     <div class="header">
       <div class="header-left">
-        <span class="badge">CNN FEAR &amp; GREED INDEX</span>
+        <span class="badge">FEAR &amp; GREED INDEX</span>
         <h1>공포 <span>&amp; 탐욕 지수</span></h1>
-        <p class="subtitle">미국 주식 시장의 투자 심리 지표 · feargreedchart.com 제공</p>
+        <p class="subtitle">시장 심리 및 금융 지표 모음</p>
       </div>
     </div>
 
-    <!-- 메인 게이지 + 히스토리 -->
-    <div style="display:flex;flex-direction:column;gap:20px;max-width:900px;margin:0 auto;">
+    <!-- 공포 & 탐욕 지수 접이식 카드 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('fear-main-body',this)"
+           style="border:none;background:transparent;margin:0;border-radius:0;padding:16px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+          <span class="acc-title">공포 &amp; 탐욕 지수</span>
+          <span style="font-size:11px;color:var(--text3);">미국 주식 시장 투자 심리 · feargreedchart.com</span>
+        </div>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="fear-main-body">
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:900px;margin:0 auto;">
 
       <!-- 현재 지수 카드 -->
       <div class="card" style="text-align:center;">
@@ -4753,10 +4769,548 @@
       </div>
 
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:24px;">
-      데이터 출처: feargreedchart.com · 15분 캐시 · 투자 참고용이며 투자 권고가 아닙니다.
-    </p>
+        <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:24px;">
+          데이터 출처: feargreedchart.com · 15분 캐시 · 투자 참고용이며 투자 권고가 아닙니다.
+        </p>
+      </div><!-- /acc-body fear-main-body -->
+    </div><!-- /card -->
   </div><!-- /page-fear -->
+
+  <!-- ───────────────────────────────────────────── page-moneyspeed ── -->
+  <div class="app-page" id="page-moneyspeed">
+    <div class="header">
+      <div class="header-left">
+        <span class="badge">VALUE OF MONEY</span>
+        <h1>돈, 자산, 노동의 <span>가치 속도</span></h1>
+        <p class="subtitle">주요 자산·소득·물가의 연평균 상승률(CAGR) · 통화량·소득·부동산·물가는 1995→2025 · 귀금속·주가지수는 실시간 15년</p>
+      </div>
+    </div>
+
+    <!-- ① 비교 요약표 (섹션별 접이식) -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <p class="card-title" style="padding:18px 20px 12px;margin:0;">가치 속도 한눈에 비교</p>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:var(--bg3);">
+              <th style="padding:7px 12px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">자산 / 지표</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">시작값</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">종료값</th>
+              <th style="padding:7px 12px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.1);">CAGR</th>
+              <th style="padding:7px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1);">배수</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- 통화량 헤더 -->
+            <tr class="ms-sec-hdr" onclick="msSec('money',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">통화량</b>
+                  <span style="font-size:10px;color:var(--text3);">1995→2025 · 한국은행 ECOS</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">M0 본원통화</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">31조</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">230조</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+6.9%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×7.4</td>
+            </tr>
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">M1 협의통화</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">140조</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,360조</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+7.9%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×9.7</td>
+            </tr>
+            <tr class="ms-row-money" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">M2 광의통화</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">380조</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,500조</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+8.6%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×11.8</td>
+            </tr>
+
+            <!-- 근로소득 헤더 -->
+            <tr class="ms-sec-hdr" onclick="msSec('income',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">근로소득</b>
+                  <span style="font-size:10px;color:var(--text3);">1995→2025 · 고용노동부 임금구조기본통계 / 통계청</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-income" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">평균 연봉</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">1,350만원</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">4,300만원</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.9%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.2</td>
+            </tr>
+            <tr class="ms-row-income" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">중위 연봉</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">950만원</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">2,850만원</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.7%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×3.0</td>
+            </tr>
+
+            <!-- 부동산 헤더 -->
+            <tr class="ms-sec-hdr" onclick="msSec('realty',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">부동산</b>
+                  <span style="font-size:10px;color:var(--text3);">1995→2025 · KB국민은행 주택가격동향 / 한국부동산원</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">서울 아파트</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">1.1억</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">13억</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+8.8%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×11.8</td>
+            </tr>
+            <tr class="ms-row-realty" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">강남 아파트</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">2.0억</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">26억</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+9.2%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×13.0</td>
+            </tr>
+
+            <!-- 물가 헤더 -->
+            <tr class="ms-sec-hdr" onclick="msSec('cpi',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">물가</b>
+                  <span style="font-size:10px;color:var(--text3);">1995→2025 · 통계청 소비자물가조사</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">소비자물가(CPI)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+2.6%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×2.1</td>
+            </tr>
+            <tr class="ms-row-cpi" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">생활물가지수</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">+3.0%</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);">×2.4</td>
+            </tr>
+
+            <!-- 귀금속 헤더 (실시간) -->
+            <tr class="ms-sec-hdr" onclick="msSec('metal',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">귀금속 (원화)</b>
+                  <span style="font-size:10px;color:var(--text3);">실시간 15년 · Yahoo Finance GC=F / SI=F · 원/달러 환율 반영</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">금 (GC=F)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-gold-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-gold-mult">—</td>
+            </tr>
+            <tr class="ms-row-metal" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">은 (SI=F)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-silver-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-silver-mult">—</td>
+            </tr>
+
+            <!-- 주가지수 헤더 (실시간) -->
+            <tr class="ms-sec-hdr" onclick="msSec('index',this)" style="cursor:pointer;background:rgba(0,229,176,0.05);">
+              <td colspan="5" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="ms-arr" style="font-size:10px;color:var(--accent);display:inline-block;transition:transform 0.2s;">▼</span>
+                  <b style="color:var(--text);font-size:12px;">주가지수</b>
+                  <span style="font-size:10px;color:var(--text3);">실시간 15년 · Yahoo Finance</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text3);font-size:10px;font-weight:600;" colspan="5">국내</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 (^KS11)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-kospi-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-kospi-mult">—</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">코스피 200 (^KS200)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-k200-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-k200-mult">—</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text3);font-size:10px;font-weight:600;" colspan="5">미국</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 종합 (^IXIC)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-nasdaq-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-nasdaq-mult">—</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">나스닥 100 (^NDX)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-ndx-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-ndx-mult">—</td>
+            </tr>
+            <tr class="ms-row-index" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">S&amp;P 500 (^GSPC)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-sp500-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-sp500-mult">—</td>
+            </tr>
+            <tr class="ms-row-index">
+              <td style="padding:7px 12px 7px 28px;color:var(--text2);">다우존스 (^DJI)</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-start">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-end">—</td>
+              <td style="padding:7px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;" id="ms-dji-cagr">—</td>
+              <td style="padding:7px 12px;text-align:center;color:var(--text3);" id="ms-dji-mult">—</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid rgba(255,255,255,0.05);">
+        <p id="ms-sum-status" style="margin:0;font-size:10px;color:var(--text3);">귀금속·주가지수 데이터 로딩 중...</p>
+        <button onclick="fetchMSAll()" id="ms-refresh-btn"
+          style="display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:11px;cursor:pointer;">
+          <span id="ms-refresh-icon">↺</span> 갱신
+        </button>
+      </div>
+    </div>
+
+    <!-- ② 통화량 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-money-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <span class="acc-title">통화량 — M0 / M1 / M2</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="ms-money-body" style="padding:0 20px 20px;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:14px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 5px;font-size:12px;font-weight:600;color:var(--accent);">M0 · 본원통화</p>
+            <p style="margin:0;font-size:11px;color:var(--text2);line-height:1.6;">한국은행이 직접 발행·공급. 화폐발행액 + 금융기관의 對한은 원화예치금. 통화량의 원천.</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:14px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 5px;font-size:12px;font-weight:600;color:var(--accent);">M1 · 협의통화</p>
+            <p style="margin:0;font-size:11px;color:var(--text2);line-height:1.6;">현금통화 + 요구불예금 + 수시입출식 저축성예금. 즉시 결제 가능한 초유동성 통화.</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:14px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 5px;font-size:12px;font-weight:600;color:var(--accent);">M2 · 광의통화</p>
+            <p style="margin:0;font-size:11px;color:var(--text2);line-height:1.6;">M1 + 만기 2년 미만 정기예적금 + MMF + 시장형상품 등. 한국은행 통화정책 핵심 지표.</p>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin:0 0 10px;">30년 연평균 증가율 (1995→2025 · 한국은행 ECOS)</p>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M0 본원통화</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:58%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;"></div></div>
+            <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+6.9%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M1 협의통화</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:66%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),rgba(0,229,176,0.9));border-radius:4px;"></div></div>
+            <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+7.9%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:75px;font-size:12px;color:var(--text2);flex-shrink:0;">M2 광의통화</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:72%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.6),#00e5b0);border-radius:4px;"></div></div>
+            <span style="width:50px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">+8.6%</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: 한국은행 ECOS</b> ·
+            1995년 M2 약 380조 → 2025년 약 4,500조 (약 11.8배) ·
+            CPI 연평균 +2.6%와 비교하면 나머지 5~6%p는 자산 가격 팽창에 반영
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 근로소득 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-income-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <span class="acc-title">근로소득 — 평균·중위 연봉</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="ms-income-body" style="padding:0 20px 20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">평균 연봉 CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">+3.9%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">1,350만원 → 4,300만원 (×3.2배)</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent2);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">중위 연봉 CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);">+3.7%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">950만원 → 2,850만원 (×3.0배)</p>
+          </div>
+        </div>
+        <div style="padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: 고용노동부 임금구조기본통계 / 통계청</b> ·
+            실질 구매력 상승 = 명목(~3.9%) − 물가(~2.6%) ≈ <b style="color:var(--accent);">연 +1.3%</b> ·
+            평균이 중위보다 높은 이유는 고소득자 쏠림 현상
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 부동산 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-realty-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <span class="acc-title">부동산 — 서울·강남 아파트</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="ms-realty-body" style="padding:0 20px 20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">서울 아파트 평균 CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">+8.8%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">1.1억 → 13억 (약 11.8배)</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent2);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">강남 아파트 평균 CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);">+9.2%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">2.0억 → 26억 (약 13.0배)</p>
+          </div>
+        </div>
+        <div style="padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: KB국민은행 주택가격동향 / 한국부동산원</b> ·
+            1998년 외환위기(−15~30%), 2008년 금융위기(−5%), 2022~23년 급락 포함 ·
+            강남은 학군·재건축 기대감으로 서울 평균 대비 <b style="color:var(--accent);">+0.4%p</b> 초과 상승
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 물가 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-price-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <span class="acc-title">물가 — 소비자물가·생활물가</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="ms-price-body" style="padding:0 20px 20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">소비자물가(CPI) CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">+2.6%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">30년 누적 약 2.1배 상승</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent2);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">생활물가지수 CAGR (1995→2025)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);">+3.0%</p>
+            <p style="margin:5px 0 0;font-size:11px;color:var(--text3);">체감물가 144개 품목 (외식·식품 중심)</p>
+          </div>
+        </div>
+        <div style="padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: 통계청 소비자물가조사</b> ·
+            2022~2023년 에너지·식품 급등으로 CPI 5~6%대 포함 ·
+            30년 누적: 1995년 100만원의 구매력이 2025년 <b style="color:var(--accent);">약 47만원</b> 수준으로 하락
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 순자산 분포 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-netasset-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <span class="acc-title">대한민국 순자산 분포</span>
+        <span class="acc-arrow open">▼</span>
+      </div>
+      <div class="acc-body default-open" id="ms-netasset-body" style="padding:0 20px 20px;">
+        <p style="font-size:11px;color:var(--text3);margin:0 0 12px;"><b style="color:var(--text2);">출처: 통계청 가계금융복지조사(2023)</b> · 가구별 순자산 분포</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">상위 10%</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:43%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.3),rgba(0,229,176,0.75));border-radius:4px;"></div></div>
+            <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--accent);">43% 보유</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">10~40%</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:38%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.2),rgba(0,229,176,0.55));border-radius:4px;"></div></div>
+            <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--accent2);">38% 보유</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">40~70%</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:15%;height:100%;background:rgba(0,229,176,0.35);border-radius:4px;"></div></div>
+            <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--text2);">15% 보유</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="width:80px;font-size:11px;color:var(--text3);flex-shrink:0;">하위 30%</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div style="width:4%;height:100%;background:rgba(0,229,176,0.25);border-radius:4px;"></div></div>
+            <span style="width:80px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--text3);">4% 보유</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">가구 평균 순자산</p>
+            <p style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">4.5억원</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--accent2);">
+            <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">가구 중위 순자산</p>
+            <p style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent2);">2.1억원</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:8px;padding:12px;text-align:center;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">지니계수 (순자산)</p>
+            <p style="margin:0;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);">0.602</p>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            평균(4.5억)이 중위(2.1억)의 2배 이상 → 상위 집중도 높음 ·
+            부동산 자산이 가구 총자산의 약 <b style="color:var(--accent);">76%</b> 차지
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑦ 귀금속 실시간 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-precious-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          <span class="acc-title">귀금속 — 금·은 (원화 기준, 실시간 15년)</span>
+          <span id="ms-metal-loading" style="display:none;font-size:11px;color:var(--text3);">⏳ 조회 중...</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="event.stopPropagation();fetchMSMetals()" id="ms-metal-btn"
+            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
+            ↺ 갱신
+          </button>
+          <span class="acc-arrow open">▼</span>
+        </div>
+      </div>
+      <div class="acc-body default-open" id="ms-precious-body" style="padding:0 20px 20px;">
+        <p id="ms-metal-date" style="font-size:11px;color:var(--text3);margin:0 0 14px;">Yahoo Finance GC=F / SI=F · 현재 시가 기준 · 15년 전 동월 대비</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">금(Gold) 원화 기준 · 15년 CAGR</p>
+            <p id="ms-gold-cagr-big" style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">—</p>
+            <p id="ms-gold-detail" style="margin:5px 0 0;font-size:11px;color:var(--text3);">조회 중...</p>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent2);">
+            <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">은(Silver) 원화 기준 · 15년 CAGR</p>
+            <p id="ms-silver-cagr-big" style="margin:0;font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent2);">—</p>
+            <p id="ms-silver-detail" style="margin:5px 0 0;font-size:11px;color:var(--text3);">조회 중...</p>
+          </div>
+        </div>
+        <div style="padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: Yahoo Finance (GC=F / SI=F)</b> ·
+            달러 시세에 현재 원/달러 환율 적용 → 원화 g당 가격 환산 ·
+            1 troy oz = 31.1035g · 환율 조회 불가 시 기존 _fxRates.USD 사용
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑧ 주가지수 실시간 -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="acc-header" onclick="toggleAcc('ms-index-body',this)" style="border:none;background:transparent;margin:0;border-radius:0;padding:14px 20px;">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          <span class="acc-title">주가지수 — 국내·해외 (실시간 15년)</span>
+          <span id="ms-index-loading" style="display:none;font-size:11px;color:var(--text3);">⏳ 조회 중...</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="event.stopPropagation();fetchMSIndices()" id="ms-index-btn"
+            style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">
+            ↺ 갱신
+          </button>
+          <span class="acc-arrow open">▼</span>
+        </div>
+      </div>
+      <div class="acc-body default-open" id="ms-index-body" style="padding:0 20px 20px;">
+        <p id="ms-index-date" style="font-size:11px;color:var(--text3);margin:0 0 14px;">Yahoo Finance 기준 · 현재가 vs 15년 전 동일 날짜 종가</p>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="ms-index-bars">
+          <div style="background:var(--bg3);border-radius:6px;padding:5px 12px;"><p style="margin:0;font-size:10px;font-weight:600;color:var(--text3);">국내</p></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">코스피 (^KS11)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-kospi" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-kospi-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">코스피200 (^KS200)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-k200" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.8));border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-k200-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+          <div style="background:var(--bg3);border-radius:6px;padding:5px 12px;margin-top:4px;"><p style="margin:0;font-size:10px;font-weight:600;color:var(--text3);">미국</p></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">나스닥 (^IXIC)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-nasdaq" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-nasdaq-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">나스닥100 (^NDX)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-ndx" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.55),#00e5b0);border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-ndx-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">S&amp;P500 (^GSPC)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-sp500" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.4),rgba(0,229,176,0.85));border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-sp500-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:110px;font-size:11px;color:var(--text2);flex-shrink:0;">다우존스 (^DJI)</span>
+            <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden;"><div id="ms-bar-dji" style="width:0%;height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.35),rgba(0,229,176,0.75));border-radius:4px;transition:width 0.6s;"></div></div>
+            <span id="ms-bar-dji-val" style="width:55px;text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">—</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <thead>
+              <tr style="background:var(--bg3);">
+                <th style="padding:6px 10px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">지수</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">15년 전</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">현재</th>
+                <th style="padding:6px 10px;text-align:center;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.08);">15년 CAGR</th>
+                <th style="padding:6px 10px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">배수</th>
+              </tr>
+            </thead>
+            <tbody id="ms-index-table">
+              <tr><td colspan="5" style="padding:12px;text-align:center;color:var(--text3);">↺ 갱신 버튼을 눌러 데이터를 불러오세요</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent);">
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.7;">
+            <b style="color:var(--text2);">출처: Yahoo Finance</b> · 현재가는 Anthropic Web Search 또는 Yahoo Finance API ·
+            15년 전 가격은 Yahoo Finance 히스토리 조회 · 배당 미포함 가격지수 기준
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-moneyspeed -->
+
 
 </div>
 
@@ -5449,16 +6003,26 @@ function syncMonthlyFromSlider() {
 
 /* ── 아코디언 토글 ── */
 function toggleAcc(id, header) {
-  const body  = document.getElementById(id);
-  const arrow = header.querySelector('.acc-arrow');
-  const isOpen = body.classList.contains('open') || body.classList.contains('default-open');
+  var body = document.getElementById(id);
+  if (!body) return;
+  var arrow = header ? header.querySelector('.acc-arrow') : null;
+  var isOpen = body.classList.contains('open') || body.classList.contains('default-open');
   if (isOpen) {
     body.classList.remove('open', 'default-open');
-    arrow.classList.remove('open');
+    if (arrow) arrow.classList.remove('open');
   } else {
     body.classList.add('open');
-    arrow.classList.add('open');
+    if (arrow) arrow.classList.add('open');
   }
+}
+
+/* 요약표 섹션 접이식 */
+function msSec(sec, hdrRow) {
+  var rows = document.querySelectorAll('.ms-row-' + sec);
+  var arr  = hdrRow.querySelector('.ms-arr');
+  var isOpen = rows.length > 0 && rows[0].style.display !== 'none';
+  rows.forEach(function(r) { r.style.display = isOpen ? 'none' : ''; });
+  if (arr) arr.style.transform = isOpen ? 'rotate(-90deg)' : '';
 }
 
 /* ── 분배 ↔ 분배 텍스트 전환 ── */
@@ -9185,6 +9749,7 @@ function switchSubTabDirect(tab, grpId, btn) {
   const grpBtn = document.getElementById('grp-' + grpId + '-btn');
   if (grpBtn) grpBtn.classList.add('has-active');
   if (tab === 'fear') fetchFearGreed();
+  if (tab === 'moneyspeed') { setTimeout(fetchMSAll, 300); }
 }
 
 function toggleTabGroup(grpId) {
@@ -10779,6 +11344,336 @@ function renderCagrChart(cache) {
     options: opts,
   });
 }
+
+/* ════════════════════════════════════════
+   돈·자산·노동의 가치 속도 — 실시간 데이터
+   귀금속(금/은): Yahoo Finance GC=F / SI=F
+   주가지수: Yahoo Finance 기존 패턴 재활용
+   기간: 현재 ~ 15년 전
+════════════════════════════════════════ */
+
+var _msFetching = false;
+var _msIndexData = {}; /* {ticker: {cur, hist15, histDate}} */
+var _msMetalData = {}; /* {gold: {cur, hist15}, silver: {cur, hist15}} */
+
+/* 15년 전 날짜 */
+function ms15yAgo() {
+  var d = new Date();
+  d.setFullYear(d.getFullYear() - 15);
+  return d;
+}
+
+/* 소형 숫자 포맷 */
+function msFmt(n) {
+  if (!n || !isFinite(n)) return '—';
+  return n.toLocaleString('ko-KR', {maximumFractionDigits: 2});
+}
+
+/* CAGR 계산 */
+function msCAGR(cur, hist, years) {
+  if (!cur || !hist || hist <= 0 || years <= 0) return null;
+  return Math.pow(cur / hist, 1 / years) - 1;
+}
+
+/* 요약표 셀 업데이트 */
+function msUpdateSumRow(prefix, start, end, cagrPct, mult) {
+  var sEl = document.getElementById('ms-' + prefix + '-start');
+  var eEl = document.getElementById('ms-' + prefix + '-end');
+  var cEl = document.getElementById('ms-' + prefix + '-cagr');
+  var mEl = document.getElementById('ms-' + prefix + '-mult');
+  if (sEl && start) sEl.textContent = start;
+  if (eEl && end)   eEl.textContent = end;
+  if (cEl && cagrPct !== null) { cEl.textContent = (cagrPct >= 0 ? '+' : '') + cagrPct.toFixed(1) + '%'; }
+  if (mEl && mult)  mEl.textContent = '×' + mult;
+}
+
+/* 바 차트 업데이트 (최대 CAGR 기준 상대 폭) */
+var _msMaxCAGR = 0;
+function msUpdateBar(id, cagrPct) {
+  if (cagrPct > _msMaxCAGR) _msMaxCAGR = cagrPct;
+  /* 최대 15%를 100%로 */
+  var pct = Math.min(Math.max(cagrPct / 15 * 100, 2), 100);
+  var bar = document.getElementById('ms-bar-' + id);
+  var val = document.getElementById('ms-bar-' + id + '-val');
+  if (bar) bar.style.width = pct + '%';
+  if (val) val.textContent = (cagrPct >= 0 ? '+' : '') + cagrPct.toFixed(1) + '%';
+}
+
+/* 주가지수 테이블 행 생성 */
+function msRenderIndexTable() {
+  var configs = [
+    { id:'kospi',  name:'코스피 (^KS11)' },
+    { id:'k200',   name:'코스피200 (^KS200)' },
+    { id:'nasdaq', name:'나스닥 종합 (^IXIC)' },
+    { id:'ndx',    name:'나스닥100 (^NDX)' },
+    { id:'sp500',  name:'S&P500 (^GSPC)' },
+    { id:'dji',    name:'다우존스 (^DJI)' }
+  ];
+  var tbody = document.getElementById('ms-index-table');
+  if (!tbody) return;
+  var rows = '';
+  var hasAny = false;
+  configs.forEach(function(cfg) {
+    var d = _msIndexData[cfg.id];
+    if (!d || !d.cur || !d.hist15) {
+      rows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+        + '<td style="padding:6px 10px;color:var(--text2);">' + cfg.name + '</td>'
+        + '<td colspan="4" style="padding:6px 10px;text-align:center;color:var(--text3);">조회 중...</td>'
+        + '</tr>';
+      return;
+    }
+    hasAny = true;
+    var yrs   = (new Date() - new Date(d.histDate || '')) / (1000*60*60*24*365.25) || 15;
+    var cagr  = msCAGR(d.cur, d.hist15, yrs);
+    var mult  = d.hist15 > 0 ? (d.cur / d.hist15) : null;
+    var cp    = cagr !== null ? (cagr * 100).toFixed(1) : '—';
+    var mpStr = mult !== null ? '×' + mult.toFixed(1) : '—';
+    rows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">'
+      + '<td style="padding:6px 10px;color:var(--text2);">' + cfg.name + '</td>'
+      + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.hist15) + 'pt</td>'
+      + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + msFmt(d.cur) + 'pt</td>'
+      + '<td style="padding:6px 10px;text-align:center;font-family:var(--mono);font-weight:600;color:#00e5b0;">'
+        + (cagr !== null ? (cagr >= 0 ? '+' : '') + cp + '%' : '—') + '</td>'
+      + '<td style="padding:6px 10px;text-align:center;color:var(--text3);">' + mpStr + '</td>'
+      + '</tr>';
+  });
+  tbody.innerHTML = rows || '<tr><td colspan="5" style="padding:12px;text-align:center;color:var(--text3);">데이터 없음</td></tr>';
+}
+
+/* ── Yahoo Finance 현재가 조회 (기존 tryYahooIndex 패턴) ── */
+async function msFetchYahoo(ticker, isKrw) {
+  var yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(ticker) + '?interval=1d&range=5d';
+  var proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
+  ];
+  for (var i = 0; i < proxies.length; i++) {
+    try {
+      var ctrl = new AbortController();
+      var tid  = setTimeout(function() { ctrl.abort(); }, 8000);
+      var resp;
+      try { resp = await fetch(proxies[i], { cache: 'no-cache', signal: ctrl.signal }); }
+      finally { clearTimeout(tid); }
+      if (!resp || !resp.ok) continue;
+      var txt  = await resp.text();
+      var json; try { json = JSON.parse(txt); } catch { continue; }
+      if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+      var r = json && json.chart && json.chart.result && json.chart.result[0];
+      if (!r) continue;
+      var m  = r.meta;
+      var cl = r.indicators && r.indicators.quote && r.indicators.quote[0] && r.indicators.quote[0].close;
+      var p  = m.regularMarketPrice || m.previousClose || (cl ? cl.filter(Boolean).slice(-1)[0] : null);
+      if (p && p > 0) return parseFloat(p);
+    } catch(e) {}
+  }
+  return null;
+}
+
+/* ── 귀금속 조회 ── */
+async function fetchMSMetals() {
+  var btn  = document.getElementById('ms-metal-btn');
+  var load = document.getElementById('ms-metal-loading');
+  var date = document.getElementById('ms-metal-date');
+  if (btn) btn.disabled = true;
+  if (load) load.style.display = '';
+
+  var TROY = 31.1035; /* 1 troy oz = 31.1035g */
+
+  /* 현재 USD/KRW 환율 */
+  var usdKrw = (_fxRates && _fxRates['USD']) || 1380;
+
+  try {
+    /* 1. 현재 금 가격 */
+    var goldCur = await msFetchYahoo('GC=F', false); /* USD/troy oz */
+    var silverCur = await msFetchYahoo('SI=F', false); /* USD/troy oz */
+
+    /* 환율 최신화 시도 */
+    var krwRate = await msFetchYahoo('USDKRW=X', false);
+    if (krwRate && krwRate > 800 && krwRate < 2500) usdKrw = krwRate;
+
+    /* 2. 15년 전 금/은 가격 */
+    var date15y = ms15yAgo();
+    var gold15  = await fetchHistoricalPrice('GC%3DF', date15y);
+    var silver15= await fetchHistoricalPrice('SI%3DF', date15y);
+
+    /* 15년 전 USD/KRW */
+    var krw15Res = await fetchHistoricalPrice('USDKRW%3DX', date15y);
+    var usdKrw15 = krw15Res ? krw15Res.price : 1150;
+
+    var now = new Date();
+
+    /* 금 CAGR */
+    if (goldCur && gold15 && gold15.price) {
+      var goldCurKrw  = goldCur / TROY * usdKrw;
+      var gold15Krw   = gold15.price / TROY * usdKrw15;
+      var yrs15 = (now - new Date(gold15.date || '')) / (1000*60*60*24*365.25) || 15;
+      var goldCAGR = msCAGR(goldCurKrw, gold15Krw, yrs15);
+      _msMetalData.gold = { cur: goldCurKrw, hist15: gold15Krw, cagr: goldCAGR };
+
+      var el1 = document.getElementById('ms-gold-cagr-big');
+      var el2 = document.getElementById('ms-gold-detail');
+      if (el1) el1.textContent = (goldCAGR >= 0 ? '+' : '') + (goldCAGR * 100).toFixed(1) + '%';
+      if (el2) el2.textContent = 'g당 ' + Math.round(gold15Krw).toLocaleString('ko-KR') + '원 → ' + Math.round(goldCurKrw).toLocaleString('ko-KR') + '원 (' + gold15.date + ')';
+
+      /* 요약표 업데이트 */
+      msUpdateSumRow('gold',
+        'g당 ' + Math.round(gold15Krw/100)*100 + '원',
+        'g당 ' + Math.round(goldCurKrw/100)*100 + '원',
+        goldCAGR * 100,
+        (goldCurKrw / gold15Krw).toFixed(1)
+      );
+    }
+
+    /* 은 CAGR */
+    if (silverCur && silver15 && silver15.price) {
+      var silverCurKrw = silverCur / TROY * usdKrw;
+      var silver15Krw  = silver15.price / TROY * usdKrw15;
+      var yrs15s = (now - new Date(silver15.date || '')) / (1000*60*60*24*365.25) || 15;
+      var silverCAGR = msCAGR(silverCurKrw, silver15Krw, yrs15s);
+      _msMetalData.silver = { cur: silverCurKrw, hist15: silver15Krw, cagr: silverCAGR };
+
+      var el3 = document.getElementById('ms-silver-cagr-big');
+      var el4 = document.getElementById('ms-silver-detail');
+      if (el3) el3.textContent = (silverCAGR >= 0 ? '+' : '') + (silverCAGR * 100).toFixed(1) + '%';
+      if (el4) el4.textContent = 'g당 ' + silver15Krw.toFixed(0) + '원 → ' + silverCurKrw.toFixed(0) + '원 (' + silver15.date + ')';
+
+      msUpdateSumRow('silver',
+        'g당 ' + Math.round(silver15Krw) + '원',
+        'g당 ' + Math.round(silverCurKrw) + '원',
+        silverCAGR * 100,
+        (silverCurKrw / silver15Krw).toFixed(1)
+      );
+    }
+
+    var nowStr = now.toISOString().slice(0,10);
+    if (date) date.textContent = nowStr + ' 기준 · 원달러 ' + Math.round(usdKrw) + '원 · 15년 전: ' + date15y.toISOString().slice(0,7);
+
+  } catch(e) {
+    console.error('MS Metals error:', e);
+    var el = document.getElementById('ms-metal-date');
+    if (el) el.textContent = '조회 실패 — ↺ 갱신 버튼 재시도';
+  } finally {
+    if (btn)  btn.disabled = false;
+    if (load) load.style.display = 'none';
+  }
+}
+
+/* ── 주가지수 조회 ── */
+var _msIdxConfigs = [
+  { id:'kospi',  ticker:'%5EKS11',  name:'코스피',    min:200, max:20000 },
+  { id:'k200',   ticker:'%5EKS200', name:'코스피200', min:50,  max:10000 },
+  { id:'nasdaq', ticker:'%5EIXIC',  name:'나스닥',    min:500, max:100000 },
+  { id:'ndx',    ticker:'%5ENDX',   name:'나스닥100', min:500, max:200000 },
+  { id:'sp500',  ticker:'%5EGSPC',  name:'S&P500',    min:100, max:50000 },
+  { id:'dji',    ticker:'%5EDJI',   name:'다우존스',  min:100, max:500000 }
+];
+
+async function fetchMSIndices() {
+  var btn  = document.getElementById('ms-index-btn');
+  var load = document.getElementById('ms-index-loading');
+  var date = document.getElementById('ms-index-date');
+  if (btn) btn.disabled = true;
+  if (load) load.style.display = '';
+
+  var date15y = ms15yAgo();
+
+  try {
+    /* 현재가: Anthropic Web Search 우선, Yahoo fallback */
+    var curPrices = {};
+    try {
+      var resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 500,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          messages: [{ role: 'user', content:
+            '현재 KOSPI, KOSPI200, NASDAQ Composite, NASDAQ100, S&P500, Dow Jones 지수 현재가를 검색해줘. JSON만 답해: {"kospi":숫자,"k200":숫자,"nasdaq":숫자,"ndx":숫자,"sp500":숫자,"dji":숫자}'
+          }]
+        })
+      });
+      if (resp.ok) {
+        var data = await resp.json();
+        var txt  = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(' ');
+        var m    = txt.match(/\{[^}]*"kospi"[^}]*\}/);
+        if (m) {
+          try { curPrices = JSON.parse(m[0]); } catch(e) {}
+        }
+      }
+    } catch(e) {}
+
+    /* Yahoo Finance fallback 병렬 */
+    var yPromises = _msIdxConfigs.map(async function(cfg) {
+      if (curPrices[cfg.id] && curPrices[cfg.id] >= cfg.min) return;
+      var p = await msFetchYahoo(decodeURIComponent(cfg.ticker), false);
+      if (p && p >= cfg.min && p <= cfg.max) curPrices[cfg.id] = p;
+    });
+    await Promise.all(yPromises);
+
+    /* 15년 전 가격 병렬 조회 */
+    var histPromises = _msIdxConfigs.map(async function(cfg) {
+      var res = await fetchHistoricalPrice(cfg.ticker, date15y);
+      if (res && res.price >= cfg.min) {
+        _msIndexData[cfg.id] = { cur: curPrices[cfg.id] || null, hist15: res.price, histDate: res.date };
+      } else {
+        _msIndexData[cfg.id] = { cur: curPrices[cfg.id] || null, hist15: null, histDate: null };
+      }
+      /* cur 업데이트 */
+      if (curPrices[cfg.id]) _msIndexData[cfg.id].cur = curPrices[cfg.id];
+    });
+    await Promise.all(histPromises);
+
+    /* 바 차트 + 요약표 업데이트 */
+    _msMaxCAGR = 0;
+    _msIdxConfigs.forEach(function(cfg) {
+      var d = _msIndexData[cfg.id];
+      if (!d || !d.cur || !d.hist15) return;
+      var yrs  = d.histDate ? Math.max(1, (new Date() - new Date(d.histDate)) / (1000*60*60*24*365.25)) : 15;
+      var cagr = msCAGR(d.cur, d.hist15, yrs);
+      if (cagr === null) return;
+      var cp   = cagr * 100;
+      msUpdateBar(cfg.id, cp);
+      var mult = (d.cur / d.hist15).toFixed(1);
+      /* 요약표 */
+      msUpdateSumRow(cfg.id === 'k200' ? 'k200' : cfg.id,
+        msFmt(d.hist15) + 'pt',
+        msFmt(d.cur) + 'pt',
+        cp,
+        mult
+      );
+    });
+
+    /* 테이블 렌더 */
+    msRenderIndexTable();
+
+    var nowStr = new Date().toISOString().slice(0,10);
+    if (date) date.textContent = nowStr + ' 기준 현재가 vs 15년 전 (Yahoo Finance) · 가격지수, 배당 미포함';
+    var stat = document.getElementById('ms-sum-status');
+    if (stat) stat.textContent = nowStr + ' 기준 갱신 완료';
+
+  } catch(e) {
+    console.error('MS Indices error:', e);
+    if (date) date.textContent = '조회 실패 — ↺ 갱신 버튼 재시도';
+  } finally {
+    if (btn)  btn.disabled = false;
+    if (load) load.style.display = 'none';
+  }
+}
+
+/* 귀금속 + 주가지수 통합 갱신 */
+async function fetchMSAll() {
+  var btn  = document.getElementById('ms-refresh-btn');
+  var icon = document.getElementById('ms-refresh-icon');
+  if (btn)  btn.disabled = true;
+  if (icon) icon.textContent = '⏳';
+  try {
+    await Promise.all([fetchMSMetals(), fetchMSIndices()]);
+  } finally {
+    if (btn)  btn.disabled = false;
+    if (icon) icon.textContent = '↺';
+  }
+}
+
 </script>
   <!-- ── 하단 후원/문의 배너 ── -->
   <div style="max-width:1280px;margin:0 auto;padding:0 32px 40px;">
@@ -10814,6 +11709,10 @@ function renderCagrChart(cache) {
     <button class="drop-item" id="drop-cagr"     onclick="switchSubTab('cagr','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2.5" y="1.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.4"/><rect x="4.5" y="3.5" width="9" height="3" rx="0.8" fill="currentColor" opacity="0.5"/><path d="M4.5 11 L7.5 8.5 L10.5 10 L13.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13.5" cy="6.5" r="1.2" fill="currentColor"/></svg>CAGR 계산기</button>
     <button class="drop-item" id="drop-fx" onclick="switchSubTab('fx','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 2.5 Q12.5 9 9 15.5 M9 2.5 Q5.5 9 9 15.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M2.5 6.5 Q9 5 15.5 6.5 M2.5 11.5 Q9 13 15.5 11.5" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M7 8 h1.5 a1 1 0 1 1 0 2 H7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>환율 계산기</button>
     <button class="drop-item" id="drop-health" onclick="switchSubTab('health','finance',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="4" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M9 7v4M7 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 4V3M13 4V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>건강보험료 계산기</button>
+  </div>
+  <div class="tab-dropdown" id="grp-etc-drop">
+    <button class="drop-item" id="drop-fear" onclick="switchSubTab('fear','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><path d="M9 2a7 7 0 1 0 0 14A7 7 0 0 0 9 2z" stroke="currentColor" stroke-width="1.3"/><path d="M6 7.5 C6 6.7 6.7 6 7.5 6 S9 6.7 9 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M9 7.5 C9 6.7 9.7 6 10.5 6 S12 6.7 12 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="7.5" cy="7.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="7.5" r="0.8" fill="currentColor"/><path d="M6.5 11.5 Q9 10 11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>공포 &amp; 탐욕 지수</button>
+    <button class="drop-item" id="drop-moneyspeed" onclick="switchSubTab('moneyspeed','etc',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M9 5.5v4l2.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3.5 L5 1.5 M12 3.5 L13 1.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5"/></svg>돈, 자산, 노동의 가치 속도</button>
   </div>
   <div class="tab-dropdown" id="grp-domestic-drop">
     <button class="drop-item" id="drop-kospi" onclick="switchSubTab('kospi','domestic',this)"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:5px;flex-shrink:0;"><rect x="2" y="12" width="3" height="4" rx="0.6" fill="currentColor" opacity="0.5"/><rect x="6.5" y="8" width="3" height="8" rx="0.6" fill="currentColor" opacity="0.7"/><rect x="11" y="4" width="3" height="12" rx="0.6" fill="currentColor"/><path d="M2 9 L6 6 L11 7.5 L15.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 2 h3 v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>코스피 성장률</button>

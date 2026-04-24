@@ -936,20 +936,15 @@
   .acc-body {
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.28s ease, padding 0.22s ease;
-    padding-top: 0;
-    padding-bottom: 0;
+    transition: max-height 0.3s ease;
+    padding: 0;
   }
   .acc-body.open {
     max-height: 4000px;
-    padding-top: 16px;
-    padding-bottom: 4px;
   }
   /* 첫 번째 아코디언: 기본으로 열려 있음 */
   .acc-body.default-open {
     max-height: 4000px;
-    padding-top: 16px;
-    padding-bottom: 4px;
   }
 
   /* 월간 테이블 연차 아코디언 헤더 */
@@ -5011,7 +5006,8 @@
         <span class="acc-title">통화량 — M0 / M1 / M2</span>
         <span class="acc-arrow open">▼</span>
       </div>
-      <div class="acc-body default-open" id="ms-money-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-money-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;">
           <div style="background:var(--bg3);border-radius:10px;padding:14px;border-top:2px solid var(--accent);">
             <p style="margin:0 0 5px;font-size:12px;font-weight:600;color:var(--accent);">M0 · 본원통화</p>
@@ -5051,6 +5047,7 @@
             CPI 연평균 +2.6%와 비교하면 나머지 5~6%p는 자산 가격 팽창에 반영
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5060,7 +5057,8 @@
         <span class="acc-title">근로소득 — 평균·중위 연봉</span>
         <span class="acc-arrow open">▼</span>
       </div>
-      <div class="acc-body default-open" id="ms-income-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-income-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
             <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">평균 연봉 CAGR (1995→2025)</p>
@@ -5080,6 +5078,7 @@
             평균이 중위보다 높은 이유는 고소득자 쏠림 현상
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5089,7 +5088,8 @@
         <span class="acc-title">부동산 — 서울·강남 아파트</span>
         <span class="acc-arrow open">▼</span>
       </div>
-      <div class="acc-body default-open" id="ms-realty-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-realty-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
             <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">서울 아파트 평균 CAGR (1995→2025)</p>
@@ -5109,6 +5109,7 @@
             강남은 학군·재건축 기대감으로 서울 평균 대비 <b style="color:var(--accent);">+0.4%p</b> 초과 상승
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5118,7 +5119,8 @@
         <span class="acc-title">물가 — 소비자물가·생활물가</span>
         <span class="acc-arrow open">▼</span>
       </div>
-      <div class="acc-body default-open" id="ms-price-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-price-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
             <p style="margin:0 0 3px;font-size:11px;color:var(--text3);">소비자물가(CPI) CAGR (1995→2025)</p>
@@ -5138,6 +5140,7 @@
             30년 누적: 1995년 100만원의 구매력이 2025년 <b style="color:var(--accent);">약 47만원</b> 수준으로 하락
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5147,7 +5150,8 @@
         <span class="acc-title">대한민국 순자산 분포</span>
         <span class="acc-arrow open">▼</span>
       </div>
-      <div class="acc-body default-open" id="ms-netasset-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-netasset-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <p style="font-size:11px;color:var(--text3);margin:0 0 12px;"><b style="color:var(--text2);">출처: 통계청 가계금융복지조사(2023)</b> · 가구별 순자산 분포</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;align-items:center;gap:12px;">
@@ -5191,6 +5195,7 @@
             부동산 자산이 가구 총자산의 약 <b style="color:var(--accent);">76%</b> 차지
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5209,7 +5214,8 @@
           <span class="acc-arrow open">▼</span>
         </div>
       </div>
-      <div class="acc-body default-open" id="ms-precious-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-precious-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <p id="ms-metal-date" style="font-size:11px;color:var(--text3);margin:0 0 14px;">Yahoo Finance GC=F / SI=F · 현재 시가 기준 · 15년 전 동월 대비</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
           <div style="background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--accent);">
@@ -5230,6 +5236,7 @@
             1 troy oz = 31.1035g · 환율 조회 불가 시 기존 _fxRates.USD 사용
           </p>
         </div>
+              </div>
       </div>
     </div>
 
@@ -5248,7 +5255,8 @@
           <span class="acc-arrow open">▼</span>
         </div>
       </div>
-      <div class="acc-body default-open" id="ms-index-body" style="padding:0 20px 20px;">
+      <div class="acc-body default-open" id="ms-index-body" style="padding:0">
+        <div style="padding:20px 20px 24px;">
         <p id="ms-index-date" style="font-size:11px;color:var(--text3);margin:0 0 14px;">Yahoo Finance 기준 · 현재가 vs 15년 전 동일 날짜 종가</p>
         <div style="display:flex;flex-direction:column;gap:8px;" id="ms-index-bars">
           <div style="background:var(--bg3);border-radius:6px;padding:5px 12px;"><p style="margin:0;font-size:10px;font-weight:600;color:var(--text3);">국내</p></div>
@@ -5306,6 +5314,7 @@
             15년 전 가격은 Yahoo Finance 히스토리 조회 · 배당 미포함 가격지수 기준
           </p>
         </div>
+              </div>
       </div>
     </div>
 

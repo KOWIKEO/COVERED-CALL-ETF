@@ -5327,245 +5327,343 @@
 
   </div><!-- /page-moneyspeed -->
 
+
   <!-- ───────────────────────────────────────────── page-muhan ── -->
   <div class="app-page" id="page-muhan">
-    <div class="header">
-      <div class="header-left">
-        <span class="badge">INFINITE BUYING METHOD</span>
-        <h1>무한매수법 <span>기록</span></h1>
-        <p class="subtitle">종목별 40분할 매수 현황 · 평단가·목표가·진행률 자동 계산 · 데이터는 브라우저에 저장됩니다</p>
-      </div>
-      <button onclick="muhanOpenAddStock()"
-        style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;flex-shrink:0;">
-        + 종목 추가
-      </button>
-    </div>
 
-    <!-- 종목 없을 때 안내 -->
-    <div id="muhan-empty" style="display:none;text-align:center;padding:60px 20px;">
-      <p style="font-size:40px;margin:0 0 16px;">📋</p>
-      <p style="font-size:16px;color:var(--text2);margin:0 0 8px;">추적 중인 종목이 없습니다</p>
-      <p style="font-size:13px;color:var(--text3);margin:0 0 24px;">우측 상단 '+ 종목 추가' 버튼으로 시작하세요</p>
-    </div>
-
-    <!-- 종목 목록 뷰 -->
-    <div id="muhan-list-view">
-      <!-- 전체 요약 -->
-      <div id="muhan-summary-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
-        <div class="card" style="padding:14px 16px;">
-          <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">추적 종목 수</p>
-          <p id="muhan-total-stocks" style="margin:0;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">0</p>
-        </div>
-        <div class="card" style="padding:14px 16px;">
-          <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">총 투자금 (원화환산)</p>
-          <p id="muhan-total-invest" style="margin:0;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">—</p>
-        </div>
-        <div class="card" style="padding:14px 16px;">
-          <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">진행 중 종목</p>
-          <p id="muhan-active-stocks" style="margin:0;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">0</p>
-        </div>
-        <div class="card" style="padding:14px 16px;">
-          <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">완료/익절 종목</p>
-          <p id="muhan-done-stocks" style="margin:0;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);">0</p>
-        </div>
-      </div>
-
-      <!-- 종목 카드 그리드 -->
-      <div id="muhan-stock-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;"></div>
-    </div>
-
-    <!-- 종목 상세 뷰 -->
-    <div id="muhan-detail-view" style="display:none;">
-      <!-- 상세 헤더 -->
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-        <button onclick="muhanBackToList()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);">
-          ← 목록
+    <!-- ══ SCREEN A: 설정 화면 (세션 없을 때) ══ -->
+    <div id="mh-setup-screen">
+      <div style="text-align:center;padding:32px 0 24px;">
+        <h2 style="margin:0 0 4px;font-size:22px;font-weight:700;letter-spacing:-0.5px;">무한매수법</h2>
+        <p style="margin:0 0 20px;font-size:13px;color:var(--accent);font-weight:600;">V4.0</p>
+        <button id="mh-login-btn" onclick="mhShowLoginModal()"
+          style="padding:8px 20px;border-radius:8px;border:1px solid rgba(0,229,176,0.4);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">
+          로그인하여 데이터 불러오기
         </button>
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <h2 id="muhan-detail-ticker" style="margin:0;font-size:22px;font-weight:700;color:var(--accent);font-family:var(--mono);"></h2>
-            <span id="muhan-detail-name" style="font-size:14px;color:var(--text3);"></span>
-            <span id="muhan-detail-status-badge" style="font-size:11px;padding:2px 10px;border-radius:20px;background:rgba(0,229,176,0.15);color:var(--accent);"></span>
+      </div>
+
+      <!-- 설정 카드 -->
+      <div style="max-width:480px;margin:0 auto;">
+        <div class="card" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+          <!-- 종목 -->
+          <div>
+            <p style="margin:0 0 10px;font-size:12px;color:var(--text3);">종목</p>
+            <div id="mh-ticker-btns" style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="mh-sel-btn active" data-val="TQQQ" onclick="mhSelBtn(this,'ticker')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,229,176,0.5);background:rgba(0,229,176,0.15);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;">TQQQ</button>
+              <button class="mh-sel-btn" data-val="SOXL" onclick="mhSelBtn(this,'ticker')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;">SOXL</button>
+              <button class="mh-sel-btn" data-val="CUSTOM" onclick="mhSelBtn(this,'ticker')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;">직접입력</button>
+            </div>
+            <input id="mh-custom-ticker" type="text" placeholder="예: TSLA, QLD..." oninput="this.value=this.value.toUpperCase()"
+              style="display:none;width:100%;box-sizing:border-box;margin-top:8px;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:14px;">
+          </div>
+
+          <!-- 분할 수 -->
+          <div>
+            <p style="margin:0 0 10px;font-size:12px;color:var(--text3);">분할 수</p>
+            <div id="mh-splits-btns" style="display:flex;gap:8px;">
+              <button class="mh-sel-btn" data-val="20" onclick="mhSelBtn(this,'splits')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;">20분할</button>
+              <button class="mh-sel-btn" data-val="30" onclick="mhSelBtn(this,'splits')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;">30분할</button>
+              <button class="mh-sel-btn active" data-val="40" onclick="mhSelBtn(this,'splits')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,229,176,0.5);background:rgba(0,229,176,0.15);color:var(--accent);font-size:13px;cursor:pointer;">40분할</button>
+            </div>
+            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">적을수록 공격적, 클수록 안정적</p>
+          </div>
+
+          <!-- 목표 수익률 -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <p style="margin:0;font-size:12px;color:var(--text3);">목표 수익률 (%)</p>
+              <span style="font-size:11px;color:var(--text3);">기본 15% (라오어 공식)</span>
+            </div>
+            <input id="mh-target-pct" type="number" value="15" min="1" max="100" step="0.5"
+              style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
+            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">별도 지정가매도 가격, 리버스 복귀 조건에 적용됩니다</p>
+          </div>
+
+          <!-- 큰수 % -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <p style="margin:0;font-size:12px;color:var(--text3);">큰수 % (증가 × 배수)</p>
+              <span style="font-size:11px;color:var(--text3);">기본 12%, 범위 0~30%</span>
+            </div>
+            <input id="mh-bignum-pct" type="number" value="12" min="0" max="30" step="0.5"
+              style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
+            <p style="margin:6px 0 0;font-size:11px;color:var(--text3);">증권사 LOC 상한 회피용 매수 가격. 낮을수록 보수적(체결 조건 까다로움), 높을수록 공격적. 급등락장에서 조정 필요</p>
+          </div>
+
+          <!-- 새로 시작 / 중간 진입 -->
+          <div>
+            <div id="mh-start-btns" style="display:flex;gap:8px;">
+              <button class="mh-sel-btn active" data-val="new" onclick="mhSelBtn(this,'startType')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,229,176,0.5);background:rgba(0,229,176,0.15);color:var(--accent);font-size:13px;cursor:pointer;">새로 시작</button>
+              <button class="mh-sel-btn" data-val="mid" onclick="mhSelBtn(this,'startType')" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;">중간 진입</button>
+            </div>
+          </div>
+
+          <!-- 원금 -->
+          <div>
+            <p style="margin:0 0 8px;font-size:12px;color:var(--text3);">원금 ($)</p>
+            <input id="mh-seed" type="number" value="20000" min="100" step="100"
+              style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:15px;">
+          </div>
+
+          <!-- 시작하기 버튼 -->
+          <button onclick="mhStart()"
+            style="width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:#000;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);">
+            시작하기
+          </button>
+        </div>
+        <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:12px;">초심자는 TQQQ 추천, 익숙해지면 SOXL</p>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN B: 메인 트래커 ══ -->
+    <div id="mh-main-screen" style="display:none;">
+
+      <!-- 상단 헤더 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <h2 style="margin:0;font-size:18px;font-weight:700;">무한매수법 4.0</h2>
+            <button onclick="mhBackToSetup()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text3);font-size:11px;cursor:pointer;font-family:var(--font);">← 설정</button>
+          </div>
+          <p id="mh-header-sub" style="margin:4px 0 0;font-size:12px;color:var(--text3);font-family:var(--mono);"></p>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="mh-login-user" style="font-size:12px;color:var(--text3);"></span>
+          <button id="mh-logout-btn" onclick="mhLogout()" style="display:none;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);">로그아웃</button>
+          <button onclick="mhToggleSettings()" style="padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:14px;cursor:pointer;">⋮</button>
+        </div>
+      </div>
+
+      <!-- 설정 패널 (⋮ 클릭 시) -->
+      <div id="mh-settings-panel" style="display:none;margin-bottom:16px;">
+        <div class="card" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+          <p style="margin:0;font-size:12px;font-weight:600;color:var(--text);">설정</p>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text3);width:80px;">목표 수익률</span>
+            <input id="mh-s-target" type="number" step="0.5" style="width:80px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
+            <span style="font-size:12px;color:var(--text3);">%</span>
+            <button onclick="mhApplySettings('target')" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">적용</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text3);width:80px;">큰수 %</span>
+            <input id="mh-s-bignum" type="number" step="0.5" min="0" max="30" style="width:80px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
+            <span style="font-size:12px;color:var(--text3);">%</span>
+            <button onclick="mhApplySettings('bignum')" style="padding:5px 12px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">적용</button>
+          </div>
+          <div style="display:flex;gap:8px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.06);">
+            <button onclick="mhAddSession()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">+ 세션 추가</button>
+            <button onclick="mhResetSession()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);color:#f87171;font-size:12px;cursor:pointer;font-family:var(--font);">세션 초기화</button>
           </div>
         </div>
+      </div>
+
+      <!-- 현재가 + 슬라이더 -->
+      <div class="card" style="padding:18px 20px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span id="mh-price-arrow" style="font-size:14px;color:var(--text3);">↑</span>
+            <span id="mh-cur-price" style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);">0.00000</span>
+            <span id="mh-price-change" style="font-size:12px;color:var(--text3);"></span>
+          </div>
+          <button onclick="mhOpenRecordModal()" style="padding:7px 16px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);" id="mh-record-btn">처음매수</button>
+        </div>
+        <!-- 슬라이더 바 -->
+        <div style="position:relative;height:6px;background:var(--bg3);border-radius:3px;margin-bottom:8px;">
+          <div id="mh-progress-fill" style="height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:3px;width:0%;transition:width 0.4s;"></div>
+          <div id="mh-progress-thumb" style="position:absolute;top:50%;width:12px;height:12px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);left:0%;transition:left 0.4s;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:var(--mono);">
+          <span>0</span>
+          <span id="mh-slider-mid" style="color:var(--accent);">20 (추천반)</span>
+          <span id="mh-slider-max">40</span>
+        </div>
+      </div>
+
+      <!-- 스탯 행 1 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">평단가</p>
+          <p id="mh-stat-avg" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">-</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">보유수량</p>
+          <p id="mh-stat-qty" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">0주</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">잔금</p>
+          <p id="mh-stat-cash" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">-</p>
+        </div>
+      </div>
+      <!-- 스탯 행 2 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">할%</p>
+          <p id="mh-stat-pct" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent);">+15.00%</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">별지정</p>
+          <p id="mh-stat-target" style="margin:0;font-family:var(--mono);font-size:16px;font-weight:600;color:#34d399;">-</p>
+        </div>
+        <div class="card" style="padding:12px 14px;">
+          <p style="margin:0 0 4px;font-size:10px;color:var(--text3);">1회 매수금</p>
+          <p id="mh-stat-onediv" style="margin:0;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);">-</p>
+          <p id="mh-stat-onediv-krw" style="margin:2px 0 0;font-size:10px;color:var(--text3);font-family:var(--mono);"></p>
+        </div>
+      </div>
+      <!-- 환율 표시 -->
+      <p id="mh-usdkrw-row" style="text-align:right;font-size:11px;color:var(--text3);margin:0 0 14px;font-family:var(--mono);"></p>
+
+      <!-- 최근 종가 카드 -->
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px;">
+          <p id="mh-recent-title" style="margin:0;font-size:13px;font-weight:600;color:var(--text);">TQQQ 최근 종가</p>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="mh-5day-avg" style="font-size:12px;color:var(--accent);font-family:var(--mono);"></span>
+            <button onclick="mhFetchPrices()" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:11px;cursor:pointer;font-family:var(--font);">↺</button>
+          </div>
+        </div>
+        <div id="mh-recent-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,255,255,0.04);padding:0 0 0 0;">
+          <!-- 동적으로 채워짐 -->
+          <div style="padding:12px;text-align:center;background:var(--bg2);">
+            <p style="margin:0;font-size:10px;color:var(--text3);">불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공포 & 탐욕 지수 -->
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px 10px;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">공포 &amp; 탐욕 지수</p>
+          <span style="font-size:10px;color:var(--text3);">CNN</span>
+        </div>
+        <div style="padding:0 18px 18px;">
+          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px;">
+            <span id="mh-fg-val" style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent);">—</span>
+            <span id="mh-fg-label" style="font-size:13px;color:var(--text2);">—</span>
+          </div>
+          <!-- 게이지 바 -->
+          <div style="position:relative;height:10px;border-radius:5px;overflow:hidden;background:linear-gradient(90deg,#dc2626 0%,#ef4444 16%,#f97316 33%,#eab308 50%,#84cc16 66%,#22c55e 83%,#16a34a 100%);margin-bottom:8px;">
+            <div id="mh-fg-cursor" style="position:absolute;top:50%;width:14px;height:14px;background:white;border:2px solid rgba(0,0,0,0.3);border-radius:50%;transform:translate(-50%,-50%);left:50%;transition:left 0.5s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);">
+            <span>극도공포</span><span>공포</span><span>중립</span><span>탐욕</span><span>극도탐욕</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 새 시이클 시작 -->
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">
+        <div style="padding:14px 18px 10px;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">☆ 새 시이클 시작</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.04);margin-bottom:14px;">
+          <div style="background:var(--bg2);padding:14px 18px;">
+            <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">1회 매수금</p>
+            <p id="mh-cycle-onediv" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p>
+          </div>
+          <div style="background:var(--bg2);padding:14px 18px;">
+            <p style="margin:0 0 4px;font-size:11px;color:var(--text3);">전일 종가</p>
+            <p id="mh-cycle-prevclose" style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">-</p>
+          </div>
+        </div>
+        <div style="padding:0 18px 16px;">
+          <p id="mh-cycle-bignum-info" style="margin:0 0 8px;font-size:12px;color:var(--accent);font-family:var(--mono);"></p>
+          <p style="margin:0;font-size:11px;color:var(--text3);line-height:1.6;">아래 주문표대로 LOC 매수를 걸고, 체결되면 오늘 기록하기 버튼으로 기록해주세요</p>
+        </div>
+      </div>
+
+      <!-- 오늘의 주문 -->
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:80px;">
+        <div style="padding:14px 18px 10px;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">오늘의 주문</p>
+        </div>
+        <div style="padding:0 4px 4px;">
+          <div style="padding:6px 14px;display:flex;align-items:center;gap:6px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
+            <span style="font-size:12px;color:var(--text2);font-weight:600;">매수</span>
+          </div>
+          <div id="mh-orders-list" style="display:flex;flex-direction:column;">
+            <!-- 동적 주문 목록 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 오늘 기록하기 플로팅 버튼 -->
+      <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;">
+        <button onclick="mhOpenRecordModal()" id="mh-floating-record-btn"
+          style="display:flex;align-items:center;gap:8px;padding:13px 28px;border-radius:30px;border:none;background:var(--accent);color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 20px rgba(0,229,176,0.35);">
+          + 오늘 기록하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ 로그인 모달 ══ -->
+    <div id="mh-login-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
+      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:340px;max-width:90vw;">
+        <h3 style="margin:0 0 6px;font-size:16px;font-weight:600;">데이터 불러오기</h3>
+        <p style="margin:0 0 20px;font-size:12px;color:var(--text3);">설정한 비밀번호를 입력하면 저장된 기록을 불러옵니다</p>
+        <input id="mh-pw-input" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')mhDoLogin()"
+          style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:14px;margin-bottom:8px;">
+        <p id="mh-pw-hint" style="margin:0 0 16px;font-size:11px;color:var(--text3);">처음 사용 시 새 비밀번호를 설정합니다</p>
+        <p id="mh-pw-error" style="display:none;margin:0 0 12px;font-size:12px;color:#f87171;"></p>
         <div style="display:flex;gap:8px;">
-          <button onclick="muhanEditStock()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font);">⚙ 설정</button>
-          <button onclick="muhanDeleteStock()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.06);color:#f87171;font-size:12px;cursor:pointer;font-family:var(--font);">🗑 삭제</button>
-        </div>
-      </div>
-
-      <!-- 대시보드 -->
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;" id="muhan-dash-grid">
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">현재 평단가</p>
-          <p id="muhan-dash-avg" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent);">—</p>
-        </div>
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">목표가</p>
-          <p id="muhan-dash-target" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:#34d399;">—</p>
-        </div>
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">진행률</p>
-          <p id="muhan-dash-progress" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent);">0%</p>
-        </div>
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">총 투자금</p>
-          <p id="muhan-dash-invested" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent);">—</p>
-        </div>
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">잔여 시드</p>
-          <p id="muhan-dash-remain" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent2);">—</p>
-        </div>
-        <div class="card" style="padding:12px 14px;">
-          <p style="margin:0 0 3px;font-size:10px;color:var(--text3);">보유 수량</p>
-          <p id="muhan-dash-qty" style="margin:0;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent);">—</p>
-        </div>
-      </div>
-
-      <!-- 진행률 바 -->
-      <div class="card" style="padding:14px 18px;margin-bottom:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <span style="font-size:12px;color:var(--text3);">매수 진행률</span>
-          <span id="muhan-progress-txt" style="font-size:12px;color:var(--accent);font-family:var(--mono);">0 / 40 회</span>
-        </div>
-        <div style="background:var(--bg3);border-radius:6px;height:12px;overflow:hidden;">
-          <div id="muhan-progress-bar" style="height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);border-radius:6px;width:0%;transition:width 0.4s;"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px;">
-          <span style="font-size:10px;color:var(--text3);" id="muhan-bar-seed">시드: —</span>
-          <span style="font-size:10px;color:var(--text3);" id="muhan-bar-1div">1회차: —</span>
-        </div>
-      </div>
-
-      <!-- 매매 기록 -->
-      <div class="card" style="padding:0;overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;">
-          <p style="margin:0;font-size:13px;font-weight:600;color:var(--text);">매매 기록</p>
-          <div style="display:flex;gap:8px;">
-            <button onclick="muhanExport()" style="padding:6px 12px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);">CSV 내보내기</button>
-            <button onclick="muhanOpenAddTrade()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;border:1px solid rgba(0,229,176,0.3);background:rgba(0,229,176,0.08);color:var(--accent);font-size:12px;cursor:pointer;font-family:var(--font);">+ 매매 추가</button>
-          </div>
-        </div>
-        <div style="overflow-x:auto;">
-          <table style="width:100%;border-collapse:collapse;font-size:12px;">
-            <thead>
-              <tr style="background:var(--bg3);">
-                <th style="padding:8px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">회차</th>
-                <th style="padding:8px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">날짜</th>
-                <th style="padding:8px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">유형</th>
-                <th style="padding:8px 12px;text-align:right;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">매수가</th>
-                <th style="padding:8px 12px;text-align:right;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">수량</th>
-                <th style="padding:8px 12px;text-align:right;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">매수금액</th>
-                <th style="padding:8px 12px;text-align:right;color:#00e5b0;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.08);">평단가</th>
-                <th style="padding:8px 12px;text-align:right;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">목표가</th>
-                <th style="padding:8px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">메모</th>
-                <th style="padding:8px 12px;text-align:center;color:var(--text3);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.08);">삭제</th>
-              </tr>
-            </thead>
-            <tbody id="muhan-trade-tbody">
-              <tr><td colspan="10" style="padding:24px;text-align:center;color:var(--text3);">매매 기록이 없습니다</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.05);">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button onclick="muhanQuarterSell()" style="padding:6px 14px;border-radius:7px;border:1px solid rgba(251,191,36,0.3);background:rgba(251,191,36,0.08);color:#fbbf24;font-size:12px;cursor:pointer;font-family:var(--font);">¼ 쿼터 손절</button>
-            <button onclick="muhanTakeProfit()" style="padding:6px 14px;border-radius:7px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.08);color:#34d399;font-size:12px;cursor:pointer;font-family:var(--font);">✓ 익절 완료</button>
-          </div>
+          <button onclick="mhCloseLoginModal()" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);">취소</button>
+          <button onclick="mhDoLogin()" style="flex:2;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">로그인 / 설정</button>
         </div>
       </div>
     </div>
 
-    <!-- 모달: 종목 추가/편집 -->
-    <div id="muhan-stock-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
-      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:420px;max-width:90vw;max-height:90vh;overflow-y:auto;">
-        <h3 id="muhan-stock-modal-title" style="margin:0 0 20px;font-size:16px;font-weight:600;">종목 추가</h3>
+    <!-- ══ 기록 모달 ══ -->
+    <div id="mh-record-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
+      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:400px;max-width:90vw;max-height:85vh;overflow-y:auto;">
+        <h3 style="margin:0 0 20px;font-size:16px;font-weight:600;">오늘 매매 기록</h3>
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">티커 (종목 코드) *</label>
-            <input id="muhan-input-ticker" type="text" placeholder="TQQQ, SOXL, TSLA..." style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:14px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">날짜</label>
+            <input id="mh-rec-date" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:13px;">
           </div>
           <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">종목명 (선택)</label>
-            <input id="muhan-input-name" type="text" placeholder="ProShares UltraPro QQQ" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div>
-              <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">통화</label>
-              <select id="muhan-input-currency" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
-                <option value="USD">USD (달러)</option>
-                <option value="KRW">KRW (원화)</option>
-              </select>
-            </div>
-            <div>
-              <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">분할 횟수</label>
-              <input id="muhan-input-splits" type="number" value="40" min="1" max="200" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
-            </div>
+            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">유형</label>
+            <select id="mh-rec-type" onchange="mhRecTypeChange()" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:13px;">
+              <option value="buy_first">처음매수 (큰수 LOC)</option>
+              <option value="buy_avg">평단매수 (LOC)</option>
+              <option value="buy_manual">직접입력 매수</option>
+              <option value="sell_profit">익절 매도</option>
+              <option value="sell_quarter">쿼터 손절</option>
+            </select>
           </div>
           <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">총 시드 (원화 또는 달러)</label>
-            <input id="muhan-input-seed" type="number" placeholder="4000000" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
+            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">체결가 ($)</label>
+            <input id="mh-rec-price" type="number" step="0.01" placeholder="체결된 실제 가격" oninput="mhCalcRecQty()"
+              style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:14px;">
           </div>
           <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">목표 수익률 (%)</label>
-            <input id="muhan-input-target-pct" type="number" value="10" min="1" max="50" step="0.5" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
-          </div>
-          <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">시작일</label>
-            <input id="muhan-input-startdate" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
+            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">수량 (주)</label>
+            <input id="mh-rec-qty" type="number" step="1" min="1" placeholder="체결 수량"
+              style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:14px;">
+            <p id="mh-rec-qty-hint" style="margin:4px 0 0;font-size:10px;color:var(--text3);"></p>
           </div>
           <div>
             <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">메모 (선택)</label>
-            <input id="muhan-input-memo" type="text" placeholder="사이클 1, 2차 진행 등" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
+            <input id="mh-rec-memo" type="text" placeholder="LOC 평단매수, 큰수매수..."
+              style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-size:13px;">
+          </div>
+          <!-- 기록 이력 -->
+          <div id="mh-rec-history-block" style="max-height:160px;overflow-y:auto;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;">
+            <p style="margin:0 0 8px;font-size:11px;color:var(--text3);">현재 세션 기록</p>
+            <div id="mh-rec-history-list" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;margin-top:24px;">
-          <button onclick="muhanCloseStockModal()" style="flex:1;padding:10px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;">취소</button>
-          <button onclick="muhanSaveStock()" style="flex:2;padding:10px;border-radius:9px;border:none;background:var(--accent);color:#000;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;">저장</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 모달: 매매 추가 -->
-    <div id="muhan-trade-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
-      <div style="background:var(--bg2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:400px;max-width:90vw;max-height:90vh;overflow-y:auto;">
-        <h3 style="margin:0 0 20px;font-size:16px;font-weight:600;">매매 기록 추가</h3>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div>
-              <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">날짜 *</label>
-              <input id="muhan-trade-date" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
-            </div>
-            <div>
-              <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">유형</label>
-              <select id="muhan-trade-type" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
-                <option value="buy">매수</option>
-                <option value="sell">매도</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">매수가 (단가) *</label>
-            <input id="muhan-trade-price" type="number" step="0.01" placeholder="45.23" oninput="muhanCalcAutoQty()" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
-          </div>
-          <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">수량 <span style="color:var(--accent);font-size:10px;" id="muhan-auto-qty-label">(자동 계산됨)</span></label>
-            <input id="muhan-trade-qty" type="number" step="1" min="0" placeholder="자동 계산" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;">
-            <p id="muhan-auto-calc-info" style="margin:4px 0 0;font-size:10px;color:var(--text3);"></p>
-          </div>
-          <div>
-            <label style="display:block;font-size:11px;color:var(--text3);margin-bottom:5px;">메모 (선택)</label>
-            <input id="muhan-trade-memo" type="text" placeholder="LOC 평단매수, LOC 큰수매수..." style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;">
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:24px;">
-          <button onclick="muhanCloseTradeModal()" style="flex:1;padding:10px;border-radius:9px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;">취소</button>
-          <button onclick="muhanSaveTrade()" style="flex:2;padding:10px;border-radius:9px;border:none;background:var(--accent);color:#000;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;">추가</button>
+        <div style="display:flex;gap:8px;margin-top:20px;">
+          <button onclick="mhCloseRecordModal()" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:var(--font);">닫기</button>
+          <button onclick="mhSaveRecord()" style="flex:2;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#000;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">기록 추가</button>
         </div>
       </div>
     </div>
 
   </div><!-- /page-muhan -->
+
 
 
 
@@ -11985,497 +12083,650 @@ async function fetchMSAll() {
 }
 
 
-/* ════════════════════════════════════════════════════════
-   무한매수법 기록 - JavaScript
-   localStorage 키: muhan_v1
-════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════
+   무한매수법 4.0 — 메인 JS
+   저장소: localStorage (muhan4_data, muhan4_pwhash)
+   비밀번호: SHA-256 해시로 검증
+════════════════════════════════════════════════════════════ */
 (function() {
 
-  var STORE_KEY = 'muhan_v1';
-  var _muhanData = null;    // { stocks: [] }
-  var _muhanCurId = null;   // 현재 선택된 stock id
-  var _muhanEditingStockId = null;
+  /* ── 스토어 키 ── */
+  var PW_KEY   = 'muhan4_pwhash';
+  var DATA_KEY = 'muhan4_data';
 
-  /* ── 스토리지 ── */
+  /* ── 내부 상태 ── */
+  var MH = {
+    loggedIn: false,
+    username: '',
+    settings: { ticker:'TQQQ', splits:40, targetPct:15, bigNumPct:12, startType:'new', seed:20000 },
+    sessions: [],   /* [{id, startDate, trades:[]}] */
+    curSession: 0,  /* 인덱스 */
+    recentPrices: [],
+    prevClose: null,
+    curPrice: null,
+    usdKrw: 1380,
+    fgVal: null
+  };
+
+  /* ── SHA-256 해시 ── */
+  async function sha256(str) {
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  }
+
+  /* ── 저장/불러오기 ── */
+  function mhSave() {
+    try {
+      localStorage.setItem(DATA_KEY, JSON.stringify({
+        settings: MH.settings,
+        sessions: MH.sessions,
+        curSession: MH.curSession,
+        username: MH.username
+      }));
+    } catch(e) {}
+  }
+
   function mhLoad() {
     try {
-      var raw = localStorage.getItem(STORE_KEY);
-      _muhanData = raw ? JSON.parse(raw) : { stocks: [] };
-    } catch(e) { _muhanData = { stocks: [] }; }
-  }
-  function mhSave() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(_muhanData)); } catch(e) {}
+      var raw = localStorage.getItem(DATA_KEY);
+      if (!raw) return false;
+      var d = JSON.parse(raw);
+      MH.settings   = Object.assign({}, MH.settings, d.settings || {});
+      MH.sessions    = d.sessions || [];
+      MH.curSession  = d.curSession || 0;
+      MH.username    = d.username || '';
+      return true;
+    } catch(e) { return false; }
   }
 
-  /* ── 유틸 ── */
-  function mhFmt(n, cur, dec) {
-    if (n === null || n === undefined || isNaN(n)) return '—';
-    dec = dec !== undefined ? dec : 2;
-    var s = n.toFixed(dec);
-    return (cur || '') + parseFloat(s).toLocaleString('ko-KR', {minimumFractionDigits: dec, maximumFractionDigits: dec});
-  }
-  function mhFmtK(n, cur) {
-    if (!n) return '—';
-    if (cur === 'KRW') return Math.round(n).toLocaleString('ko-KR') + '원';
-    return '$' + parseFloat(n.toFixed(2)).toLocaleString('ko-KR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-  function mhUID() { return 'mh_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+  /* ── DOM 유틸 ── */
+  var $ = function(id) { return document.getElementById(id); };
 
-  /* ── 계산 ── */
-  function mhCalcStock(stock) {
-    var trades = (stock.trades || []).filter(function(t){ return t.type === 'buy'; });
-    var totalQty = 0;
-    var totalAmount = 0;
-    var runAvg = 0;
-    var runTarget = 0;
-    trades.sort(function(a,b){ return a.date > b.date ? 1 : a.date < b.date ? -1 : 0; });
-    trades.forEach(function(t) {
-      if (t.type === 'buy') {
-        totalQty += parseFloat(t.qty) || 0;
-        totalAmount += (parseFloat(t.price) * parseFloat(t.qty)) || 0;
-      }
+  /* ── 선택 버튼 ── */
+  window.mhSelBtn = function(btn, field) {
+    var parent = btn.parentElement;
+    parent.querySelectorAll('.mh-sel-btn').forEach(function(b) {
+      b.style.background = 'var(--bg3)';
+      b.style.borderColor = 'rgba(255,255,255,0.1)';
+      b.style.color = 'var(--text2)';
+      b.classList.remove('active');
     });
-    runAvg = totalQty > 0 ? totalAmount / totalQty : 0;
-    runTarget = runAvg * (1 + (parseFloat(stock.targetPct) || 10) / 100);
-    var splits = parseInt(stock.splits) || 40;
-    var seed = parseFloat(stock.seed) || 0;
-    var oneDiv = seed / splits;
-    var progress = splits > 0 ? Math.min(trades.length / splits, 1) : 0;
-    var invested = totalAmount;
-    var remain = Math.max(seed - invested, 0);
-    return {
-      totalQty: totalQty,
-      totalAmount: totalAmount,
-      avgPrice: runAvg,
-      targetPrice: runTarget,
-      progress: progress,
-      tradeCount: trades.length,
-      splits: splits,
-      seed: seed,
-      oneDiv: oneDiv,
-      invested: invested,
-      remain: remain
-    };
-  }
+    btn.style.background = 'rgba(0,229,176,0.15)';
+    btn.style.borderColor = 'rgba(0,229,176,0.5)';
+    btn.style.color = 'var(--accent)';
+    btn.classList.add('active');
 
-  /* ── 목록 렌더 ── */
-  function mhRenderList() {
-    mhLoad();
-    var stocks = _muhanData.stocks || [];
-    var empty = document.getElementById('muhan-empty');
-    var listView = document.getElementById('muhan-list-view');
-    var grid = document.getElementById('muhan-stock-grid');
-
-    if (stocks.length === 0) {
-      if (empty) empty.style.display = '';
-      if (listView) listView.style.display = 'none';
-      return;
+    if (field === 'ticker') {
+      var customInput = $('mh-custom-ticker');
+      customInput.style.display = btn.dataset.val === 'CUSTOM' ? 'block' : 'none';
     }
-    if (empty) empty.style.display = 'none';
-    if (listView) listView.style.display = '';
+  };
 
-    // 요약
-    var activeCount = 0, doneCount = 0;
-    var totalInvested = 0;
-    stocks.forEach(function(s) {
-      var c = mhCalcStock(s);
-      if (s.status === 'done') doneCount++;
-      else activeCount++;
-      // KRW 환산 (USD는 환율 1450 추정)
-      totalInvested += s.currency === 'KRW' ? c.invested : c.invested * 1450;
-    });
+  /* ── 로그인 모달 ── */
+  window.mhShowLoginModal = function() {
+    $('mh-pw-input').value = '';
+    $('mh-pw-error').style.display = 'none';
+    var hasPw = !!localStorage.getItem(PW_KEY);
+    $('mh-pw-hint').textContent = hasPw
+      ? '저장된 데이터를 불러옵니다'
+      : '처음 사용 시 새 비밀번호를 설정합니다 (분실 시 복구 불가)';
+    $('mh-login-modal').style.display = 'flex';
+    setTimeout(function(){ $('mh-pw-input').focus(); }, 100);
+  };
 
-    var el = function(id){ return document.getElementById(id); };
-    if (el('muhan-total-stocks')) el('muhan-total-stocks').textContent = stocks.length;
-    if (el('muhan-active-stocks')) el('muhan-active-stocks').textContent = activeCount;
-    if (el('muhan-done-stocks')) el('muhan-done-stocks').textContent = doneCount;
-    if (el('muhan-total-invest')) el('muhan-total-invest').textContent = totalInvested > 0 ? Math.round(totalInvested).toLocaleString('ko-KR') + '원' : '—';
+  window.mhCloseLoginModal = function() {
+    $('mh-login-modal').style.display = 'none';
+  };
 
-    // 종목 카드
-    if (!grid) return;
-    grid.innerHTML = '';
-    stocks.forEach(function(stock) {
-      var c = mhCalcStock(stock);
-      var pct = Math.round(c.progress * 100);
-      var isDone = stock.status === 'done';
-      var card = document.createElement('div');
-      card.className = 'card';
-      card.style.cssText = 'padding:0;overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.15s;';
-      card.onmouseenter = function(){ this.style.borderColor='rgba(0,229,176,0.3)'; };
-      card.onmouseleave = function(){ this.style.borderColor='rgba(255,255,255,0.07)'; };
-      card.onclick = function(){ mhOpenDetail(stock.id); };
+  window.mhDoLogin = async function() {
+    var pw = $('mh-pw-input').value.trim();
+    if (!pw) { showPwError('비밀번호를 입력해주세요'); return; }
+    if (pw.length < 4) { showPwError('비밀번호는 4자리 이상이어야 합니다'); return; }
 
-      var statusColor = isDone ? '#34d399' : (pct >= 100 ? '#fbbf24' : 'var(--accent)');
-      var statusLabel = isDone ? '익절완료' : (pct >= 100 ? '씨드소진' : '진행중');
+    var hash = await sha256(pw);
+    var stored = localStorage.getItem(PW_KEY);
 
-      card.innerHTML =
-        '<div style="padding:16px 18px;">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
-            '<div>' +
-              '<p style="margin:0;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);">' + stock.ticker + '</p>' +
-              '<p style="margin:2px 0 0;font-size:11px;color:var(--text3);">' + (stock.name || '') + '</p>' +
-            '</div>' +
-            '<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(0,229,176,0.1);color:' + statusColor + ';">' + statusLabel + '</span>' +
-          '</div>' +
-          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">' +
-            '<div style="background:var(--bg3);border-radius:7px;padding:8px 10px;">' +
-              '<p style="margin:0 0 2px;font-size:9px;color:var(--text3);">평단가</p>' +
-              '<p style="margin:0;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">' + (c.avgPrice > 0 ? (stock.currency==='KRW' ? Math.round(c.avgPrice).toLocaleString('ko-KR')+'원' : '$'+c.avgPrice.toFixed(2)) : '—') + '</p>' +
-            '</div>' +
-            '<div style="background:var(--bg3);border-radius:7px;padding:8px 10px;">' +
-              '<p style="margin:0 0 2px;font-size:9px;color:var(--text3);">목표가</p>' +
-              '<p style="margin:0;font-family:var(--mono);font-size:12px;font-weight:600;color:#34d399;">' + (c.targetPrice > 0 ? (stock.currency==='KRW' ? Math.round(c.targetPrice).toLocaleString('ko-KR')+'원' : '$'+c.targetPrice.toFixed(2)) : '—') + '</p>' +
-            '</div>' +
-            '<div style="background:var(--bg3);border-radius:7px;padding:8px 10px;">' +
-              '<p style="margin:0 0 2px;font-size:9px;color:var(--text3);">진행</p>' +
-              '<p style="margin:0;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);">' + c.tradeCount + ' / ' + c.splits + '</p>' +
-            '</div>' +
-          '</div>' +
-          '<div style="background:var(--bg3);border-radius:4px;height:6px;overflow:hidden;">' +
-            '<div style="height:100%;background:linear-gradient(90deg,rgba(0,229,176,0.5),#00e5b0);width:' + pct + '%;border-radius:4px;"></div>' +
-          '</div>' +
-          '<div style="display:flex;justify-content:space-between;margin-top:6px;">' +
-            '<span style="font-size:10px;color:var(--text3);">진행률 ' + pct + '%</span>' +
-            '<span style="font-size:10px;color:var(--text3);">' + stock.currency + ' · ' + (stock.startDate || '') + '</span>' +
-          '</div>' +
-        '</div>';
-      grid.appendChild(card);
-    });
-  }
-
-  /* ── 상세 뷰 ── */
-  function mhOpenDetail(stockId) {
-    _muhanCurId = stockId;
-    var stock = (_muhanData.stocks || []).find(function(s){ return s.id === stockId; });
-    if (!stock) return;
-
-    document.getElementById('muhan-list-view').style.display = 'none';
-    document.getElementById('muhan-detail-view').style.display = '';
-
-    var c = mhCalcStock(stock);
-    var cur = stock.currency || 'USD';
-    var fmtP = function(n){ return cur === 'KRW' ? Math.round(n).toLocaleString('ko-KR') + '원' : '$' + (n||0).toFixed(2); };
-    var fmtA = function(n){ return cur === 'KRW' ? Math.round(n).toLocaleString('ko-KR') + '원' : '$' + (n||0).toFixed(2); };
-
-    var el = function(id){ return document.getElementById(id); };
-    el('muhan-detail-ticker').textContent = stock.ticker;
-    el('muhan-detail-name').textContent = stock.name || '';
-    el('muhan-detail-status-badge').textContent = stock.status === 'done' ? '익절완료' : '진행중';
-    el('muhan-dash-avg').textContent = c.avgPrice > 0 ? fmtP(c.avgPrice) : '—';
-    el('muhan-dash-target').textContent = c.targetPrice > 0 ? fmtP(c.targetPrice) : '—';
-    el('muhan-dash-progress').textContent = Math.round(c.progress * 100) + '%';
-    el('muhan-dash-invested').textContent = c.invested > 0 ? fmtA(c.invested) : '—';
-    el('muhan-dash-remain').textContent = fmtA(c.remain);
-    el('muhan-dash-qty').textContent = c.totalQty.toLocaleString('ko-KR') + '주';
-    el('muhan-progress-bar').style.width = Math.round(c.progress * 100) + '%';
-    el('muhan-progress-txt').textContent = c.tradeCount + ' / ' + c.splits + ' 회';
-    el('muhan-bar-seed').textContent = '시드: ' + fmtA(c.seed);
-    el('muhan-bar-1div').textContent = '1회차: ' + fmtA(c.oneDiv);
-
-    // 거래 테이블
-    mhRenderTrades(stock, c);
-  }
-
-  function mhRenderTrades(stock, c) {
-    var tbody = document.getElementById('muhan-trade-tbody');
-    if (!tbody) return;
-    var trades = (stock.trades || []).slice().sort(function(a,b){ return a.date > b.date ? 1 : a.date < b.date ? -1 : 0; });
-
-    if (trades.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" style="padding:24px;text-align:center;color:var(--text3);">매매 기록이 없습니다 · 매매 추가 버튼을 눌러 시작하세요</td></tr>';
+    if (!stored) {
+      /* 최초 설정 */
+      localStorage.setItem(PW_KEY, hash);
+      MH.loggedIn = true;
+      MH.username = '로그인됨';
+      mhCloseLoginModal();
+      mhUpdateLoginUI();
+      alert('비밀번호가 설정되었습니다!');
       return;
     }
 
-    var cur = stock.currency || 'USD';
-    var fmtP = function(n){ return cur === 'KRW' ? Math.round(n).toLocaleString('ko-KR') : (n||0).toFixed(2); };
+    if (hash !== stored) {
+      showPwError('비밀번호가 틀렸습니다');
+      return;
+    }
 
-    // 누적 계산
-    var runQty = 0, runAmt = 0;
-    var round = 0;
-    tbody.innerHTML = '';
+    /* 로그인 성공 */
+    MH.loggedIn = true;
+    mhLoad();
+    mhCloseLoginModal();
+    mhUpdateLoginUI();
 
-    trades.forEach(function(t) {
-      var isBuy = t.type !== 'sell';
-      if (isBuy) round++;
-      var tQty = parseFloat(t.qty) || 0;
-      var tPrice = parseFloat(t.price) || 0;
-      var tAmt = tQty * tPrice;
-      if (isBuy) {
-        runQty += tQty; runAmt += tAmt;
-      } else {
-        runQty -= tQty; runAmt = runQty > 0 ? runAmt - tAmt : 0;
-      }
-      var avg = runQty > 0 ? runAmt / runQty : 0;
-      var target = avg * (1 + (parseFloat(stock.targetPct)||10)/100);
+    /* 기존 세션이 있으면 메인 화면으로 */
+    if (MH.sessions.length > 0) {
+      mhShowMain();
+    }
+  };
 
-      var tr = document.createElement('tr');
-      tr.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.04);' + (isBuy ? '' : 'background:rgba(52,211,153,0.05);');
-      tr.innerHTML =
-        '<td style="padding:7px 12px;text-align:center;color:var(--text3);">' + (isBuy ? round : '—') + '</td>' +
-        '<td style="padding:7px 12px;text-align:center;color:var(--text2);font-family:var(--mono);font-size:11px;">' + t.date + '</td>' +
-        '<td style="padding:7px 12px;text-align:center;"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + (isBuy ? 'rgba(0,229,176,0.12)' : 'rgba(52,211,153,0.12)') + ';color:' + (isBuy ? 'var(--accent)' : '#34d399') + ';">' + (isBuy ? '매수' : '매도') + '</span></td>' +
-        '<td style="padding:7px 12px;text-align:right;font-family:var(--mono);color:var(--text2);">' + fmtP(tPrice) + '</td>' +
-        '<td style="padding:7px 12px;text-align:right;font-family:var(--mono);color:var(--text2);">' + tQty.toLocaleString('ko-KR') + '</td>' +
-        '<td style="padding:7px 12px;text-align:right;font-family:var(--mono);color:var(--text2);">' + fmtP(tAmt) + '</td>' +
-        '<td style="padding:7px 12px;text-align:right;font-family:var(--mono);font-weight:600;color:#00e5b0;">' + (avg > 0 ? fmtP(avg) : '—') + '</td>' +
-        '<td style="padding:7px 12px;text-align:right;font-family:var(--mono);color:#34d399;">' + (target > 0 ? fmtP(target) : '—') + '</td>' +
-        '<td style="padding:7px 12px;text-align:center;font-size:11px;color:var(--text3);">' + (t.memo || '') + '</td>' +
-        '<td style="padding:7px 12px;text-align:center;"><button onclick="muhanDeleteTrade(\'' + t.id + '\')" style="padding:2px 8px;border-radius:4px;border:1px solid rgba(220,38,38,0.2);background:rgba(220,38,38,0.05);color:#f87171;font-size:10px;cursor:pointer;">삭제</button></td>';
-      tbody.appendChild(tr);
-    });
+  function showPwError(msg) {
+    $('mh-pw-error').textContent = msg;
+    $('mh-pw-error').style.display = 'block';
   }
 
-  /* ── 모달: 종목 추가/편집 ── */
-  window.muhanOpenAddStock = function() {
-    _muhanEditingStockId = null;
-    document.getElementById('muhan-stock-modal-title').textContent = '종목 추가';
-    document.getElementById('muhan-input-ticker').value = '';
-    document.getElementById('muhan-input-name').value = '';
-    document.getElementById('muhan-input-currency').value = 'USD';
-    document.getElementById('muhan-input-splits').value = '40';
-    document.getElementById('muhan-input-seed').value = '';
-    document.getElementById('muhan-input-target-pct').value = '10';
-    document.getElementById('muhan-input-startdate').value = new Date().toISOString().slice(0,10);
-    document.getElementById('muhan-input-memo').value = '';
-    document.getElementById('muhan-stock-modal').style.display = 'flex';
-  };
-
-  window.muhanEditStock = function() {
-    mhLoad();
-    var stock = (_muhanData.stocks||[]).find(function(s){ return s.id === _muhanCurId; });
-    if (!stock) return;
-    _muhanEditingStockId = stock.id;
-    document.getElementById('muhan-stock-modal-title').textContent = '종목 설정 편집';
-    document.getElementById('muhan-input-ticker').value = stock.ticker || '';
-    document.getElementById('muhan-input-name').value = stock.name || '';
-    document.getElementById('muhan-input-currency').value = stock.currency || 'USD';
-    document.getElementById('muhan-input-splits').value = stock.splits || 40;
-    document.getElementById('muhan-input-seed').value = stock.seed || '';
-    document.getElementById('muhan-input-target-pct').value = stock.targetPct || 10;
-    document.getElementById('muhan-input-startdate').value = stock.startDate || '';
-    document.getElementById('muhan-input-memo').value = stock.memo || '';
-    document.getElementById('muhan-stock-modal').style.display = 'flex';
-  };
-
-  window.muhanCloseStockModal = function() {
-    document.getElementById('muhan-stock-modal').style.display = 'none';
-  };
-
-  window.muhanSaveStock = function() {
-    var ticker = (document.getElementById('muhan-input-ticker').value || '').trim().toUpperCase();
-    if (!ticker) { alert('티커를 입력해주세요'); return; }
-    var seed = parseFloat(document.getElementById('muhan-input-seed').value);
-    if (!seed || seed <= 0) { alert('시드 금액을 입력해주세요'); return; }
-
-    mhLoad();
-    if (_muhanEditingStockId) {
-      var idx = _muhanData.stocks.findIndex(function(s){ return s.id === _muhanEditingStockId; });
-      if (idx >= 0) {
-        _muhanData.stocks[idx].ticker    = ticker;
-        _muhanData.stocks[idx].name      = document.getElementById('muhan-input-name').value.trim();
-        _muhanData.stocks[idx].currency  = document.getElementById('muhan-input-currency').value;
-        _muhanData.stocks[idx].splits    = parseInt(document.getElementById('muhan-input-splits').value)||40;
-        _muhanData.stocks[idx].seed      = seed;
-        _muhanData.stocks[idx].targetPct = parseFloat(document.getElementById('muhan-input-target-pct').value)||10;
-        _muhanData.stocks[idx].startDate = document.getElementById('muhan-input-startdate').value;
-        _muhanData.stocks[idx].memo      = document.getElementById('muhan-input-memo').value.trim();
-      }
+  function mhUpdateLoginUI() {
+    var loginBtn = $('mh-login-btn');
+    var userEl   = $('mh-login-user');
+    var logoutBtn = $('mh-logout-btn');
+    if (MH.loggedIn) {
+      if (loginBtn) loginBtn.textContent = '✓ 로그인됨';
+      if (userEl)   userEl.textContent = '로그인됨';
+      if (logoutBtn) logoutBtn.style.display = '';
     } else {
-      _muhanData.stocks.push({
-        id:        mhUID(),
-        ticker:    ticker,
-        name:      document.getElementById('muhan-input-name').value.trim(),
-        currency:  document.getElementById('muhan-input-currency').value,
-        splits:    parseInt(document.getElementById('muhan-input-splits').value)||40,
-        seed:      seed,
-        targetPct: parseFloat(document.getElementById('muhan-input-target-pct').value)||10,
-        startDate: document.getElementById('muhan-input-startdate').value,
-        memo:      document.getElementById('muhan-input-memo').value.trim(),
-        status:    'active',
-        trades:    []
-      });
+      if (loginBtn) loginBtn.textContent = '로그인하여 데이터 불러오기';
+      if (userEl)   userEl.textContent = '';
+      if (logoutBtn) logoutBtn.style.display = 'none';
     }
-    mhSave();
-    muhanCloseStockModal();
-    if (_muhanEditingStockId) mhOpenDetail(_muhanCurId);
-    else mhRenderList();
+  }
+
+  window.mhLogout = function() {
+    if (!confirm('로그아웃하면 비밀번호를 재입력해야 합니다. 계속할까요?')) return;
+    MH.loggedIn = false;
+    mhUpdateLoginUI();
+    mhShowSetup();
   };
 
-  window.muhanDeleteStock = function() {
-    if (!confirm('종목을 삭제하면 모든 매매 기록도 삭제됩니다. 계속할까요?')) return;
-    mhLoad();
-    _muhanData.stocks = (_muhanData.stocks||[]).filter(function(s){ return s.id !== _muhanCurId; });
-    mhSave();
-    muhanBackToList();
+  /* ── 시작하기 ── */
+  window.mhStart = function() {
+    /* 설정 수집 */
+    var tickerBtn = document.querySelector('#mh-ticker-btns .mh-sel-btn.active');
+    var splitsBtn = document.querySelector('#mh-splits-btns .mh-sel-btn.active');
+    var startBtn  = document.querySelector('#mh-start-btns .mh-sel-btn.active');
+
+    var ticker = tickerBtn ? tickerBtn.dataset.val : 'TQQQ';
+    if (ticker === 'CUSTOM') {
+      ticker = ($('mh-custom-ticker').value || '').trim().toUpperCase();
+      if (!ticker) { alert('종목 코드를 입력해주세요'); return; }
+    }
+
+    MH.settings.ticker     = ticker;
+    MH.settings.splits     = parseInt((splitsBtn && splitsBtn.dataset.val) || '40');
+    MH.settings.targetPct  = parseFloat($('mh-target-pct').value) || 15;
+    MH.settings.bigNumPct  = parseFloat($('mh-bignum-pct').value) || 12;
+    MH.settings.startType  = (startBtn && startBtn.dataset.val) || 'new';
+    MH.settings.seed       = parseFloat($('mh-seed').value) || 20000;
+
+    var now = new Date().toISOString().slice(0,10);
+    var newSession = { id: 'ses_' + Date.now(), startDate: now, trades: [] };
+    MH.sessions.push(newSession);
+    MH.curSession = MH.sessions.length - 1;
+
+    if (MH.loggedIn) mhSave();
+    mhShowMain();
   };
 
-  /* ── 모달: 매매 추가 ── */
-  window.muhanOpenAddTrade = function() {
-    document.getElementById('muhan-trade-date').value = new Date().toISOString().slice(0,10);
-    document.getElementById('muhan-trade-type').value = 'buy';
-    document.getElementById('muhan-trade-price').value = '';
-    document.getElementById('muhan-trade-qty').value = '';
-    document.getElementById('muhan-trade-memo').value = '';
-    document.getElementById('muhan-auto-calc-info').textContent = '';
-    document.getElementById('muhan-trade-modal').style.display = 'flex';
+  /* ── 화면 전환 ── */
+  function mhShowSetup() {
+    $('mh-setup-screen').style.display = '';
+    $('mh-main-screen').style.display = 'none';
+    mhUpdateLoginUI();
+  }
+
+  function mhShowMain() {
+    $('mh-setup-screen').style.display = 'none';
+    $('mh-main-screen').style.display = '';
+    mhUpdateLoginUI();
+    mhRenderMain();
+    mhFetchPrices();
+    mhFetchFG();
+  }
+
+  window.mhBackToSetup = function() {
+    mhShowSetup();
   };
 
-  window.muhanCloseTradeModal = function() {
-    document.getElementById('muhan-trade-modal').style.display = 'none';
-  };
+  /* ── 세션 계산 ── */
+  function mhGetSession() {
+    return MH.sessions[MH.curSession] || { trades: [] };
+  }
 
-  window.muhanCalcAutoQty = function() {
-    mhLoad();
-    var stock = (_muhanData.stocks||[]).find(function(s){ return s.id === _muhanCurId; });
-    if (!stock) return;
-    var price = parseFloat(document.getElementById('muhan-trade-price').value);
-    if (!price || price <= 0) return;
-    var c = mhCalcStock(stock);
-    var autoQty = Math.floor(c.oneDiv / price);
-    document.getElementById('muhan-trade-qty').value = autoQty > 0 ? autoQty : '';
-    document.getElementById('muhan-auto-calc-info').textContent =
-      '1회차 금액 ' + (stock.currency==='KRW' ? Math.round(c.oneDiv).toLocaleString('ko-KR')+'원' : '$'+c.oneDiv.toFixed(2)) + ' ÷ ' + price.toFixed(2) + ' = ' + autoQty + '주 (절사)';
-  };
-
-  window.muhanSaveTrade = function() {
-    var date  = document.getElementById('muhan-trade-date').value;
-    var type  = document.getElementById('muhan-trade-type').value;
-    var price = parseFloat(document.getElementById('muhan-trade-price').value);
-    var qty   = parseFloat(document.getElementById('muhan-trade-qty').value);
-    var memo  = document.getElementById('muhan-trade-memo').value.trim();
-
-    if (!date) { alert('날짜를 입력해주세요'); return; }
-    if (!price || price <= 0) { alert('매수가를 입력해주세요'); return; }
-    if (!qty || qty <= 0) { alert('수량을 입력해주세요'); return; }
-
-    mhLoad();
-    var idx = (_muhanData.stocks||[]).findIndex(function(s){ return s.id === _muhanCurId; });
-    if (idx < 0) return;
-    if (!_muhanData.stocks[idx].trades) _muhanData.stocks[idx].trades = [];
-    _muhanData.stocks[idx].trades.push({ id: mhUID(), date: date, type: type, price: price, qty: qty, memo: memo });
-    mhSave();
-    muhanCloseTradeModal();
-    mhOpenDetail(_muhanCurId);
-  };
-
-  window.muhanDeleteTrade = function(tradeId) {
-    if (!confirm('이 매매 기록을 삭제할까요?')) return;
-    mhLoad();
-    var idx = (_muhanData.stocks||[]).findIndex(function(s){ return s.id === _muhanCurId; });
-    if (idx < 0) return;
-    _muhanData.stocks[idx].trades = (_muhanData.stocks[idx].trades||[]).filter(function(t){ return t.id !== tradeId; });
-    mhSave();
-    mhOpenDetail(_muhanCurId);
-  };
-
-  /* ── 쿼터 손절 / 익절 완료 ── */
-  window.muhanQuarterSell = function() {
-    mhLoad();
-    var stock = (_muhanData.stocks||[]).find(function(s){ return s.id === _muhanCurId; });
-    if (!stock) return;
-    var c = mhCalcStock(stock);
-    var sellQty = Math.floor(c.totalQty / 4);
-    if (sellQty <= 0) { alert('보유 수량이 없습니다'); return; }
-    var priceStr = prompt('¼ 쿼터 손절 — 현재 매도가를 입력하세요 (' + stock.currency + '):', '');
-    if (!priceStr) return;
-    var price = parseFloat(priceStr);
-    if (!price || price <= 0) { alert('올바른 가격을 입력해주세요'); return; }
-
-    var idx = (_muhanData.stocks||[]).findIndex(function(s){ return s.id === _muhanCurId; });
-    if (!_muhanData.stocks[idx].trades) _muhanData.stocks[idx].trades = [];
-    _muhanData.stocks[idx].trades.push({
-      id: mhUID(),
-      date: new Date().toISOString().slice(0,10),
-      type: 'sell',
-      price: price,
-      qty: sellQty,
-      memo: '¼ 쿼터 손절'
-    });
-    // 시드 복구: 매도대금을 시드에 추가
-    _muhanData.stocks[idx].seed = parseFloat(_muhanData.stocks[idx].seed) + price * sellQty;
-    mhSave();
-    alert('쿼터 손절 완료! ' + sellQty + '주 @ ' + price + '\n시드에 ' + (price*sellQty).toFixed(2) + ' 추가됨');
-    mhOpenDetail(_muhanCurId);
-  };
-
-  window.muhanTakeProfit = function() {
-    mhLoad();
-    var stock = (_muhanData.stocks||[]).find(function(s){ return s.id === _muhanCurId; });
-    if (!stock) return;
-    var c = mhCalcStock(stock);
-    if (c.totalQty <= 0) { alert('보유 수량이 없습니다'); return; }
-    var priceStr = prompt('익절 매도가를 입력하세요 (' + stock.currency + '):', c.targetPrice > 0 ? c.targetPrice.toFixed(2) : '');
-    if (!priceStr) return;
-    var price = parseFloat(priceStr);
-    if (!price || price <= 0) { alert('올바른 가격을 입력해주세요'); return; }
-
-    var idx = (_muhanData.stocks||[]).findIndex(function(s){ return s.id === _muhanCurId; });
-    _muhanData.stocks[idx].trades.push({
-      id: mhUID(),
-      date: new Date().toISOString().slice(0,10),
-      type: 'sell',
-      price: price,
-      qty: c.totalQty,
-      memo: '익절 완료'
-    });
-    _muhanData.stocks[idx].status = 'done';
-    mhSave();
-    var profit = (price - c.avgPrice) * c.totalQty;
-    var profitPct = c.avgPrice > 0 ? ((price / c.avgPrice - 1) * 100) : 0;
-    alert('익절 완료! 수익: ' + (profit > 0 ? '+' : '') + profit.toFixed(2) + ' (' + profitPct.toFixed(1) + '%)');
-    mhOpenDetail(_muhanCurId);
-  };
-
-  /* ── 목록으로 돌아가기 ── */
-  window.muhanBackToList = function() {
-    document.getElementById('muhan-detail-view').style.display = 'none';
-    document.getElementById('muhan-list-view').style.display = '';
-    _muhanCurId = null;
-    mhRenderList();
-  };
-
-  /* ── CSV 내보내기 ── */
-  window.muhanExport = function() {
-    mhLoad();
-    var stock = (_muhanData.stocks||[]).find(function(s){ return s.id === _muhanCurId; });
-    if (!stock) return;
-    var trades = (stock.trades||[]).slice().sort(function(a,b){ return a.date > b.date ? 1 : -1; });
-    var csv = '\uFEFF'; // BOM
-    csv += '회차,날짜,유형,매수가,수량,매수금액,평단가,목표가,메모\n';
-    var runQty=0, runAmt=0, round=0;
+  function mhCalcSession() {
+    var ses = mhGetSession();
+    var trades = (ses.trades || []).filter(function(t){ return t.type !== 'sell_profit' && t.type !== 'sell_quarter'; });
+    var totalQty = 0, totalAmt = 0;
     trades.forEach(function(t) {
-      var isBuy = t.type !== 'sell';
-      if (isBuy) round++;
-      var tQty = parseFloat(t.qty)||0, tPrice = parseFloat(t.price)||0, tAmt = tQty*tPrice;
-      if (isBuy) { runQty+=tQty; runAmt+=tAmt; } else { runQty-=tQty; }
-      var avg = runQty>0?runAmt/runQty:0;
-      var target = avg*(1+(parseFloat(stock.targetPct)||10)/100);
-      csv += [isBuy?round:'—', t.date, isBuy?'매수':'매도', tPrice.toFixed(2), tQty, tAmt.toFixed(2), avg.toFixed(2), target.toFixed(2), t.memo||''].join(',') + '\n';
+      var q = parseFloat(t.qty)||0, p = parseFloat(t.price)||0;
+      totalQty += q;
+      totalAmt += q * p;
     });
-    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = stock.ticker + '_무한매수법_' + new Date().toISOString().slice(0,10) + '.csv';
-    a.click();
+    var avg = totalQty > 0 ? totalAmt / totalQty : 0;
+    var tradeCount = ses.trades.filter(function(t){ return t.type.startsWith('buy'); }).length;
+    var splits = MH.settings.splits || 40;
+    var seed = MH.settings.seed || 20000;
+    var oneDiv = seed / splits;
+    var invested = totalAmt;
+    var cash = Math.max(seed - invested, 0);
+    var targetPrice = avg > 0 ? avg * (1 + (MH.settings.targetPct||15)/100) : 0;
+    return { totalQty, totalAmt, avg, tradeCount, splits, seed, oneDiv, invested, cash, targetPrice };
+  }
+
+  /* ── 메인 렌더 ── */
+  function mhRenderMain() {
+    var c = mhCalcSession();
+    var t = MH.settings.targetPct || 15;
+    var ticker = MH.settings.ticker || 'TQQQ';
+
+    /* 헤더 */
+    $('mh-header-sub').textContent = ticker + ' · ' + c.splits + '분할 · $' + (MH.settings.seed||0).toLocaleString('ko-KR');
+    $('mh-recent-title').textContent = ticker + ' 최근 종가';
+
+    /* 슬라이더 */
+    var mid = Math.floor(c.splits / 2);
+    $('mh-slider-mid').textContent = mid + ' (추천반)';
+    $('mh-slider-max').textContent = c.splits;
+    var pct = c.splits > 0 ? Math.min(c.tradeCount / c.splits * 100, 100) : 0;
+    $('mh-progress-fill').style.width = pct + '%';
+    $('mh-progress-thumb').style.left = pct + '%';
+
+    /* 현재가 */
+    if (MH.curPrice) {
+      $('mh-cur-price').textContent = MH.curPrice.toFixed(5);
+      $('mh-price-arrow').textContent = MH.prevClose && MH.curPrice > MH.prevClose ? '↑' : '↓';
+      $('mh-price-arrow').style.color = MH.prevClose && MH.curPrice > MH.prevClose ? '#34d399' : '#f87171';
+    }
+
+    /* 스탯 */
+    $('mh-stat-avg').textContent = c.avg > 0 ? '$' + c.avg.toFixed(2) : '-';
+    $('mh-stat-qty').textContent = c.totalQty.toLocaleString('ko-KR') + '주';
+    $('mh-stat-cash').textContent = '$' + c.cash.toFixed(2);
+    $('mh-stat-pct').textContent = '+' + t.toFixed(2) + '%';
+    $('mh-stat-target').textContent = c.targetPrice > 0 ? '$' + c.targetPrice.toFixed(2) : '-';
+    $('mh-stat-onediv').textContent = '$' + c.oneDiv.toFixed(2);
+    var oneDivKrw = c.oneDiv * MH.usdKrw;
+    $('mh-stat-onediv-krw').textContent = '(₩' + Math.round(oneDivKrw).toLocaleString('ko-KR') + ')';
+
+    /* 환율 */
+    $('mh-usdkrw-row').textContent = 'USD/KRW ₩' + MH.usdKrw.toLocaleString('ko-KR') + ' · ' + new Date().toISOString().slice(0,10);
+
+    /* 새 시이클 */
+    $('mh-cycle-onediv').textContent = '$' + c.oneDiv.toFixed(2);
+    var prevC = MH.prevClose || 0;
+    $('mh-cycle-prevclose').textContent = prevC > 0 ? '$' + prevC.toFixed(2) : '조회 중...';
+
+    if (prevC > 0) {
+      var bigNum = prevC * (1 + (MH.settings.bigNumPct||12)/100);
+      var bigQty = Math.floor(c.oneDiv / bigNum);
+      $('mh-cycle-bignum-info').textContent =
+        '★ 큰수 = 종가 × ' + (1 + (MH.settings.bigNumPct||12)/100).toFixed(2) +
+        ' = $' + bigNum.toFixed(2) +
+        ' (큰수% 설정 ' + (MH.settings.bigNumPct||12) + '%)';
+    }
+
+    /* 기록 버튼 */
+    $('mh-record-btn').textContent = c.tradeCount === 0 ? '처음매수' : '오늘 기록';
+
+    /* 주문 목록 */
+    mhRenderOrders(c);
+  }
+
+  function mhRenderOrders(c) {
+    var el = $('mh-orders-list');
+    if (!el) return;
+    var prevC = MH.prevClose;
+    var oneDiv = c.oneDiv;
+
+    if (!prevC || prevC <= 0 || oneDiv <= 0) {
+      el.innerHTML = '<div style="padding:12px 18px;font-size:12px;color:var(--text3);">전일 종가를 불러오는 중...</div>';
+      return;
+    }
+
+    var html = '';
+    var bigNumPct = MH.settings.bigNumPct || 12;
+    var bigNum = prevC * (1 + bigNumPct/100);
+    var bigQty = Math.floor(oneDiv / bigNum);
+
+    /* 처음매수 LOC */
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.04);">' +
+      '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<span style="font-size:11px;color:var(--accent);font-weight:600;">★ 처음매수</span>' +
+      '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(0,229,176,0.1);color:var(--accent);">LOC</span>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+      '<span style="font-family:var(--mono);font-size:13px;color:var(--text);">$' + bigNum.toFixed(2) + '</span>' +
+      '<span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">' + bigQty + '주</span>' +
+      '</div></div>';
+
+    /* LOC 평단매수 목록: 1회매수금/n for n = ceil(1회매수금/prevClose), ... , splits */
+    var nStart = Math.ceil(oneDiv / prevC);
+    var nEnd   = Math.min(nStart + 20, MH.settings.splits || 40); /* 최대 20개 표시 */
+
+    for (var n = nStart; n <= nEnd; n++) {
+      var locPrice = oneDiv / n;
+      if (locPrice <= 0) continue;
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.03);">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span>' +
+        '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);">LOC</span>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+        '<span style="font-family:var(--mono);font-size:13px;color:var(--text2);">$' + locPrice.toFixed(2) + '</span>' +
+        '<span style="font-family:var(--mono);font-size:12px;color:var(--text3);margin-left:8px;">1주</span>' +
+        '</div></div>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  /* ── 실시간 가격 조회 ── */
+  window.mhFetchPrices = async function() {
+    var ticker = MH.settings.ticker || 'TQQQ';
+    var encodedTicker = encodeURIComponent(ticker);
+
+    /* Yahoo Finance 최근 10일 */
+    var yfUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodedTicker + '?interval=1d&range=15d';
+    var proxies = [
+      'https://corsproxy.io/?' + encodeURIComponent(yfUrl),
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfUrl)
+    ];
+
+    for (var i = 0; i < proxies.length; i++) {
+      try {
+        var ctrl = new AbortController();
+        var tid = setTimeout(function(){ ctrl.abort(); }, 10000);
+        var resp;
+        try { resp = await fetch(proxies[i], { cache:'no-cache', signal: ctrl.signal }); }
+        finally { clearTimeout(tid); }
+        if (!resp || !resp.ok) continue;
+        var txt = await resp.text();
+        var json; try { json = JSON.parse(txt); } catch { continue; }
+        if (json.contents) { try { json = JSON.parse(json.contents); } catch { continue; } }
+
+        var r = json && json.chart && json.chart.result && json.chart.result[0];
+        if (!r) continue;
+
+        var meta = r.meta;
+        var timestamps = r.timestamp || [];
+        var closes = r.indicators && r.indicators.quote && r.indicators.quote[0] && r.indicators.quote[0].close || [];
+
+        /* 유효한 날짜+종가 쌍 수집 */
+        var pairs = [];
+        for (var k = 0; k < timestamps.length; k++) {
+          var cl = closes[k];
+          if (cl && cl > 0) {
+            var d = new Date(timestamps[k] * 1000);
+            var dateStr = (d.getMonth()+1) + '/' + d.getDate();
+            pairs.push({ date: dateStr, close: cl });
+          }
+        }
+
+        /* 최근 10개 */
+        MH.recentPrices = pairs.slice(-10);
+        if (MH.recentPrices.length >= 2) {
+          MH.prevClose = MH.recentPrices[MH.recentPrices.length - 2].close;
+        }
+        MH.curPrice = meta.regularMarketPrice || (MH.recentPrices.length > 0 ? MH.recentPrices[MH.recentPrices.length-1].close : null);
+
+        /* 환율 */
+        if (_fxRates && _fxRates['USD'] && _fxRates['USD'] > 100) MH.usdKrw = _fxRates['USD'];
+
+        mhRenderPrices();
+        mhRenderMain();
+        return;
+      } catch(e) { continue; }
+    }
+
+    /* Anthropic API fallback */
+    try {
+      var aResp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:200,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:'What is the current price of ' + ticker + ' stock? Reply only with the number.'}]
+        })
+      });
+      if (aResp.ok) {
+        var aData = await aResp.json();
+        var aText = (aData.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+        var aNum = aText.match(/\$?([\d.]+)/);
+        if (aNum) { MH.curPrice = parseFloat(aNum[1]); mhRenderMain(); }
+      }
+    } catch(e) {}
   };
 
-  /* ── 탭 진입 시 ── */
+  function mhRenderPrices() {
+    var grid = $('mh-recent-grid');
+    if (!grid || MH.recentPrices.length === 0) return;
+
+    var html = '';
+    var prices = MH.recentPrices.slice().reverse(); /* 최신 먼저 */
+    prices.forEach(function(p, i) {
+      var prev = prices[i+1];
+      var chg = prev ? p.close - prev.close : 0;
+      var chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2);
+      var color = chg >= 0 ? '#34d399' : '#f87171';
+      html += '<div style="padding:10px;text-align:center;background:var(--bg2);border:1px solid rgba(255,255,255,0.04);">' +
+        '<p style="margin:0 0 3px;font-size:10px;color:var(--text3);">' + p.date + '</p>' +
+        '<p style="margin:0 0 2px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);">$' + p.close.toFixed(2) + '</p>' +
+        '<p style="margin:0;font-size:10px;color:' + color + ';">' + chgStr + '</p>' +
+        '</div>';
+    });
+    grid.innerHTML = html;
+    grid.style.gridTemplateColumns = 'repeat(5,1fr)';
+
+    /* 5일 평균 */
+    var last5 = MH.recentPrices.slice(-5).map(function(p){ return p.close; });
+    var avg5 = last5.reduce(function(a,b){return a+b;},0)/last5.length;
+    $('mh-5day-avg').textContent = '5일 평균 $' + avg5.toFixed(2);
+  }
+
+  /* ── 공포 & 탐욕 ── */
+  window.mhFetchFG = async function() {
+    try {
+      var resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514', max_tokens:50,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:'Current CNN Fear and Greed Index value? Reply only with the integer number.'}]
+        })
+      });
+      if (!resp.ok) return;
+      var data = await resp.json();
+      var txt = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+      var m = txt.match(/\b(\d{1,3})\b/);
+      if (m) {
+        var val = parseInt(m[1]);
+        MH.fgVal = val;
+        var label = val <= 25 ? '극도 공포' : val <= 45 ? '공포' : val <= 55 ? '중립' : val <= 75 ? '탐욕' : '극도 탐욕';
+        $('mh-fg-val').textContent = val;
+        $('mh-fg-label').textContent = label;
+        $('mh-fg-cursor').style.left = val + '%';
+        $('mh-fg-val').style.color = val <= 25 ? '#ef4444' : val <= 55 ? '#f97316' : val <= 75 ? '#22c55e' : '#16a34a';
+      }
+    } catch(e) {}
+  };
+
+  /* ── 설정 패널 ── */
+  window.mhToggleSettings = function() {
+    var panel = $('mh-settings-panel');
+    if (!panel) return;
+    var visible = panel.style.display !== 'none';
+    if (!visible) {
+      $('mh-s-target').value = MH.settings.targetPct;
+      $('mh-s-bignum').value = MH.settings.bigNumPct;
+    }
+    panel.style.display = visible ? 'none' : '';
+  };
+
+  window.mhApplySettings = function(field) {
+    if (field === 'target') {
+      var v = parseFloat($('mh-s-target').value);
+      if (v > 0 && v <= 100) { MH.settings.targetPct = v; }
+    }
+    if (field === 'bignum') {
+      var v2 = parseFloat($('mh-s-bignum').value);
+      if (v2 >= 0 && v2 <= 30) { MH.settings.bigNumPct = v2; }
+    }
+    if (MH.loggedIn) mhSave();
+    mhRenderMain();
+  };
+
+  window.mhAddSession = function() {
+    var now = new Date().toISOString().slice(0,10);
+    MH.sessions.push({ id: 'ses_' + Date.now(), startDate: now, trades: [] });
+    MH.curSession = MH.sessions.length - 1;
+    if (MH.loggedIn) mhSave();
+    mhToggleSettings();
+    mhRenderMain();
+    alert('새 세션이 추가됐습니다! (' + now + ')');
+  };
+
+  window.mhResetSession = function() {
+    if (!confirm('현재 세션의 모든 기록을 초기화하겠습니까?')) return;
+    MH.sessions[MH.curSession] = { id: 'ses_reset_' + Date.now(), startDate: new Date().toISOString().slice(0,10), trades: [] };
+    if (MH.loggedIn) mhSave();
+    mhRenderMain();
+  };
+
+  /* ── 기록 모달 ── */
+  window.mhOpenRecordModal = function() {
+    $('mh-rec-date').value = new Date().toISOString().slice(0,10);
+    $('mh-rec-type').value = 'buy_first';
+    $('mh-rec-price').value = '';
+    $('mh-rec-qty').value = '';
+    $('mh-rec-memo').value = '';
+    $('mh-rec-qty-hint').textContent = '';
+
+    /* 기록 이력 */
+    mhRenderRecHistory();
+
+    $('mh-record-modal').style.display = 'flex';
+  };
+
+  window.mhCloseRecordModal = function() {
+    $('mh-record-modal').style.display = 'none';
+  };
+
+  window.mhRecTypeChange = function() {
+    mhCalcRecQty();
+  };
+
+  window.mhCalcRecQty = function() {
+    var price = parseFloat($('mh-rec-price').value);
+    var type  = $('mh-rec-type').value;
+    if (!price || price <= 0) return;
+
+    var c = mhCalcSession();
+    var oneDiv = c.oneDiv;
+
+    if (type === 'buy_first' || type === 'buy_avg' || type === 'buy_manual') {
+      var qty = Math.floor(oneDiv / price);
+      if (qty > 0) {
+        $('mh-rec-qty').value = qty;
+        $('mh-rec-qty-hint').textContent = '1회 매수금 $' + oneDiv.toFixed(2) + ' ÷ $' + price.toFixed(2) + ' = ' + qty + '주 (절사)';
+      }
+    } else if (type === 'sell_quarter') {
+      var sellQty = Math.floor(c.totalQty / 4);
+      $('mh-rec-qty').value = sellQty;
+      $('mh-rec-qty-hint').textContent = '보유 ' + c.totalQty + '주의 1/4 = ' + sellQty + '주';
+    } else if (type === 'sell_profit') {
+      $('mh-rec-qty').value = c.totalQty;
+      $('mh-rec-qty-hint').textContent = '전체 보유 ' + c.totalQty + '주 익절';
+    }
+  };
+
+  window.mhSaveRecord = function() {
+    var date  = $('mh-rec-date').value;
+    var type  = $('mh-rec-type').value;
+    var price = parseFloat($('mh-rec-price').value);
+    var qty   = parseFloat($('mh-rec-qty').value);
+    var memo  = $('mh-rec-memo').value.trim();
+
+    if (!date) { alert('날짜를 입력하세요'); return; }
+    if (!price || price <= 0) { alert('체결가를 입력하세요'); return; }
+    if (!qty || qty <= 0) { alert('수량을 입력하세요'); return; }
+
+    var trade = { id: 'tr_' + Date.now(), date, type, price, qty, memo };
+    MH.sessions[MH.curSession].trades.push(trade);
+    if (MH.loggedIn) mhSave();
+
+    mhRenderRecHistory();
+    $('mh-rec-price').value = '';
+    $('mh-rec-qty').value = '';
+    $('mh-rec-memo').value = '';
+    mhRenderMain();
+  };
+
+  function mhRenderRecHistory() {
+    var el = $('mh-rec-history-list');
+    if (!el) return;
+    var ses = mhGetSession();
+    var trades = (ses.trades || []).slice().reverse().slice(0,10);
+    if (trades.length === 0) {
+      el.innerHTML = '<p style="font-size:11px;color:var(--text3);">기록 없음</p>';
+      return;
+    }
+    var typeLabel = {buy_first:'처음매수',buy_avg:'평단매수',buy_manual:'직접매수',sell_profit:'익절',sell_quarter:'쿼터손절'};
+    el.innerHTML = trades.map(function(t) {
+      var isBuy = t.type.startsWith('buy');
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<span style="font-size:10px;color:var(--text3);">' + t.date + '</span>' +
+        '<span style="font-size:10px;padding:1px 6px;border-radius:3px;background:' + (isBuy?'rgba(0,229,176,0.1)':'rgba(52,211,153,0.1)') + ';color:' + (isBuy?'var(--accent)':'#34d399') + ';">' + (typeLabel[t.type]||t.type) + '</span>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-family:var(--mono);font-size:11px;color:var(--text2);">$' + parseFloat(t.price).toFixed(2) + '</span>' +
+        '<span style="font-family:var(--mono);font-size:11px;color:var(--text3);">' + t.qty + '주</span>' +
+        '<button onclick="mhDeleteTrade(\'' + t.id + '\')" style="padding:1px 6px;border-radius:3px;border:1px solid rgba(220,38,38,0.2);background:transparent;color:#f87171;font-size:10px;cursor:pointer;">×</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  window.mhDeleteTrade = function(tradeId) {
+    var ses = MH.sessions[MH.curSession];
+    ses.trades = (ses.trades || []).filter(function(t){ return t.id !== tradeId; });
+    if (MH.loggedIn) mhSave();
+    mhRenderRecHistory();
+    mhRenderMain();
+  };
+
+  /* ── 탭 진입 시 초기화 ── */
   window.muhanInit = function() {
-    mhLoad();
-    document.getElementById('muhan-detail-view').style.display = 'none';
-    document.getElementById('muhan-list-view').style.display = '';
-    mhRenderList();
+    /* 로그인 상태 체크 */
+    var hasPw = !!localStorage.getItem(PW_KEY);
+    var hasData = !!localStorage.getItem(DATA_KEY);
+
+    if (MH.loggedIn && MH.sessions.length > 0) {
+      mhShowMain();
+      return;
+    }
+
+    /* 세션 없으면 설정화면 */
+    mhShowSetup();
+    mhUpdateLoginUI();
   };
 
   /* 모달 외부 클릭 닫기 */
-  window.addEventListener('click', function(e) {
-    var sm = document.getElementById('muhan-stock-modal');
-    var tm = document.getElementById('muhan-trade-modal');
-    if (sm && e.target === sm) muhanCloseStockModal();
-    if (tm && e.target === tm) muhanCloseTradeModal();
+  ['mh-login-modal','mh-record-modal'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(e) {
+      if (e.target === el) {
+        el.style.display = 'none';
+      }
+    });
   });
 
-})(); // IIFE end
+})();
+
 
 </script>
   <!-- ── 하단 후원/문의 배너 ── -->
